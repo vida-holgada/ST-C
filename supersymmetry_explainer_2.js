@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
-import { 
+// 기존 import 구문은 모두 지우거나 주석 처리하세요.
+// import React, { useState } from 'react';
+// import { History, User, ... } from 'lucide-react';
+
+// 대신 브라우저가 전역으로 들고 있는 객체에서 꺼내옵니다.
+const { useState } = React;
+const { 
   History, 
   User, 
   BookOpen, 
   AlertCircle, 
   CheckCircle2, 
   XCircle, 
-  Info,
-  Quote,
-  Zap,
-  RefreshCw,
-  ArrowRightLeft,
-  CircleDot,
+  Info, 
+  Quote, 
+  Zap, 
+  RefreshCw, 
+  ArrowRightLeft, 
+  CircleDot, 
   Layers 
-} from 'lucide-react';
-
+} = lucide;
 // --- 이미지 폴백 컴포넌트 (오류 방지) ---
 const ImageWithFallback = ({ src, alt, className }) => {
   const [error, setError] = useState(false);
