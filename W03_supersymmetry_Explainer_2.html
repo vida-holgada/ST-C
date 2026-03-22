@@ -1,13 +1,26 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body>
-    <div id="root"></div> <!-- 결과가 나올 자리 -->
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Supersymmetry Project</title>
     
-    <!-- 여기에 본인이 올린 .js 파일 이름을 정확히 쓰세요 -->
-<!-- 원래 코드 -->
-<script src="supersymmetry_explainer_2.js"></script>
+    <!-- 1. React 라이브러리 불러오기 (CDN) -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- 2. JSX 문법을 브라우저가 이해할 수 있게 변환해주는 Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+        body { margin: 0; font-family: sans-serif; }
+        #root { min-height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
 
-<!-- 수정 후: type="module"을 꼭 붙여주세요! -->
-<script type="module" src="supersymmetry_explainer_2.js"></script></body>
+    <!-- 3. 핵심: type="text/babel"과 data-type="module"을 써야 React 코드가 돌아갑니다 -->
+    <script type="text/babel" data-type="module" src="supersymmetry_explainer_2.js"></script>
+</body>
 </html>
