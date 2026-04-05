@@ -303,40 +303,31 @@ body::before {
   font-size: 14px;
 }
 
-.modules {
+.path-grid {
   display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px;
 }
 
-.module {
-  background: rgba(255, 251, 245, 0.84);
+.path-card {
+  background: rgba(255, 251, 245, 0.88);
   border: 1px solid rgba(29, 27, 24, 0.1);
   border-radius: 30px;
-  overflow: hidden;
+  padding: 26px;
   box-shadow: var(--shadow);
-  transition: transform 0.28s ease, box-shadow 0.28s ease;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
-.module:target {
-  box-shadow: 0 0 0 4px rgba(178, 139, 69, 0.18), var(--shadow);
-}
-
-.module-head {
-  padding: 28px 28px 20px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 18px;
-  align-items: start;
-}
-
-.module-meta {
+.path-meta {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
-.module-tag {
+.path-tag {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -346,7 +337,7 @@ body::before {
   color: var(--muted);
 }
 
-.module-tag::before {
+.path-tag::before {
   content: '';
   width: 10px;
   height: 10px;
@@ -358,57 +349,36 @@ body::before {
 .tag-tides { color: var(--teal); }
 .tag-tonkin { color: var(--wine); }
 
-.module h3 {
-  margin: 0 0 10px;
+.path-card h3 {
+  margin: 0 0 12px;
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(30px, 4vw, 44px);
+  font-size: clamp(30px, 4vw, 42px);
   line-height: 0.95;
   font-weight: 600;
 }
 
-.module p {
-  margin: 0;
+.path-card p {
+  margin: 0 0 16px;
   color: var(--muted);
   font-size: 16px;
-  max-width: 760px;
 }
 
-.module-actions {
+.prompt-list {
+  margin: 0 0 20px;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.prompt-list li + li {
+  margin-top: 8px;
+}
+
+.path-actions {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.frame-wrap {
-  position: relative;
-  background: linear-gradient(180deg, rgba(29, 27, 24, 0.06), rgba(29, 27, 24, 0.02));
-  border-top: 1px solid rgba(29, 27, 24, 0.08);
-  padding: 0 18px 18px;
-}
-
-.frame {
-  width: 100%;
-  border: 0;
-  border-radius: 18px;
-  background: #ffffff;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
-  min-height: 920px;
-}
-
-.frame.large {
-  min-height: 1080px;
-}
-
-.frame-caption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 14px 10px 0;
-  color: var(--muted);
-  font-size: 13px;
-  flex-wrap: wrap;
+  margin-top: auto;
 }
 
 .foot {
@@ -422,16 +392,8 @@ body::before {
 @media (max-width: 920px) {
   .hero-grid,
   .intro-grid,
-  .module-head {
+  .path-grid {
     grid-template-columns: 1fr;
-  }
-
-  .module-actions {
-    justify-content: flex-start;
-  }
-
-  .frame {
-    min-height: 760px;
   }
 }
 
@@ -452,18 +414,9 @@ body::before {
   }
 
   .paper-card,
-  .module-head {
+  .path-card {
     padding-left: 18px;
     padding-right: 18px;
-  }
-
-  .frame-wrap {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
-  .frame {
-    min-height: 640px;
   }
 }
 </style>
@@ -477,9 +430,9 @@ body::before {
         <span class="brand-title">Science, Technology and Civilization · Week 5</span>
       </div>
       <div class="top-links">
-        <button class="nav-btn active" data-target="module-network">1. Network</button>
-        <button class="nav-btn" data-target="module-tides">2. Tides</button>
-        <button class="nav-btn" data-target="module-tonkin">3. Tonkin</button>
+        <a class="nav-btn" href="./newton_network.html">1. Network</a>
+        <a class="nav-btn" href="./tides_comparison.html">2. Tides</a>
+        <a class="nav-btn" href="./tonkin_tides.html">3. Tonkin</a>
       </div>
     </div>
   </div>
@@ -541,73 +494,52 @@ body::before {
       </div>
     </section>
 
-    <section class="modules">
-      <article class="module" id="module-network">
-        <div class="module-head">
-          <div>
-            <div class="module-meta">
-              <span class="module-tag tag-network">Module 1</span>
-              <span class="module-tag tag-network">Information Empire</span>
-            </div>
-            <h3>Newton's Information Empire</h3>
-            <p>관측자, 중개자, 식민지 공간, 그리고 핼리의 이동 경로를 통해 프린키피아의 지식이 어떻게 집합적이고 선별적인 방식으로 생산되었는지 추적합니다.</p>
-          </div>
-          <div class="module-actions">
-            <a class="link-btn" href="./newton_network.html" target="_blank" rel="noreferrer">Open Original</a>
-          </div>
+    <section class="path-grid">
+      <article class="path-card">
+        <div class="path-meta">
+          <span class="path-tag tag-network">Module 1</span>
+          <span class="path-tag tag-network">Information Empire</span>
         </div>
-        <div class="frame-wrap">
-          <iframe class="frame large" src="./newton_network.html" title="Newton network visualization" loading="lazy"></iframe>
-          <div class="frame-caption">
-            <span>지도, 관측자 평가, 신뢰도 체계, 진자 데이터가 포함된 원본 인터랙티브를 그대로 표시합니다.</span>
-            <span>Source file: <code>newton_network.html</code></span>
-          </div>
+        <h3>Newton's Information Empire</h3>
+        <p>프린키피아의 지식이 개인의 천재성만이 아니라 관측자, 중개자, 식민지 공간의 네트워크 속에서 어떻게 만들어졌는지 보여줍니다.</p>
+        <ol class="prompt-list">
+          <li>누가 데이터를 보냈고, 누가 그 데이터를 믿을 만하다고 판단했는가?</li>
+          <li>뉴턴은 왜 어떤 관측은 채택하고 어떤 관측은 배제했는가?</li>
+        </ol>
+        <div class="path-actions">
+          <a class="link-btn" href="./newton_network.html">들어가기</a>
         </div>
       </article>
 
-      <article class="module" id="module-tides">
-        <div class="module-head">
-          <div>
-            <div class="module-meta">
-              <span class="module-tag tag-tides">Module 2</span>
-              <span class="module-tag tag-tides">Theory vs Reality</span>
-            </div>
-            <h3>Tidal Theory Comparison</h3>
-            <p>뉴턴이 상상한 조석 메커니즘과 실제로 더 정확한 수평 기조력 기반 설명을 한 화면에서 비교해, “왜 이론 수정이 필요했는가”를 직관적으로 드러냅니다.</p>
-          </div>
-          <div class="module-actions">
-            <a class="link-btn" href="./tides_comparison.html" target="_blank" rel="noreferrer">Open Original</a>
-          </div>
+      <article class="path-card">
+        <div class="path-meta">
+          <span class="path-tag tag-tides">Module 2</span>
+          <span class="path-tag tag-tides">Theory vs Reality</span>
         </div>
-        <div class="frame-wrap">
-          <iframe class="frame" src="./tides_comparison.html" title="Tides comparison visualization" loading="lazy"></iframe>
-          <div class="frame-caption">
-            <span>양쪽 패널에서 힘의 방향과 물의 반응을 동시에 비교하도록 만든 시각화입니다.</span>
-            <span>Source file: <code>tides_comparison.html</code></span>
-          </div>
+        <h3>Tidal Theory Comparison</h3>
+        <p>뉴턴의 조석 설명과 더 정확한 현대적 설명을 나란히 보면서, 왜 기존 이론이 수정되어야 했는지 비교할 수 있습니다.</p>
+        <ol class="prompt-list">
+          <li>뉴턴의 설명은 어느 점에서 설득력 있었고, 어느 점에서 부족했는가?</li>
+          <li>힘의 방향을 어떻게 이해하느냐가 조석 해석을 어떻게 바꾸는가?</li>
+        </ol>
+        <div class="path-actions">
+          <a class="link-btn" href="./tides_comparison.html">들어가기</a>
         </div>
       </article>
 
-      <article class="module" id="module-tonkin">
-        <div class="module-head">
-          <div>
-            <div class="module-meta">
-              <span class="module-tag tag-tonkin">Module 3</span>
-              <span class="module-tag tag-tonkin">Wave Interference</span>
-            </div>
-            <h3>The Tonkin Gulf Puzzle</h3>
-            <p>홍강 하구 조석 관측을 둘러싼 의문을 파동 간섭과 지형적 조건으로 설명하면서, 단일 원리만으로는 설명되지 않는 복합 자연현상을 보여줍니다.</p>
-          </div>
-          <div class="module-actions">
-            <a class="link-btn" href="./tonkin_tides.html" target="_blank" rel="noreferrer">Open Original</a>
-          </div>
+      <article class="path-card">
+        <div class="path-meta">
+          <span class="path-tag tag-tonkin">Module 3</span>
+          <span class="path-tag tag-tonkin">Wave Interference</span>
         </div>
-        <div class="frame-wrap">
-          <iframe class="frame" src="./tonkin_tides.html" title="Tonkin tides visualization" loading="lazy"></iframe>
-          <div class="frame-caption">
-            <span>조석 곡선과 통킹만 지도를 함께 사용해 두 조석파의 간섭을 설명합니다.</span>
-            <span>Source file: <code>tonkin_tides.html</code></span>
-          </div>
+        <h3>The Tonkin Gulf Puzzle</h3>
+        <p>통킹만 사례를 통해 실제 자연현상이 단일한 법칙 하나로는 설명되지 않으며, 지역적 조건과 파동 간섭이 중요하다는 점을 보여줍니다.</p>
+        <ol class="prompt-list">
+          <li>왜 같은 조석 현상도 지역에 따라 전혀 다르게 나타나는가?</li>
+          <li>이 사례는 보편 이론과 지역 사례의 관계를 어떻게 다시 보게 하는가?</li>
+        </ol>
+        <div class="path-actions">
+          <a class="link-btn" href="./tonkin_tides.html">들어가기</a>
         </div>
       </article>
     </section>
@@ -618,37 +550,5 @@ body::before {
     </section>
   </main>
 </div>
-
-<script>
-const navButtons = document.querySelectorAll('.nav-btn');
-
-function setActiveButton(targetId) {
-  navButtons.forEach((button) => {
-    button.classList.toggle('active', button.dataset.target === targetId);
-  });
-}
-
-navButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    const target = document.getElementById(button.dataset.target);
-    if (!target) return;
-    setActiveButton(button.dataset.target);
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-});
-
-const observer = new IntersectionObserver((entries) => {
-  const visible = entries
-    .filter((entry) => entry.isIntersecting)
-    .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-  if (visible) {
-    setActiveButton(visible.target.id);
-  }
-}, {
-  threshold: [0.3, 0.45, 0.6]
-});
-
-document.querySelectorAll('.module').forEach((section) => observer.observe(section));
-</script>
 </body>
 </html>
