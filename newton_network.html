@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>뉴턴의 정보 제국</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+KR:wght@300;400;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1208;--p:#f5edd8;--p2:#efe4c8;--p3:#e6d8b0;
+  --gold:#8a6820;--g2:#c49a30;--red:#8b2318;--blue:#1a3d6b;--teal:#1a5a4a;
+  --muted:#5a4a30;--b:rgba(138,104,32,0.25);
+}
+body{background:var(--p);color:var(--ink);font-family:'EB Garamond','Noto Serif KR',serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(180,150,80,0.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(140,100,40,0.06) 0%,transparent 50%);pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 32px 80px;}
+header{padding:52px 0 40px;border-bottom:1px solid var(--b);position:relative;}
+header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--g2),transparent);opacity:.5;}
+.stag{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
+h1{font-size:clamp(28px,5vw,54px);font-weight:400;line-height:1.1;margin-bottom:14px;}
+h1 em{font-style:italic;color:var(--red);}
+.sub{font-size:16px;color:var(--muted);line-height:1.7;max-width:580px;font-style:italic;}
+.hr{display:flex;align-items:center;gap:12px;margin-top:24px;font-size:11px;color:var(--gold);letter-spacing:.12em;}
+.hr::before,.hr::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--b));}
+.hr::after{background:linear-gradient(270deg,transparent,var(--b));}
+.tabs{display:flex;margin:32px 0 0;border-bottom:1px solid var(--b);flex-wrap:wrap;}
+.tab{padding:10px 22px;font-size:13px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:'EB Garamond',serif;}
+.tab:hover{color:var(--ink);}.tab.on{color:var(--ink);border-bottom-color:var(--g2);font-weight:500;}
+.sec{display:none;padding-top:36px;}.sec.vis{display:block;}
+.intro{font-size:15px;color:var(--muted);line-height:1.8;max-width:640px;margin-bottom:32px;font-style:italic;border-left:2px solid var(--b);padding-left:16px;}
+
+/* MAP */
+.mo{border:1px solid var(--b);border-radius:6px;overflow:hidden;position:relative;}
+.mo.exp{margin-left:-32px;margin-right:-32px;border-radius:0;}
+.mo.fs{position:fixed!important;inset:0!important;margin:0!important;border-radius:0!important;z-index:999!important;overflow:auto!important;}
+.mtb{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-bottom:1px solid var(--b);background:var(--p2);flex-wrap:wrap;}
+.fg{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.fl{font-size:11px;color:var(--muted);letter-spacing:.08em;margin-right:2px;}
+.fb{background:transparent;border:1px solid var(--b);color:var(--muted);font-family:'EB Garamond',serif;font-size:12px;padding:4px 12px;border-radius:20px;cursor:pointer;transition:all .15s;}
+.fb:hover{border-color:var(--g2);color:var(--ink);}.fb.on{background:var(--ink);color:var(--p);border-color:var(--ink);}
+.fb[data-f="comet"].on{background:#1a3d6b;border-color:#1a3d6b;}
+.fb[data-f="pendulum"].on{background:#1a5a4a;border-color:#1a5a4a;}
+.fb[data-f="halley"].on{background:#7a5810;border-color:#7a5810;}
+.tr2{display:flex;gap:6px;align-items:center;}
+.mb{background:transparent;border:1px solid var(--b);color:var(--muted);font-family:'EB Garamond',serif;font-size:12px;padding:4px 12px;border-radius:3px;cursor:pointer;transition:all .15s;}
+.mb:hover{background:var(--p3);color:var(--ink);}.mb.on{background:var(--ink);color:var(--p);border-color:var(--ink);}
+#mw{width:100%;position:relative;min-height:320px;background:var(--p2);}
+#mw svg{display:block;width:100%;}
+.mleg{display:flex;gap:20px;padding:10px 16px;border-top:1px solid var(--b);flex-wrap:wrap;background:var(--p2);}
+.li{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+.ld{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+/* info overlay */
+.iov{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;}
+.ic{position:absolute;pointer-events:none;font-family:'EB Garamond','Noto Serif KR',serif;border-radius:5px;box-shadow:0 2px 8px rgba(0,0,0,.15);min-width:145px;display:none;}
+.ich{font-size:9px;font-weight:600;padding:4px 8px;border-radius:5px 5px 0 0;color:#f5edd8;white-space:nowrap;}
+.icb{background:rgba(245,237,216,.97);border-left:1.5px solid;border-right:1.5px solid;border-bottom:1.5px solid;border-radius:0 0 5px 5px;padding:5px 8px;}
+.icl{font-size:8.5px;line-height:1.55;white-space:nowrap;}
+
+/* tooltip */
+#tt{position:fixed;background:var(--ink);color:var(--p);padding:10px 14px;border-radius:4px;font-size:12px;line-height:1.6;max-width:290px;pointer-events:none;z-index:9999;opacity:0;transition:opacity .15s;border:1px solid var(--gold);}
+#tt.vis{opacity:1;}
+#tt strong{color:var(--g2);display:block;margin-bottom:2px;font-size:13px;}
+#tt .tr{color:var(--g2);font-size:11px;}
+#tt em{color:var(--p3);font-style:italic;font-size:11px;}
+#tt .tx{display:block;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.15);font-size:11px;color:#e6d8b0;}
+
+/* observer cards */
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
+.oc{background:var(--p2);border:1px solid var(--b);border-radius:6px;padding:16px 18px;transition:border-color .2s;}
+.oc:hover{border-color:var(--g2);}
+.oc.ok{border-left:3px solid var(--teal);}
+.oc.ob{border-left:3px solid var(--red);}
+.oc.om{border-left:3px solid var(--g2);}
+.cbg{font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;}
+.cgk{color:var(--teal);}.cgb{color:var(--red);}.cgm{color:var(--gold);}
+.cn{font-size:16px;font-weight:500;margin-bottom:2px;}
+.cr{font-size:12px;color:var(--muted);margin-bottom:10px;font-style:italic;}
+.cd{font-size:13px;line-height:1.65;}
+.cq{margin-top:10px;padding:8px 10px;background:rgba(26,18,8,.05);border-left:2px solid var(--b);font-size:12px;color:var(--muted);font-style:italic;line-height:1.6;border-radius:0 3px 3px 0;}
+
+/* cred flow */
+.cf{display:flex;flex-direction:column;gap:0;}
+.fs{display:grid;grid-template-columns:40px 1fr;gap:16px;position:relative;}
+.fs:not(:last-child)::after{content:'';position:absolute;left:31px;top:28px;bottom:-4px;width:1px;background:var(--b);}
+.sn{width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--p);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px;}
+.st{font-size:16px;font-weight:500;margin-bottom:4px;}
+.sx{font-size:14px;color:var(--muted);line-height:1.7;}
+.sd{width:1px;height:16px;background:var(--b);margin:2px 0 2px 18px;}
+.er{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+.ec{font-size:11px;padding:4px 10px;border-radius:20px;background:var(--p3);border:1px solid var(--b);color:var(--muted);}
+.ec.g{background:rgba(26,90,74,.08);border-color:rgba(26,90,74,.3);color:var(--teal);}
+.ec.b{background:rgba(139,35,24,.07);border-color:rgba(139,35,24,.25);color:var(--red);}
+.sb{padding:0 0 24px;}
+
+/* pendulum */
+.pt{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px;}
+.pt th{text-align:left;padding:10px 14px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--b);background:var(--p2);font-weight:400;}
+.pt td{padding:10px 14px;border-bottom:1px solid rgba(138,104,32,.1);vertical-align:top;line-height:1.55;}
+.pt tr:last-child td{border-bottom:none;}.pt tr:hover td{background:var(--p2);}
+.vt{color:var(--teal);font-size:11px;letter-spacing:.08em;text-transform:uppercase;}
+.vb{color:var(--red);font-size:11px;letter-spacing:.08em;text-transform:uppercase;}
+.pb{display:flex;align-items:center;gap:8px;}
+.pbr{height:4px;border-radius:2px;background:var(--p3);flex:1;overflow:hidden;}
+.pbf{height:100%;border-radius:2px;}
+
+/* big quote */
+.bq{margin:40px 0;padding:28px 32px;background:var(--p2);border:1px solid var(--b);border-radius:6px;position:relative;}
+.bq::before{content:'\201C';position:absolute;top:-12px;left:24px;font-size:60px;color:var(--g2);font-family:'EB Garamond',serif;line-height:1;opacity:.6;}
+.bq p{font-size:17px;font-style:italic;line-height:1.8;}
+.bq cite{display:block;margin-top:12px;font-size:12px;color:var(--muted);letter-spacing:.06em;}
+@media(max-width:600px){.wrap{padding:0 16px 60px}.tab{padding:8px 14px;font-size:12px}.cg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="stag">프린키피아의 숨겨진 역사 · 1681–1713</div>
+  <h1>뉴턴의 <em>정보 제국</em></h1>
+  <p class="sub">프린키피아는 천재 한 명의 작품이 아니었다. 브라질의 예수회 선교사, 메릴랜드의 노예주, 캔터베리의 장인, 서아프리카 요새의 천문학자 — 수십 명의 관측자가 데이터를 보냈고, 뉴턴은 그것을 선별하고 가공하고 때로는 묻어버렸다.</p>
+  <div class="hr">Principia Mathematica · Isaac Newton · 1687 / 1713</div>
+</header>
+<nav class="tabs">
+  <button class="tab on" onclick="swTab('map',this)">세계 지도</button>
+  <button class="tab"    onclick="swTab('obs',this)">관측자 평가</button>
+  <button class="tab"    onclick="swTab('cred',this)">신뢰도 시스템</button>
+  <button class="tab"    onclick="swTab('pend',this)">진자 데이터</button>
+</nav>
+
+<!-- MAP -->
+<div class="sec vis" id="tab-map">
+  <p class="intro">핼리가 직접 발로 뛰며 수집한 데이터 경로. 파리·로마·단치히·아비뇽의 천문학자들, 브라질과 메릴랜드의 식민지 관측자들, 서아프리카 요새의 기록까지 모두 케임브리지로 흘러들었다.</p>
+  <div class="mo" id="mo">
+    <div class="mtb">
+      <div class="fg">
+        <span class="fl">표시:</span>
+        <button class="fb on" data-f="all"      onclick="setF('all')">전체</button>
+        <button class="fb"    data-f="comet"    onclick="setF('comet')">혜성 관측</button>
+        <button class="fb"    data-f="pendulum" onclick="setF('pendulum')">진자 실험</button>
+        <button class="fb"    data-f="halley"   onclick="setF('halley')">핼리 경로</button>
+      </div>
+      <div class="tr2">
+        <button class="mb" id="infob" onclick="togInfo()">☰ 정보 레이어</button>
+        <button class="mb" id="sizeb" onclick="togSize()">⤢ 크게</button>
+        <button class="mb" id="fsb"   onclick="togFS()">⛶ 최대화</button>
+      </div>
+    </div>
+    <div id="mw"><div style="padding:40px;text-align:center;color:#8a6820;font-style:italic;font-size:14px">지도 불러오는 중…</div></div>
+    <div class="mleg">
+      <div class="li"><div class="ld" style="background:#1a3d6b"></div>혜성 관측자</div>
+      <div class="li"><div class="ld" style="background:#1a5a4a"></div>진자 실험 (초판)</div>
+      <div class="li" style="gap:5px">
+        <div style="width:10px;height:10px;border-radius:50%;border:1.5px dashed #1a5a4a;flex-shrink:0"></div>
+        진자 (후기판 1713)
+      </div>
+      <div class="li" style="gap:5px">
+        <div style="width:10px;height:10px;border-radius:50%;background:#1a5a4a;position:relative;flex-shrink:0">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#8b2318;font-weight:700">✕</div>
+        </div>
+        진자 기각
+      </div>
+      <div class="li"><div class="ld" style="background:#8b2318"></div>신뢰도 논란</div>
+      <div class="li"><div class="ld" style="background:#7a5810;width:22px;height:3px;border-radius:1px"></div>핼리 경로</div>
+    </div>
+  </div>
+</div>
+
+<!-- OBSERVERS -->
+<div class="sec" id="tab-obs">
+  <p class="intro">뉴턴은 관측 데이터만 평가한 게 아니라 관측자 자신을 평가했다. 인물 평가가 곧 데이터 선별이었다.</p>
+  <div class="cg">
+    <div class="oc ok"><div class="cbg cgk">신뢰 — 채택</div><div class="cn">Jean Richer</div><div class="cr">프랑스 국왕 파견 · 카옌 (1672)</div><div class="cd">카옌에서 진자시계가 짧아져야 함을 처음 발견. "프랑스 왕이 파견한" 공식 신분이 권위를 보증했다.</div><div class="cq">"뉴턴은 핼리로부터 직접 이 데이터를 전달받아 1681년 노트에 기록했다"</div></div>
+    <div class="oc ok"><div class="cbg cgk">신뢰 — 채택</div><div class="cn">Arthur Storer</div><div class="cr">뉴턴의 학창 동창 · 메릴랜드 농장주·노예주</div><div class="cd">1680–81년 대혜성과 1682년 핼리혜성을 관측. "주머니 기기"를 쓴 비전문가였으나 모델과 잘 맞았다.</div><div class="cq">"스토러의 관측은 핼리 본인이나 헤벨리우스보다 분명히 우수하다"</div></div>
+    <div class="oc ok"><div class="cbg cgk">신뢰 — 채택</div><div class="cn">Thomas Brattle</div><div class="cr">하버드 천문학자 · 케임브리지 MA</div><div class="cd">핼리가 런던에서 데이터를 정리하고, 브래틀이 1682년 직접 런던을 방문해 신뢰도가 높아졌다.</div></div>
+    <div class="oc om"><div class="cbg cgm">논란 — 부분 채택</div><div class="cn">Jean-Charles Gallet</div><div class="cr">아비뇽 천문학자 · 1680년 혜성</div><div class="cd">구력/신력 달력 오차, 별 목록 차이, 케임브리지 학생의 반박 등 문제가 쌓였으나 플램스티드가 끝까지 옹호.</div></div>
+    <div class="oc om"><div class="cbg cgm">논란 — 수정 채택</div><div class="cn">Humphrey Babington</div><div class="cr">뉴턴의 케임브리지 동료</div><div class="cd">킹스 칼리지 채플 지붕에서 혜성 꼬리 관측. 초고 포함 후 최종판 삭제.</div><div class="cq">"뉴턴은 배빙턴의 이야기를 억압했다"</div></div>
+    <div class="oc ob"><div class="cbg cgb">의심 — 폄하</div><div class="cn">Geminiano Montanari</div><div class="cr">파도바 천문학자 · 갈릴레오 추종자</div><div class="cd">1680년 혜성 베네치아 관측. 1713년판에서 공식 폄하.</div><div class="cq">"몬타나리는 자신의 관측이 결국 구름에 가렸다는 의혹을 품었다" — Principia 1713</div></div>
+    <div class="oc ok"><div class="cbg cgk">신뢰 — 채택</div><div class="cn">Valentin Stansel SJ</div><div class="cr">예수회 선교사 · 바이아 브라질 (1663~)</div><div class="cd">1668년 혜성 꼬리 데이터로 예수회 굴절광 이론을 반박하는 데 활용.</div></div>
+    <div class="oc ob"><div class="cbg cgb">의심 — 기각</div><div class="cn">Claude-Antoine Couplet</div><div class="cr">프랑스 천문학자 · 포르투갈·기아나 항해 (1697)</div><div class="cd">진자 측정. 뉴턴이 "조잡한 관측"이라 명시적으로 기각.</div><div class="cq">"관측의 조잡함 때문에 그는 신뢰할 수 없다" — Newton</div></div>
+    <div class="oc om"><div class="cbg cgm">논란 — 낮은 신뢰</div><div class="cn">Thomas Hill</div><div class="cr">"캔터베리 장인" · 아마추어 관측자</div><div class="cd">플램스티드 직접 인터뷰. "무지하지만 호의적" — 로마 첼리오 수준으로 평가.</div><div class="cq">"그의 관측은 로마에서 첼리오가 한 것만큼 훌륭하다" — 플램스티드</div></div>
+  </div>
+</div>
+
+<!-- CREDIBILITY -->
+<div class="sec" id="tab-cred">
+  <p class="intro">뉴턴의 방법론: 데이터는 관측자와 분리될 수 없었다. 인물이 곧 증거였고, 신뢰도 평가는 과학적 판단이자 사회적 판단이었다.</p>
+  <div class="cf">
+    <div class="fs"><div class="sn">1</div><div class="sb"><div class="st">관측자 인적 평가</div><div class="sx">직업·신분·출신·사용 기기를 먼저 확인한다. "프랑스 국왕 파견"은 신뢰 보증, "주머니 기기"는 감점 요인이지만 결과가 모델과 맞으면 통과.</div><div class="er"><span class="ec g">국왕 파견 → 신뢰</span><span class="ec g">직접 면담 → 가중치 상승</span><span class="ec b">아마추어 기기 → 감점</span></div></div></div>
+    <div class="sd"></div>
+    <div class="fs"><div class="sn">2</div><div class="sb"><div class="st">데이터와 모델의 일치 여부</div><div class="sx">데이터가 모델과 맞으면 → 관측자의 신뢰도가 높아진다. 맞지 않으면 → 관측자의 능력이나 기기를 문제 삼는다.</div><div class="er"><span class="ec g">스토러: 모델 일치 → 인쇄 승인</span><span class="ec b">몬타나리: 경로 불일치 → "구름에 가렸다"</span></div></div></div>
+    <div class="sd"></div>
+    <div class="fs"><div class="sn">3</div><div class="sb"><div class="st">중간 검증자 네트워크</div><div class="sx">핼리와 플램스티드가 현장에서 직접 관측자를 인터뷰하거나 동료에게 물어 2차 신뢰 보증을 생성한다.</div><div class="er"><span class="ec g">핼리 직접 방문 → 헤벨리우스 재평가</span><span class="ec b">중간자 없는 식민지 → 낮은 가중치</span></div></div></div>
+    <div class="sd"></div>
+    <div class="fs"><div class="sn">4</div><div class="sb"><div class="st">최종 판본에서의 선택적 삭제</div><div class="sx">초고 → 2판(1713) 사이에 수많은 데이터가 삭제·폄하됐다. "작은 차이는 오차 범위 내"라는 표현으로 불편한 수치를 흡수.</div><div class="er"><span class="ec b">배빙턴: 초고 포함 → 최종판 삭제</span><span class="ec b">대븐포트: 이름 삭제</span></div></div></div>
+  </div>
+  <div class="bq"><p>많은 경우 뉴턴은 자신의 모델에 맞지 않는 데이터를 배제한 다음, 정보 제공자들의 판단에서 이러한 적대적 태도를 뒷받침할 근거를 찾으려 했다.</p><cite>— Simon Schaffer, 텍스트 원문 (저자 분석)</cite></div>
+</div>
+
+<!-- PENDULUM -->
+<div class="sec" id="tab-pend">
+  <p class="intro">프린키피아 제3권 명제 20 — 지구 각지에서 1초 진자의 길이를 측정. 적도에 가까울수록 진자가 짧아진다는 것이 지구 편구(扁球) 형태의 증거였다. 지도의 <span style="color:#1a3d6b;font-weight:600">파란 숫자</span>는 초판(1687) 출처, <span style="color:#8b2318;font-weight:600">빨간 숫자</span>는 후기판(1713)에 추가된 출처다.</p>
+
+  <!-- 범례 -->
+  <div style="display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
+      <div style="width:14px;height:14px;border-radius:50%;background:#1a3d6b;flex-shrink:0"></div>
+      <span>초판 1687 출처 (Principia 초판)</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
+      <div style="width:14px;height:14px;border-radius:50%;background:#8b2318;flex-shrink:0"></div>
+      <span>후기판 1713 추가 출처</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)">
+      <span>진자 길이 기준값: 파리 ≈ 3 ft 8½ lines (위도 48°N)</span>
+    </div>
+  </div>
+
+  <table class="pt">
+    <thead>
+      <tr>
+        <th>관측자</th>
+        <th>장소 · 위도</th>
+        <th>측정값</th>
+        <th>파리 기준 차이</th>
+        <th style="min-width:60px">판본</th>
+        <th>신뢰도 · 뉴턴 판정</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- 위도 높은 곳 먼저 (짧은 막대 = 적도, 긴 막대 = 고위도) -->
+      <tr style="background:rgba(26,61,107,0.03)">
+        <td><strong style="color:#1a3d6b">Christiaan Huygens</strong><br><span style="font-size:11px;color:var(--muted)">네덜란드 이론가 · 계산값</span></td>
+        <td>파리 인근<br><span style="font-size:11px;color:var(--muted)">~48°N</span></td>
+        <td>
+          <div class="pb"><span style="font-size:12px;min-width:110px;font-weight:600;color:#1a3d6b">3 ft 8½ lines</span>
+          <div class="pbr"><div class="pbf" style="width:88%;background:#1a3d6b"></div></div></div>
+        </td>
+        <td style="font-size:12px;color:var(--teal)">기준값 (0)</td>
+        <td><span style="font-size:11px;padding:2px 7px;border-radius:10px;background:#e6f0fb;color:#1a3d6b;border:1px solid #1a3d6b;white-space:nowrap">초판</span></td>
+        <td style="font-size:12px;color:var(--muted)">이론 계산. 뉴턴의 기준 참조값으로 사용.</td>
+      </tr>
+
+      <tr style="background:rgba(26,61,107,0.03)">
+        <td><strong style="color:#1a3d6b">Cassini (파리 천문대)</strong><br><span style="font-size:11px;color:var(--muted)">Jean Dominique Cassini</span></td>
+        <td>파리 · 프랑스<br><span style="font-size:11px;color:var(--muted)">48°50'N</span></td>
+        <td>
+          <div class="pb"><span style="font-size:12px;min-width:110px;font-weight:600;color:#1a3d6b">≈ 3 ft 8½ lines</span>
+          <div class="pbr"><div class="pbf" style="width:88%;background:#1a3d6b"></div></div></div>
+        </td>
+        <td style="font-size:12px;color:var(--teal)">기준값 근방</td>
+        <td><span style="font-size:11px;padding:2px 7px;border-radius:10px;background:#fbeae7;color:#8b2318;border:1px solid #8b2318;white-space:nowrap">후기판</span></td>
+        <td style="font-size:12px;color:var(--muted)">파리 왕립천문대. 핼리가 1681년 직접 협업. 수치는 기준값으로 활용.</td>
+      </tr>
+
+      <tr>
+        <td><strong style="color:#1a3d6b">Des Hayes (파리)</strong><br><span style="font-size:11px;color:var(--muted)">Jean Deshayes</span></td>
+        <td>파리 근방<br><span style="font-size:11px;color:var(--muted)">~48°N</span></td>
+        <td>
+          <div class="pb"><span style="font-size:12px;min-width:110px;font-weight:600;color:#1a3d6b">3 ft 8 5/9 lines</span>
+          <div class="pbr"><div class="pbf" style="width:87%;background:#1a3d6b"></div></div></div>
+        </td>
+        <td style="font-size:12px;color:var(--teal)">−0.1 line</td>
+        <td><span style="font-size:11px;padding:2px 7px;border-radius:10px;background:#e6f0fb;color:#1a3d6b;border:1px solid #1a3d6b;white-space:nowrap">초판</span></td>
+        <td style="font-size:12px;color:var(--muted)">파리 천문대 관련 측정. 기준값과 근접.</td>
+      </tr>
+
+      <tr style="background:rgba(26,61,107,0.03)">
+        <td><strong style="color:#1a3d6b">Jean Richer</strong><br><span style="font-size:11px;color:var(--muted)">프랑스 국왕 파견 천문학자</span></td>
+        <td>카옌 · 프랑스령 기아나<br><span style="font-size:11px;color:var(--muted)">4°55'N</span></td>
+        <td>
+          <div class="pb"><span style="font-size:12px;min-width:110px;font-weight:600;color:#1a3d6b">3 ft 7 7/20 lines</span>
+          <div class="pbr"><div class="pbf" style="width:34%;background:#1a3d6b"></div></div></div>
+        </td>
+        <td style="font-size:12px;color:#8b2318;font-weight:500">−1¼ lines</td>
+        <td><span style="font-size:11px;padding:2px 7px;border-radius:10px;background:#e6f0fb;color:#1a3d6b;border:1px solid #1a3d6b;white-space:nowrap">초판</span></td>
+        <td style="font-size:12px;color:var(--muted)"><span style="color:var(--teal);font-weight:500">★★★★★ 채택</span> — "국왕 파견" 최고 권위. 적도 부근 단축 현상 최초 발견. 핼리 경유 전달.</td>
+      </tr>
+
+      <tr>
+        <td><strong style="color:#1a3d6b">Des Hayes</strong><br><span style="font-size:11px;color:var(--muted)">장 데 아에</span></td>
+        <td>고레 섬 · 세네갈<br><span style="font-size:11px;color:var(--muted)">14°40'N</span></td>
+        <td>
+          <div class="pb"><span style="font-size:12px;min-width:110px;font-weight:600;color:#1a3d6b">3 ft 6 5/9 lines</span>
+          <div class="pbr"><div class="pbf" style="width:38%;background:#1a3d6b"></div></div></div>
+        </td>
+        <td style="font-size:12px;color:#8b2318;font-weight:500">−2 lines</td>
+        <td><span style="font-size:11px;padding:2px 7px;border-radius:10px;background:#e6f0fb;color:#1a3d6b;border:1px solid #1a3d6b;white-space:nowrap">초판</span></td>
+        <td style="font-size:12px;color:var(--muted)"><span style="color:#c49a30;font-weight:500">★★☆☆☆ 낮은 신뢰</span> — 관측단 내부 분쟁. 노예무역 요새 거점. "덜 정확"으로 분류.</td>
+      </tr>
+
+      <tr style="background:rgba(26,61,107,0.03)">
+        <td><strong style="color:#1a3d6b">Des Hayes</strong><br><span style="font-size:11px;color:var(--muted)">카리브해 측정</span></td>
+        <td>카리브해 (히스파니올라 인근)<br><span style="font-size:11px;color:var(--muted)">~18°N</span></td>
+        <td>
+          <div class="pb"><span style="font-size:12px;min-width:110px;font-weight:600;color:#1a3d6b">3 ft 7 lines</span>
+          <div class="pbr"><div class="pbf" style="width:42%;background:#1a3d6b"></div></div></div>
+        </td>
+        <td style="font-size:12px;color:#8b2318;font-weight:500">−1½ lines</td>
+        <td><span style="font-size:11px;padding:2px 7px;border-radius:10px;background:#e6f0fb;color:#1a3d6b;border:1px solid #1a3d6b;white-space:nowrap">초판</span></td>
+        <td style="font-size:12px;color:var(--muted)"><span style="color:#c49a30;font-weight:500">★★☆☆☆ 낮은 신뢰</span> — 카리브해 항해 중 측정.</td>
+      </tr>
+
+      <tr>
+        <td><strong style="color:#1a3d6b">Des Hayes</strong><br><span style="font-size:11px;color:var(--muted)">남대서양 측정</span></td>
+        <td>아마존 하구 인근<br><span style="font-size:11px;color:var(--muted)">~2°N</span></td>
+        <td>
+          <div class="pb"><span style="font-size:12px;min-width:110px;font-weight:600;color:#1a3d6b">3 ft 6½ lines</span>
+          <div class="pbr"><div class="pbf" style="width:30%;background:#1a3d6b"></div></div></div>
+        </td>
+        <td style="font-size:12px;color:#8b2318;font-weight:500">−2 lines</td>
+        <td><span style="font-size:11px;padding:2px 7px;border-radius:10px;background:#e6f0fb;color:#1a3d6b;border:1px solid #1a3d6b;white-space:nowrap">초판</span></td>
+        <td style="font-size:12px;color:var(--muted)"><span style="color:#c49a30;font-weight:500">★★☆☆☆ 낮은 신뢰</span> — 적도 근방 항해 측정.</td>
+      </tr>
+
+      <tr style="background:rgba(26,61,107,0.03)">
+        <td><strong style="color:#1a3d6b">Halley</strong><br><span style="font-size:11px;color:var(--muted)">에드먼드 핼리</span></td>
+        <td>세인트헬레나<br><span style="font-size:11px;color:var(--muted)">15°56'S</span></td>
+        <td>
+          <div class="pb"><span style="font-size:12px;min-width:110px;font-weight:600;color:#1a3d6b">런던보다 1½ lines 짧음</span>
+          <div class="pbr"><div class="pbf" style="width:36%;background:#1a3d6b"></div></div></div>
+        </td>
+        <td style="font-size:12px;color:#8b2318;font-weight:500">−1½ lines (런던 기준)</td>
+        <td><span style="font-size:11px;padding:2px 7px;border-radius:10px;background:#e6f0fb;color:#1a3d6b;border:1px solid #1a3d6b;white-space:nowrap">초판</span></td>
+        <td style="font-size:12px;color:var(--muted)"><span style="color:var(--teal);font-weight:500">채택</span> — 핼리의 1678년 세인트헬레나 항해 자체 측정. 뉴턴에게 직접 전달.</td>
+      </tr>
+
+      <!-- 후기판 추가 -->
+      <tr>
+        <td><strong style="color:#8b2318">Louis Feuillée</strong><br><span style="font-size:11px;color:var(--muted)">미니마회 수사 · 수학자</span></td>
+        <td>마르티니크 · 앤틸리스<br><span style="font-size:11px;color:var(--muted)">14°39'N</span></td>
+        <td>
+          <div class="pb"><span style="font-size:12px;min-width:110px;font-weight:600;color:#8b2318">3 ft 5 5/6 lines</span>
+          <div class="pbr"><div class="pbf" style="width:31%;background:#8b2318"></div></div></div>
+        </td>
+        <td style="font-size:12px;color:#8b2318;font-weight:500">−2⅔ lines</td>
+        <td><span style="font-size:11px;padding:2px 7px;border-radius:10px;background:#fbeae7;color:#8b2318;border:1px solid #8b2318;white-space:nowrap">후기판</span></td>
+        <td style="font-size:12px;color:var(--muted)"><span style="color:#c49a30;font-weight:500">★★☆☆☆ 낮은 신뢰</span> — "덜 정확"으로 처리.</td>
+      </tr>
+
+      <tr style="background:rgba(139,35,24,0.03)">
+        <td><strong style="color:#8b2318">Louis Feuillée</strong><br><span style="font-size:11px;color:var(--muted)">미니마회 수사 · 수학자</span></td>
+        <td>포르토벨로 · 파나마<br><span style="font-size:11px;color:var(--muted)">9°33'N</span></td>
+        <td>
+          <div class="pb"><span style="font-size:12px;min-width:110px;font-weight:600;color:#8b2318">3 ft 5 7/12 lines</span>
+          <div class="pbr"><div class="pbf" style="width:28%;background:#8b2318"></div></div></div>
+        </td>
+        <td style="font-size:12px;color:#8b2318;font-weight:500">−2¾ lines</td>
+        <td><span style="font-size:11px;padding:2px 7px;border-radius:10px;background:#fbeae7;color:#8b2318;border:1px solid #8b2318;white-space:nowrap">후기판</span></td>
+        <td style="font-size:12px;color:var(--muted)"><span style="color:#c49a30;font-weight:500">★★☆☆☆ 낮은 신뢰</span> — "차이가 마음에 걸렸다 — 결국 평균값을 취했다." 솔직한 진술이 오히려 신뢰도 낮춤.</td>
+      </tr>
+
+      <tr>
+        <td><strong style="color:#8b2318">C.-A. Couplet</strong><br><span style="font-size:11px;color:var(--muted)">프랑스 천문학자</span></td>
+        <td>대서양 항해 중 (파리 출발)<br><span style="font-size:11px;color:var(--muted)">여러 위도</span></td>
+        <td>
+          <div class="pb"><span style="font-size:12px;min-width:110px;font-weight:600;color:#8b2318">파리보다 2½ lines 짧음</span>
+          <div class="pbr"><div class="pbf" style="width:24%;background:#8b2318"></div></div></div>
+        </td>
+        <td style="font-size:12px;color:#8b2318;font-weight:500">−2½ lines (파리 기준)</td>
+        <td><span style="font-size:11px;padding:2px 7px;border-radius:10px;background:#fbeae7;color:#8b2318;border:1px solid #8b2318;white-space:nowrap">후기판</span></td>
+        <td style="font-size:12px;color:var(--muted)"><span style="color:#8b2318;font-weight:500">★☆☆☆☆ 기각</span> — "관측의 조잡함 때문에 신뢰할 수 없다" — Newton 명시 기각. 1697–98 항해.</td>
+      </tr>
+
+      <tr style="background:rgba(139,35,24,0.03)">
+        <td><strong style="color:#8b2318">C.-A. Couplet</strong><br><span style="font-size:11px;color:var(--muted)">프랑스 천문학자</span></td>
+        <td>기아나 · 남아메리카 해안<br><span style="font-size:11px;color:var(--muted)">~5°N</span></td>
+        <td>
+          <div class="pb"><span style="font-size:12px;min-width:110px;font-weight:600;color:#8b2318">파리보다 3⅔ lines 짧음</span>
+          <div class="pbr"><div class="pbf" style="width:18%;background:#8b2318"></div></div></div>
+        </td>
+        <td style="font-size:12px;color:#8b2318;font-weight:500">−3⅔ lines (파리 기준)</td>
+        <td><span style="font-size:11px;padding:2px 7px;border-radius:10px;background:#fbeae7;color:#8b2318;border:1px solid #8b2318;white-space:nowrap">후기판</span></td>
+        <td style="font-size:12px;color:var(--muted)"><span style="color:#8b2318;font-weight:500">★☆☆☆☆ 기각</span> — 극단적 수치. 다른 측정값들과 현저히 불일치. 기각.</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <!-- 위도별 시각화 -->
+  <div style="margin-top:36px;">
+    <div style="font-size:13px;font-weight:500;margin-bottom:16px;letter-spacing:0.04em;">위도별 진자 길이 — 적도로 갈수록 짧아진다</div>
+    <div style="background:var(--p2);border:1px solid var(--b);border-radius:8px;padding:20px 24px;overflow-x:auto;">
+      <div style="min-width:520px;">
+        <div style="display:flex;align-items:flex-end;gap:0;height:160px;border-bottom:2px solid var(--b);margin-bottom:8px;position:relative;">
+          <!-- 기준선 표시 -->
+          <div style="position:absolute;top:0;left:0;right:0;height:1px;background:rgba(26,61,107,0.2);"></div>
+          <div style="position:absolute;top:0;right:0;font-size:9px;color:var(--muted)">파리 기준 (3ft 8½)</div>
+          <!-- 각 막대: 높이 = 진자 길이 상대값. 파리=100%, 리세=84%, 쿠플레=75% -->
+          <!-- 고위도 → 저위도 순서 -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="width:28px;background:#1a3d6b;border-radius:3px 3px 0 0;" title="Huygens 파리" style="height:148px"></div>
+            <div style="width:28px;height:148px;background:#1a3d6b;border-radius:3px 3px 0 0;"></div>
+            <div style="font-size:9px;color:var(--muted);text-align:center;line-height:1.3">Huygens<br>48°N</div>
+            <div style="font-size:10px;font-weight:600;color:#1a3d6b">3ft 8½</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="width:28px;height:142px;background:#1a3d6b;border-radius:3px 3px 0 0;"></div>
+            <div style="font-size:9px;color:var(--muted);text-align:center;line-height:1.3">Des Hayes<br>48°N</div>
+            <div style="font-size:10px;font-weight:600;color:#1a3d6b">3ft 8 5/9</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="width:28px;height:108px;background:#1a3d6b;border-radius:3px 3px 0 0;"></div>
+            <div style="font-size:9px;color:var(--muted);text-align:center;line-height:1.3">Des Hayes<br>18°N</div>
+            <div style="font-size:10px;font-weight:600;color:#1a3d6b">3ft 7</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="width:28px;height:100px;background:#1a3d6b;border-radius:3px 3px 0 0;"></div>
+            <div style="font-size:9px;color:var(--muted);text-align:center;line-height:1.3">Des Hayes<br>14°N</div>
+            <div style="font-size:10px;font-weight:600;color:#1a3d6b">3ft 6 5/9</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="width:28px;height:96px;background:#8b2318;border-radius:3px 3px 0 0;"></div>
+            <div style="font-size:9px;color:var(--muted);text-align:center;line-height:1.3">Feuillée<br>14°39'N</div>
+            <div style="font-size:10px;font-weight:600;color:#8b2318">3ft 5 5/6</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="width:28px;height:92px;background:#8b2318;border-radius:3px 3px 0 0;"></div>
+            <div style="font-size:9px;color:var(--muted);text-align:center;line-height:1.3">Feuillée<br>9°N</div>
+            <div style="font-size:10px;font-weight:600;color:#8b2318">3ft 5 7/12</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="width:28px;height:106px;background:#1a3d6b;border-radius:3px 3px 0 0;"></div>
+            <div style="font-size:9px;color:var(--muted);text-align:center;line-height:1.3">Richer<br>4°55'N</div>
+            <div style="font-size:10px;font-weight:600;color:#1a3d6b">3ft 7 7/20</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="width:28px;height:94px;background:#1a3d6b;border-radius:3px 3px 0 0;"></div>
+            <div style="font-size:9px;color:var(--muted);text-align:center;line-height:1.3">Des Hayes<br>~2°N</div>
+            <div style="font-size:10px;font-weight:600;color:#1a3d6b">3ft 6½</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:4px">← 고위도 (진자 김) · · · 저위도 / 적도 (진자 짧음) →</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bq" style="margin-top:32px"><p>차이들이 완전히 일치하지는 않지만 오차는 너무 작아 무시할 수 있다. 이 불일치는 부분적으로 관측 오차, 부분적으로 지구 내부 구조의 차이, 그리고 기온의 차이에서 기인할 수 있다.</p><cite>— Isaac Newton, Principia 최종판 — 불편한 편차를 '자연의 변동'으로 흡수하는 전략</cite></div>
+</div>
+
+</div>
+<div id="tt"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   모든 변수와 함수는 이 하나의 스크립트 블록 안에 있음.
+   D3 + TopoJSON은 동적으로 로드 후 콜백 실행.
+═══════════════════════════════════════════════════════════════════════ */
+
+/* ── STATE (d3 참조 없음) ─────────────────────────────────────────────*/
+let filt='all', infoOn=false, expd=false, isFS=false;
+let built=false, wdata=null, zt=null, proj=null;
+
+/* ── TOOLTIP ─────────────────────────────────────────────────────────*/
+const TT=document.getElementById('tt');
+function showT(h){TT.innerHTML=h;TT.classList.add('vis');}
+function posT(e){TT.style.left=(e.clientX+14)+'px';TT.style.top=(e.clientY-10)+'px';}
+function hideT(){TT.classList.remove('vis');}
+
+/* ── TABS ────────────────────────────────────────────────────────────*/
+function swTab(id,el){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('vis'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('vis');
+  el.classList.add('on');
+  if(id==='map') startMap();
+}
+
+/* ── FILTER ──────────────────────────────────────────────────────────*/
+function setF(f){
+  filt=f;
+  document.querySelectorAll('.fb').forEach(b=>b.classList.toggle('on',b.dataset.f===f));
+  applyF();
+}
+function applyF(){
+  const f=filt;
+  document.querySelectorAll('.sm').forEach(el=>{
+    const t=el.dataset.t;
+    el.style.display=(f==='all'||(f==='comet'&&(t==='comet'||t==='disputed'||t==='hub'))||(f==='pendulum'&&(t==='pendulum'||t==='hub'))||(f==='halley'&&t==='hub'))?'':'none';
+  });
+  const cl=document.querySelector('.cl'); if(cl) cl.style.display=(f==='all'||f==='comet'||f==='pendulum')?'':'none';
+  const hg=document.querySelector('.hg'); if(hg) hg.style.display=(f==='all'||f==='halley')?'':'none';
+  applyIC();
+}
+
+/* ── INFO LAYER ──────────────────────────────────────────────────────*/
+function togInfo(){
+  infoOn=!infoOn;
+  const b=document.getElementById('infob');
+  b.classList.toggle('on',infoOn);
+  b.textContent=infoOn?'☰ 레이어 끄기':'☰ 정보 레이어';
+  applyIC(); if(infoOn) reposIC();
+}
+function applyIC(){
+  const f=filt;
+  document.querySelectorAll('.ic').forEach(el=>{
+    const t=el.dataset.t;
+    const ok= f==='all'
+      ||(f==='comet'    &&(t==='comet'||t==='disputed'))
+      ||(f==='pendulum' &&t==='pendulum')
+      ||(f==='halley'   &&t==='halley');
+    el.style.display=(infoOn&&ok)?'block':'none';
+  });
+}
+function reposIC(){
+  if(!proj||!zt) return;
+  document.querySelectorAll('.ic').forEach(el=>{
+    if(el.style.display==='none') return;
+    const [mx,my]=proj([+el.dataset.lon,+el.dataset.lat]);
+    const sx=zt.applyX(mx), sy=zt.applyY(my);
+    el.style.left=((+el.dataset.lon<-12)?sx+14:sx-el.offsetWidth-14)+'px';
+    el.style.top=(sy-el.offsetHeight/2)+'px';
+  });
+}
+
+/* ── SIZE / FS ───────────────────────────────────────────────────────*/
+function togSize(){
+  expd=!expd;
+  document.getElementById('mo').classList.toggle('exp',expd);
+  document.getElementById('sizeb').textContent=expd?'⤡ 작게':'⤢ 크게';
+  rebld();
+}
+function togFS(){
+  isFS=!isFS;
+  document.getElementById('mo').classList.toggle('fs',isFS);
+  document.getElementById('fsb').textContent=isFS?'✕ 닫기':'⛶ 최대화';
+  document.body.style.overflow=isFS?'hidden':'';
+  rebld();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&isFS) togFS();});
+function rebld(){
+  built=false;
+  const w=document.getElementById('mw');
+  if(w) w.innerHTML='<div style="padding:40px;text-align:center;color:#8a6820;font-style:italic">지도 다시 그리는 중…</div>';
+  const ov=document.querySelector('.iov'); if(ov) ov.remove();
+  startMap();
+}
+window.addEventListener('resize',()=>{if(!isFS&&built) rebld();});
+
+/* ── DATA ────────────────────────────────────────────────────────────*/
+const SITES=[
+  {lon:0.12,lat:52.2,label:'Cambridge',role:'뉴턴 · 중심',type:'hub',desc:'모든 정보가 수렴. 뉴턴이 데이터를 취사선택.',detail:'케임브리지 대학교',extra:''},
+  {lon:-0.1,lat:51.5,label:'London',role:'핼리 · 플램스티드',type:'hub',desc:'그리니치 왕립천문대. 핼리가 중간 검증 허브 역할.',detail:'왕립천문대 · 왕립학회',extra:''},
+  // 혜성
+  {lon:2.35,lat:48.85,label:'Paris',role:'Cassini',type:'comet',desc:'핼리가 1681년 카시니와 직접 협업.',detail:'파리 왕립 천문대',extra:'혜성: 1680년 11월 – 1681년 2월\n대혜성 C/1680 V1'},
+  {lon:4.81,lat:43.95,label:'Avignon',role:'Gallet',type:'disputed',desc:'1680년 혜성. 구력 달력 오차, 학생 증언 충돌.',detail:'아비뇽',extra:'혜성: 1680년 11월 관측\n달력 오류로 일자 불확실'},
+  {lon:18.65,lat:54.35,label:'Danzig',role:'Hevelius',type:'comet',desc:'핼리가 1679년 현장 방문해 기기 품질 직접 검증.',detail:'단치히 (현 그단스크)',extra:'혜성: 1680–81년 관측\n핼리 방문: 1679년 여름'},
+  {lon:11.87,lat:45.41,label:'Venice',role:'Montanari',type:'disputed',desc:'"구름에 가렸다"고 공식 폄하. 1713년판 기각.',detail:'베네치아 · 파도바',extra:'혜성: 1680년 12월 관측\n1713년판 "구름 방해" 주석으로 기각'},
+  {lon:12.49,lat:41.9,label:'Rome',role:'Cellio / Pontio',type:'comet',desc:'크리스티나 여왕 살롱. 핼리가 1681년 자료 수집.',detail:'로마 · 팔라초 리아리오',extra:'혜성: 1680년 12월 – 1681년 1월\n핼리 수집: 1681년 초'},
+  {lon:1.08,lat:51.28,label:'Canterbury',role:'T. Hill',type:'disputed',desc:'"무지하지만 호의적" — 플램스티드 직접 면담 후 채택.',detail:'캔터베리 · 아마추어',extra:'혜성: 1680년 관측\n플램스티드 면담: 1685년'},
+  {lon:12.71,lat:55.92,label:'Uraniborg',role:'Tycho 기록소',type:'comet',desc:'핼리가 직접 방문해 튀코의 기록을 현장 조사.',detail:'우라니보르 (덴마크)',extra:'역사 혜성 기록 조사\n핼리 방문: 1679년'},
+  {lon:-71.1,lat:42.37,label:'Harvard',role:'Thomas Brattle',type:'comet',desc:'1682년 런던 방문해 신뢰도 높임.',detail:'케임브리지 매사추세츠',extra:'혜성: 1680년 12월, 1682년 핼리혜성\n런던 방문: 1682–9'},
+  {lon:-76.6,lat:38.9,label:'Maryland',role:'Arthur Storer',type:'comet',desc:'"주머니 기기"로 관측, 모델에 일치해 채택.',detail:'메릴랜드 · Prince Frederick',extra:'혜성: 1680–81년 대혜성\n1682년 핼리혜성\n기기: "pocket piece"'},
+  {lon:-38.5,lat:-12.97,label:'Bahia',role:'Valentin Stansel SJ',type:'comet',desc:'예수회 선교사. 1668년 혜성 꼬리 데이터로 예수회 이론 반박.',detail:'바이아 · 브라질 (1663~)',extra:'혜성: 1664–65년, 1668년 관측\n뉴턴 활용: 1668년 꼬리 데이터'},
+  // 진자 — 초판
+  {lon:4.35,lat:52.0,label:'Huygens',role:'C. Huygens · 이론 계산',type:'pendulum',
+   desc:'파리 기준값 이론 계산. 뉴턴의 참조 기준.',detail:'네덜란드 / 파리 · ~48°N',
+   extra:'진자: 3 ft 8½ lines (기준값)\n판본: 초판 1687\n신뢰도: 이론값 (직접 측정 아님)'},
+  {lon:2.35,lat:48.55,label:'Paris (진자)',role:'Cassini / Des Hayes',type:'pendulum',
+   desc:'파리 천문대 측정. 기준값으로 사용.',detail:'파리 · 48°50\'N',
+   extra:'진자: ≈ 3 ft 8½ lines (기준값)\nDes Hayes: 3 ft 8 5/9 lines\n판본: 초판(Des Hayes) / 후기판(Cassini)'},
+  {lon:-52.3,lat:4.93,label:'Cayenne',role:'Jean Richer · ★★★★★',type:'pendulum',
+   desc:'1672년 진자시계 단축 현상 최초 발견.',detail:"카옌 · 4°55'N",
+   extra:'진자: 3 ft 7 7/20 lines\n파리보다 −1¼ lines\n판본: 초판 1687 · 신뢰도: ★★★★★'},
+  {lon:-17.4,lat:14.7,label:'Gorée',role:'Jean Deshayes · ★★☆☆☆',type:'pendulum',
+   desc:'서아프리카 노예무역 요새. 관측단 내분으로 신뢰도 저하.',detail:"고레 섬 · 세네갈 · 14°40'N",
+   extra:'진자: 3 ft 6 5/9 lines\n파리보다 −2 lines\n판본: 초판 1687 · 신뢰도: ★★☆☆☆'},
+  {lon:-70.0,lat:18.5,label:'Caribbean',role:'Des Hayes · ★★☆☆☆',type:'pendulum',
+   desc:'카리브해 항해 중 히스파니올라 인근 측정.',detail:'카리브해 · ~18°N',
+   extra:'진자: 3 ft 7 lines\n파리보다 −1½ lines\n판본: 초판 1687 · 신뢰도: ★★☆☆☆'},
+  {lon:-50.0,lat:1.5,label:'Amazon',role:'Des Hayes · ★★☆☆☆',type:'pendulum',
+   desc:'아마존 하구 인근 적도 근방 측정.',detail:'아마존 하구 · ~2°N',
+   extra:'진자: 3 ft 6½ lines\n파리보다 −2 lines\n판본: 초판 1687 · 신뢰도: ★★☆☆☆'},
+  {lon:-5.72,lat:-15.96,label:'St. Helena',role:'Halley · 채택',type:'pendulum',
+   desc:'핼리 1678년 세인트헬레나 항해. 자체 진자 측정.',detail:'세인트헬레나 · 15°56\'S',
+   extra:'진자: 런던보다 1½ lines 짧음\n판본: 초판 1687 · 신뢰도: 채택\n핼리가 뉴턴에게 직접 전달'},
+  // 진자 — 후기판
+  {lon:-61.0,lat:14.6,label:'Martinique',role:'Louis Feuillée · ★★☆☆☆',type:'pendulum',
+   desc:'마르티니크 진자 측정. "덜 정확"으로 처리.',detail:"마르티니크 · 14°39'N",
+   extra:'진자: 3 ft 5 5/6 lines\n파리보다 −2⅔ lines\n판본: 후기판 1713 · 신뢰도: ★★☆☆☆'},
+  {lon:-79.65,lat:9.36,label:'Porto Bello',role:'Louis Feuillée · ★★☆☆☆',type:'pendulum',
+   desc:'"마음에 걸렸다 — 평균값을 취했다." 솔직한 진술이 신뢰도를 낮춤.',detail:'포르토벨로 · 파나마 · 9°N',
+   extra:'진자: 3 ft 5 7/12 lines\n파리보다 −2¾ lines\n판본: 후기판 1713 · 신뢰도: ★★☆☆☆'},
+  {lon:-30.0,lat:20.0,label:'Couplet①',role:'C.-A. Couplet · 기각',type:'pendulum',
+   desc:'대서양 항해 중 측정. 뉴턴이 "조잡한 관측"으로 명시 기각.',detail:'대서양 항해 · 파리→기아나 (1697–98)',
+   extra:'진자: 파리보다 2½ lines 짧음\n판본: 후기판 1713 · 신뢰도: ★☆☆☆☆\n"관측의 조잡함으로 신뢰 불가" — Newton'},
+  {lon:-53.0,lat:5.5,label:'Couplet②',role:'C.-A. Couplet · 기각',type:'pendulum',
+   desc:'기아나 근방 적도 부근 극단적 수치. 다른 측정값들과 불일치.',detail:'기아나 · 남아메리카 해안 · ~5°N',
+   extra:'진자: 파리보다 3⅔ lines 짧음\n판본: 후기판 1713 · 신뢰도: ★☆☆☆☆\n극단적 수치로 기각'},
+];
+const HROUTE=[
+  {c:[-0.1,51.5],  n:1,  l:'① 런던 출발',   d:'1679년 여름',
+   extra:'목적: 유럽 천문학자 검증 여행 출발\n왕립학회 지시로 헤벨리우스 기기 논쟁 해결'},
+  {c:[18.65,54.35],n:2,  l:'② 단치히',       d:'1679년 여름',
+   extra:'헤벨리우스 방문 — 오픈사이트 기기 검증\n"내 눈으로 보기 전엔 믿기 어려웠다"\n결과: 기기 신뢰 가능, 하지만 이후에도 논쟁 지속'},
+  {c:[12.71,55.92],n:3,  l:'③ 우라니보르',   d:'1679년 여름',
+   extra:'튀코 브라헤의 폐허 관측소 현장 조사\n역사적 혜성 기록 수집 — Principia 기초 자료'},
+  {c:[-0.1,51.5],  n:4,  l:'④ 런던 귀환',    d:'1679년 말',
+   extra:'수집 자료 정리 — 그리니치·왕립학회 보고\n뉴턴과의 편지 교환 시작'},
+  {c:[2.35,48.85], n:5,  l:'⑤ 파리',         d:'1680–81년 초',
+   extra:'카시니와 협업 — 1680년 대혜성 궤도 계산\n카시니의 혜성 도서 입수 (Principia에 활용)\n오는 길에 직접 대혜성 목격 후 메모'},
+  {c:[4.81,43.95], n:6,  l:'⑥ 아비뇽',       d:'1680년 말',
+   extra:'갈레(Gallet) 면담 — 1680년 혜성 관측값 수집\n이후 뉴턴이 갈레 데이터를 두고 수개월 논쟁'},
+  {c:[11.87,45.41],n:7,  l:'⑦ 베네치아',     d:'1681년 초',
+   extra:'이탈리아 학자 네트워크 접촉\n몬타나리 관련 데이터 간접 수집'},
+  {c:[12.49,41.9], n:8,  l:'⑧ 로마',         d:'1681년 초',
+   extra:'크리스티나 여왕 살롱 방문\n첼리오·폰티오로부터 혜성 관측값 직접 수집\n카시니의 위도 데이터를 로마로 전달'},
+  {c:[2.35,48.85], n:9,  l:'⑨ 파리 경유',    d:'1681년',
+   extra:'카시니에게 로마 관측값 전달\n수집 데이터 통합 정리 — 파리 → 런던 반출'},
+  {c:[-0.1,51.5],  n:10, l:'⑩ 런던 귀환',   d:'1682년 초',
+   extra:'전체 자료 뉴턴에게 전달\n1682년 핼리혜성 런던 직접 관측\n1684년 여름 케임브리지 방문 → Principia 집필 촉발'},
+];
+function tcol(t){return t==='hub'||t==='comet'?'#1a3d6b':t==='pendulum'?'#1a5a4a':t==='disputed'?'#8b2318':'#7a5810';}
+
+/* ── MAP ENTRY ───────────────────────────────────────────────────────*/
+function startMap(){
+  // Load D3 then TopoJSON then build
+  loadScript('https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js', function(){
+    loadScript('https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js', function(){
+      buildMap();
+    });
+  });
+}
+
+function loadScript(src, cb){
+  // If already loaded, just call cb
+  if(src.includes('d3.min') && typeof window.d3 !== 'undefined'){ cb(); return; }
+  if(src.includes('topojson') && typeof window.topojson !== 'undefined'){ cb(); return; }
+  const s=document.createElement('script');
+  s.src=src; s.onload=cb;
+  s.onerror=function(){ document.getElementById('mw').innerHTML='<p style="padding:20px;color:#8b2318">라이브러리 로드 실패. 인터넷 연결을 확인해주세요.</p>'; };
+  document.head.appendChild(s);
+}
+
+async function buildMap(){
+  if(built) return;
+  const wrap=document.getElementById('mw');
+  if(!wrap) return;
+  const W=Math.max(wrap.getBoundingClientRect().width||0, wrap.offsetWidth||0, 400);
+  const H=Math.round(W*0.54);
+
+  if(!wdata){
+    try{ wdata=await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'); }
+    catch(e){ wrap.innerHTML='<p style="padding:20px;color:#8b2318">지도 데이터를 불러오지 못했습니다. 인터넷 연결을 확인해주세요.</p>'; return; }
+  }
+
+  const ctries=topojson.feature(wdata,wdata.objects.countries);
+  const bords=topojson.mesh(wdata,wdata.objects.countries,(a,b)=>a!==b);
+  proj=d3.geoMercator().center([-25,22]).scale(W*0.60).translate([W/2,H/2]);
+  zt=d3.zoomIdentity;
+  const path=d3.geoPath().projection(proj);
+
+  const svg=d3.create('svg').attr('width',W).attr('height',H)
+    .style('display','block').style('cursor','grab')
+    .style('font-family',"'EB Garamond','Noto Serif KR',serif");
+
+  svg.append('rect').attr('width',W).attr('height',H).attr('fill','#c4d9e8');
+  const zG=svg.append('g');
+
+  zG.append('path').datum(d3.geoGraticule().step([20,20])()).attr('d',path).attr('fill','none').attr('stroke','rgba(90,70,30,0.1)').attr('stroke-width',0.5);
+  zG.append('g').selectAll('path').data(ctries.features).join('path').attr('d',path).attr('fill','#cfc49e').attr('stroke','#a89460').attr('stroke-width',0.5);
+  zG.append('path').datum(bords).attr('d',path).attr('fill','none').attr('stroke','#b09858').attr('stroke-width',0.3).attr('opacity',0.5);
+  zG.append('path').datum({type:'LineString',coordinates:[[-180,0],[180,0]]}).attr('d',path).attr('fill','none').attr('stroke','rgba(139,35,24,0.45)').attr('stroke-width',0.9).attr('stroke-dasharray','6,5');
+  const ep=proj([-92,0]); if(ep) zG.append('text').attr('x',ep[0]+4).attr('y',ep[1]-4).attr('font-size','9px').attr('fill','rgba(139,35,24,0.6)').text('적도');
+
+  // ── 17세기 지명 레이어 ──────────────────────────────────────────────
+  const placeG=zG.append('g').attr('class','places');
+
+  // [lon, lat, 이름, 크기, 색, 기울기여부]
+  const KINGDOMS=[
+    // 왕국·제국 이름 (대문자, 크게)
+    [-3,54,    'ENGLAND',       11, '#3a2a10', true ],
+    [-4,56.5,  'SCOTLAND',      10, '#3a2a10', true ],
+    [15,52,    'PRUSSIA',       10, '#3a2a10', true ],
+    [10,51,    'HOLY ROMAN\nEMPIRE', 11,'#3a2a10',true],
+    [2,46,     'FRANCE',        12, '#3a2a10', true ],
+    [-5,40,    'SPAIN',         11, '#3a2a10', true ],
+    [12.5,42.5,'PAPAL\nSTATES', 9,  '#3a2a10', true ],
+    [24,56,    'POLAND-\nLITHUANIA',9,'#3a2a10',true],
+    [28,58,    'RUSSIA',        10, '#3a2a10', true ],
+    [16,47,    'AUSTRIA',       9,  '#3a2a10', true ],
+    [4,52,     'DUTCH\nREPUBLIC',9, '#3a2a10', true ],
+    [-8,39.5,  'PORTUGAL',      9,  '#3a2a10', true ],
+    [15,38.5,  'KINGDOM\nOF NAPLES',9,'#3a2a10',true],
+    // 도시 (소문자, 작게, 점 포함)
+    [2.35,48.85,'Paris',        9,  '#1a1208', false],
+    [4.81,43.95,'Avignon',      8,  '#1a1208', false],
+    [18.65,54.35,'Danzig',      8,  '#1a1208', false],
+    [11.87,45.41,'Venice',      8,  '#1a1208', false],
+    [12.49,41.9, 'Rome',        9,  '#1a1208', false],
+    [12.71,55.92,'Uraniborg',   8,  '#1a1208', false],
+    [-0.1,51.5,  'London',      9,  '#1a1208', false],
+    [0.12,52.2,  'Cambridge',   8,  '#1a1208', false],
+    // 바다 이름
+    [-20,50,   'ATLANTIC\nOCEAN',11,'rgba(60,100,140,0.55)',true],
+    [15,60,    'NORTH\nSEA',    9, 'rgba(60,100,140,0.5)', true],
+    [13,43,    'Adriatic',      8, 'rgba(60,100,140,0.5)', true],
+    [15,38,    'MEDITERRANEAN', 9, 'rgba(60,100,140,0.5)', true],
+    [18,37,    'SEA',           9, 'rgba(60,100,140,0.5)', true],
+    [-10,48,   'Bay of\nBiscay',8, 'rgba(60,100,140,0.5)', true],
+  ];
+
+  KINGDOMS.forEach(([lon,lat,name,sz,col,ital])=>{
+    const p=proj([lon,lat]); if(!p) return;
+    const lines=name.split('\n');
+    lines.forEach((ln,i)=>{
+      placeG.append('text')
+        .attr('x',p[0]).attr('y',p[1]+i*sz*1.35)
+        .attr('text-anchor','middle').attr('dominant-baseline','middle')
+        .attr('font-size',sz+'px').attr('font-style',ital?'italic':'normal')
+        .attr('font-weight',sz>=11?'500':'400')
+        .attr('letter-spacing',sz>=11?'0.12em':'0.04em')
+        .attr('stroke','rgba(245,237,216,0.7)').attr('stroke-width',2.5)
+        .attr('paint-order','stroke')
+        .attr('fill',col).text(ln);
+    });
+  });
+
+  const hub=proj([0.12,52.2]);
+  const clg=zG.append('g').attr('class','cl');
+  if(hub) SITES.slice(2).forEach(s=>{ const p=proj([s.lon,s.lat]); if(!p) return; clg.append('line').attr('x1',hub[0]).attr('y1',hub[1]).attr('x2',p[0]).attr('y2',p[1]).attr('stroke','rgba(26,18,8,0.1)').attr('stroke-width',0.7); });
+
+  const hgrp=zG.append('g').attr('class','hg');
+  const rl=d3.line().x(d=>{const p=proj(d);return p?p[0]:0;}).y(d=>{const p=proj(d);return p?p[1]:0;}).curve(d3.curveCatmullRom.alpha(0.5));
+  hgrp.append('path').attr('d',rl(HROUTE.map(r=>r.c))).attr('fill','none').attr('stroke','rgba(122,88,16,0.8)').attr('stroke-width',1.8).attr('stroke-dasharray','6,5');
+
+  // 각 stop마다 고유 오프셋으로 번호 배지 — 겹치지 않게
+  // London(①④⑩)·Paris(⑤⑨) 같은 재방문지는 방향을 분산
+  const badgeOffset={
+    '1': [12,-12],  // ① 런던 출발: 우상
+    '2': [12,-10],  // ② 단치히
+    '3': [-12,-10], // ③ 우라니보르: 좌상
+    '4': [-14,0],   // ④ 런던 귀환: 좌
+    '5': [12,-10],  // ⑤ 파리 1차
+    '6': [-12,-10], // ⑥ 아비뇽
+    '7': [12,-10],  // ⑦ 베네치아
+    '8': [0,14],    // ⑧ 로마: 하
+    '9': [-14,0],   // ⑨ 파리 경유: 좌
+    '10':[-14,10],  // ⑩ 런던 귀환: 좌하
+  };
+
+  HROUTE.forEach(stop=>{
+    const p=proj(stop.c); if(!p) return;
+    const [ox,oy]=badgeOffset[String(stop.n)]||[10,-10];
+    const bx=p[0]+ox, by=p[1]+oy;
+    const bg=hgrp.append('g').style('pointer-events','none');
+    bg.append('circle').attr('cx',bx).attr('cy',by).attr('r',9)
+      .attr('fill','rgba(122,88,16,0.92)').attr('stroke','#f0e8d0').attr('stroke-width',1.2);
+    bg.append('text').attr('x',bx).attr('y',by+0.5).attr('text-anchor','middle')
+      .attr('dominant-baseline','middle').attr('font-size',stop.n===10?'7px':'8px')
+      .attr('font-weight','700').attr('fill','#f5edd8').text(stop.n);
+  });
+
+  // 기착지 hover 영역 (중복 방지)
+  const seen=new Set();
+  HROUTE.forEach(stop=>{
+    const key=stop.c.join(','), p=proj(stop.c); if(!p) return;
+    if(!seen.has(key)){
+      seen.add(key);
+      hgrp.append('g').attr('transform',`translate(${p[0]},${p[1]})`).style('cursor','pointer')
+        .call(g=>g.append('circle').attr('r',16).attr('fill','transparent'))
+        .on('mouseover',()=>{
+          const st=HROUTE.filter(r=>r.c.join(',')===key);
+          showT(`<strong>핼리 경로</strong>${st.map(r=>`${r.n}. ${r.l} — ${r.d}`).join('<br>')}`);
+        }).on('mousemove',posT).on('mouseleave',hideT);
+    }
+  });
+  const rlp=proj([8,50]); if(rlp) hgrp.append('text').attr('x',rlp[0]).attr('y',rlp[1]).attr('font-size','9.5px').attr('fill','rgba(122,88,16,0.8)').attr('font-style','italic').text('핼리 여행 1679–82 ①–⑩');
+
+  SITES.forEach(s=>{
+    const p=proj([s.lon,s.lat]); if(!p) return;
+    const col=tcol(s.type), r=s.type==='hub'?8:6;
+    const g=zG.append('g').attr('transform',`translate(${p[0]},${p[1]})`).attr('class','sm').attr('data-t',s.type).style('cursor','pointer');
+    g.append('circle').attr('r',r+5).attr('fill',col).attr('opacity',0.14);
+    g.append('circle').attr('r',r).attr('fill',col).attr('stroke','#f0e8d0').attr('stroke-width',1.5);
+
+    // 진자 마커: 후기판(1713)이면 점선 외곽 링 추가
+    if(s.type==='pendulum' && s.extra && s.extra.includes('후기판')){
+      g.append('circle').attr('r',r+4).attr('fill','none')
+        .attr('stroke','#1a5a4a').attr('stroke-width',1.2)
+        .attr('stroke-dasharray','3,2').attr('opacity',0.7);
+    }
+    // 진자 마커: 기각(Couplet)이면 X 표시
+    if(s.type==='pendulum' && s.extra && s.extra.includes('★☆☆☆☆')){
+      g.append('line').attr('x1',-r+2).attr('y1',-r+2).attr('x2',r-2).attr('y2',r-2)
+        .attr('stroke','#8b2318').attr('stroke-width',1.5).attr('opacity',0.8);
+      g.append('line').attr('x1',r-2).attr('y1',-r+2).attr('x2',-r+2).attr('y2',r-2)
+        .attr('stroke','#8b2318').attr('stroke-width',1.5).attr('opacity',0.8);
+    }
+
+    const isW=s.lon<-12;
+    g.append('text').attr('x',isW?r+4:-(r+4)).attr('y',3).attr('text-anchor',isW?'start':'end')
+      .attr('font-size',s.type==='hub'?'10.5px':'9.5px').attr('font-weight',s.type==='hub'?'600':'400')
+      .attr('stroke','rgba(240,232,208,0.9)').attr('stroke-width',3).attr('paint-order','stroke').attr('fill','#1a1208').text(s.label);
+    g.on('mouseover',()=>{
+      let ex=''; if(s.extra) ex=`<span class="tx">${s.extra.replace(/\n/g,'<br>')}</span>`;
+      showT(`<strong>${s.label}</strong><span class="tr">${s.role}</span><br>${s.desc}<br><em>${s.detail}</em>${ex}`);
+    }).on('mousemove',posT).on('mouseleave',hideT);
+  });
+
+  const zoom=d3.zoom().scaleExtent([0.5,14])
+    .on('zoom',ev=>{zt=ev.transform; zG.attr('transform',zt); if(infoOn) reposIC(); svg.style('cursor',ev.sourceEvent?.buttons===1?'grabbing':'grab');})
+    .on('end',()=>svg.style('cursor','grab'));
+  svg.on('mousedown',hideT).call(zoom);
+
+  const zc=svg.append('g').attr('transform',`translate(${W-52},${H-136})`);
+  [{l:'+',dy:0,fn:()=>svg.transition().duration(280).call(zoom.scaleBy,1.7)},
+   {l:'⌂',dy:40,fn:()=>svg.transition().duration(380).call(zoom.transform,d3.zoomIdentity)},
+   {l:'−',dy:80,fn:()=>svg.transition().duration(280).call(zoom.scaleBy,0.59)}
+  ].forEach(b=>{
+    const bg=zc.append('g').style('cursor','pointer').on('click',b.fn);
+    bg.append('rect').attr('y',b.dy).attr('width',36).attr('height',32).attr('rx',5).attr('fill','rgba(245,237,216,0.93)').attr('stroke','rgba(138,104,32,0.45)').attr('stroke-width',1);
+    bg.append('text').attr('x',18).attr('y',b.dy+16).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('font-size','15px').attr('fill','#5a4a30').attr('font-weight','500').text(b.l);
+    bg.on('mouseover',function(){d3.select(this).select('rect').attr('fill','rgba(224,210,168,0.98)');}).on('mouseleave',function(){d3.select(this).select('rect').attr('fill','rgba(245,237,216,0.93)');});
+  });
+  svg.append('text').attr('x',W/2).attr('y',H-8).attr('text-anchor','middle').attr('font-size','9px').attr('fill','rgba(90,74,48,0.5)').attr('font-style','italic').text('스크롤 확대/축소 · 드래그 이동');
+
+  const ov=document.createElement('div'); ov.className='iov';
+
+  // 혜성 / 진자 카드
+  SITES.filter(s=>s.extra&&(s.type==='comet'||s.type==='disputed'||s.type==='pendulum')).forEach(s=>{
+    const col=tcol(s.type),lines=s.extra.split('\n');
+    const d=document.createElement('div');
+    d.className='ic'; d.dataset.t=s.type; d.dataset.lon=s.lon; d.dataset.lat=s.lat;
+    d.innerHTML=`<div class="ich" style="background:${col}">${s.label} <span style="font-weight:400;opacity:.85">· ${s.role}</span></div>`
+      +`<div class="icb" style="border-color:${col}">${lines.map((l,i)=>`<div class="icl" style="color:${i===0?'#1a1208':'#5a4a30'};font-weight:${i===0?'500':'400'}">${l}</div>`).join('')}</div>`;
+    ov.appendChild(d);
+  });
+
+  // 핼리 경로 카드 (각 기착지마다 고유 좌표 — 같은 좌표 중복은 첫 방문만)
+  const seenH2=new Set();
+  HROUTE.forEach(stop=>{
+    if(!stop.extra) return;
+    const key=stop.c.join(',');
+    // 같은 도시 재방문(런던 ②, 파리 ②)은 별도 카드 생성 — 좌표에 미세 오프셋
+    const lon=stop.c[0]+(seenH2.has(key)?0.8:0);
+    const lat=stop.c[1]+(seenH2.has(key)?0.8:0);
+    seenH2.add(key);
+    const lines=stop.extra.split('\n');
+    const d=document.createElement('div');
+    d.className='ic'; d.dataset.t='halley'; d.dataset.lon=lon; d.dataset.lat=lat;
+    d.innerHTML=`<div class="ich" style="background:#7a5810">${stop.n}. ${stop.l.replace(/[①-⑩]\s*/,'')} <span style="font-weight:400;opacity:.85">· ${stop.d}</span></div>`
+      +`<div class="icb" style="border-color:#7a5810">${lines.map((l,i)=>`<div class="icl" style="color:${i===0?'#1a1208':'#5a4a30'};font-weight:${i===0?'500':'400'}">${l}</div>`).join('')}</div>`;
+    ov.appendChild(d);
+  });
+
+  wrap.style.position='relative';
+  wrap.innerHTML='';
+  wrap.appendChild(svg.node());
+  wrap.parentElement.insertBefore(ov,wrap.nextSibling);
+  built=true;
+  applyF();
+}
+
+/* ── START ───────────────────────────────────────────────────────────*/
+document.addEventListener('DOMContentLoaded', startMap);
+</script>
+</body>
+</html>

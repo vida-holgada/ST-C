@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>조석 이론 비교 — 뉴턴 vs 실제</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600&family=DM+Serif+Display&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --newton-bg: #1a0f08;
+    --newton-accent: #c94f2a;
+    --newton-water: #8b4513;
+    --newton-moon: #d4a853;
+    --real-bg: #050e1a;
+    --real-accent: #1a8a6e;
+    --real-water: #1b5f8a;
+    --real-moon: #c8d4e0;
+    --text-light: #f0ece4;
+    --text-muted: rgba(240,236,228,0.55);
+  }
+
+  body {
+    background: #0d0d0d;
+    color: var(--text-light);
+    font-family: 'Noto Serif KR', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  header {
+    text-align: center;
+    padding: 48px 24px 32px;
+    background: linear-gradient(180deg, #0d0d0d 0%, transparent 100%);
+  }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(22px, 4vw, 40px);
+    letter-spacing: 0.02em;
+    color: #f0ece4;
+    margin-bottom: 8px;
+  }
+
+  header p {
+    font-size: 13px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 16px 60px;
+  }
+
+  @media (max-width: 700px) {
+    .comparison { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    position: relative;
+    padding: 32px 28px 36px;
+    border-radius: 2px;
+  }
+
+  .panel-newton { background: var(--newton-bg); }
+  .panel-real   { background: var(--real-bg); }
+
+  .panel-label {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .panel-newton .panel-label { color: var(--newton-accent); }
+  .panel-real   .panel-label { color: var(--real-accent); }
+
+  .panel-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(18px, 2.5vw, 26px);
+    margin-bottom: 4px;
+  }
+
+  .panel-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+
+  /* CANVAS WRAPPER */
+  .canvas-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-width: 360px;
+    margin: 0 auto 28px;
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  /* FORCE INDICATORS */
+  .force-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin: 6px 4px 0 0;
+  }
+  .force-tag::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 2px;
+    border-radius: 1px;
+  }
+
+  .tag-vertical {
+    background: rgba(201,79,42,0.12);
+    color: #e8856a;
+    border: 1px solid rgba(201,79,42,0.3);
+  }
+  .tag-vertical::before { background: #c94f2a; }
+
+  .tag-horizontal {
+    background: rgba(26,138,110,0.12);
+    color: #4ec8ac;
+    border: 1px solid rgba(26,138,110,0.3);
+  }
+  .tag-horizontal::before { background: #1a8a6e; }
+
+  /* INFO CARDS */
+  .info-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .info-card {
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    line-height: 1.65;
+  }
+
+  .panel-newton .info-card {
+    background: rgba(201,79,42,0.08);
+    border-left: 2px solid var(--newton-accent);
+    color: rgba(240,236,228,0.8);
+  }
+
+  .panel-real .info-card {
+    background: rgba(26,138,110,0.08);
+    border-left: 2px solid var(--real-accent);
+    color: rgba(240,236,228,0.8);
+  }
+
+  .info-card strong {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 2px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .panel-newton .info-card strong { color: #e8856a; }
+  .panel-real   .info-card strong { color: #4ec8ac; }
+
+  .error-badge {
+    display: inline-block;
+    background: rgba(201,79,42,0.18);
+    border: 1px solid rgba(201,79,42,0.4);
+    color: #e8856a;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-top: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .correct-badge {
+    display: inline-block;
+    background: rgba(26,138,110,0.18);
+    border: 1px solid rgba(26,138,110,0.4);
+    color: #4ec8ac;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-top: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  /* DIVIDER */
+  .divider {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+    margin: 0;
+  }
+
+  /* FOOTER NOTE */
+  .footnote {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 0 24px 40px;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* Speed control */
+  .controls {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .speed-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--text-light);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 12px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin: 0 4px;
+    transition: background 0.2s;
+  }
+  .speed-btn:hover { background: rgba(255,255,255,0.12); }
+  .speed-btn.active { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.3); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>조석(潮汐) — 뉴턴의 오류와 실제 메커니즘</h1>
+  <p>Principia, 1687 · 기조력 이론 비교</p>
+</header>
+
+<div class="controls">
+  <button class="speed-btn active" onclick="setSpeed(1)">보통</button>
+  <button class="speed-btn" onclick="setSpeed(0.4)">느리게</button>
+  <button class="speed-btn" onclick="setSpeed(2.5)">빠르게</button>
+</div>
+
+<div class="comparison">
+
+  <!-- NEWTON PANEL -->
+  <div class="panel panel-newton">
+    <div class="panel-label">뉴턴의 이론 (1687)</div>
+    <div class="panel-title">정역학적 조석 모델</div>
+    <div class="panel-subtitle">수직력이 바닷물을 들어올린다고 봄</div>
+
+    <div class="canvas-wrap">
+      <canvas id="canvasNewton" width="400" height="400"></canvas>
+    </div>
+
+    <div>
+      <span class="force-tag tag-vertical">↕ 수직력 (vertical force)</span>
+    </div>
+
+    <div class="info-cards">
+      <div class="info-card">
+        <strong>가정</strong>
+        달이 바닷물을 수직으로 "끌어당긴다". 달 바로 아래와 정반대쪽이 부풀어 오른다.
+        <br><span class="error-badge">오류 — 달과 태양의 조석 비율 2배 과대 추정</span>
+      </div>
+      <div class="info-card">
+        <strong>문제점</strong>
+        바다는 너무 넓고 얕아서 수직 방향 힘에는 거의 반응하지 않는다. 대륙이나 지구 자전 효과도 무시.
+      </div>
+    </div>
+  </div>
+
+  <!-- REAL PANEL -->
+  <div class="panel panel-real">
+    <div class="panel-label">실제 메커니즘</div>
+    <div class="panel-title">동역학적 기조력 모델</div>
+    <div class="panel-subtitle">수평력이 바닷물을 모은다</div>
+
+    <div class="canvas-wrap">
+      <canvas id="canvasReal" width="400" height="400"></canvas>
+    </div>
+
+    <div>
+      <span class="force-tag tag-horizontal">↔ 수평 기조력 (tractive force)</span>
+    </div>
+
+    <div class="info-cards">
+      <div class="info-card">
+        <strong>핵심</strong>
+        달의 인력 차이가 수평 방향의 흐름을 만들어 물을 달 쪽과 반대쪽으로 모운다.
+        <br><span class="correct-badge">정확 — 조석파의 실제 전파 메커니즘</span>
+      </div>
+      <div class="info-card">
+        <strong>추가 요소</strong>
+        대륙 경계, 코리올리 효과(지구 자전), 수심별 파동 전파 속도가 복잡하게 작용한다.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="footnote">
+  뉴턴은 수직력만 계산했기 때문에 조석의 크기를 실제보다 약 2배 크게 추정했다.
+  실제 조석은 수평 기조력이 거대한 수평 흐름을 만들어 발생한다. 그러나 뉴턴의 이론은
+  역사상 처음으로 천체 역학으로 조석을 설명했다는 점에서 혁명적이었다.
+</p>
+
+<script>
+// ─── Global speed multiplier ───────────────────────────────────────────────
+let SPEED = 1;
+const speedBtns = document.querySelectorAll('.speed-btn');
+function setSpeed(s) {
+  SPEED = s;
+  speedBtns.forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// ─── Utility ───────────────────────────────────────────────────────────────
+function lerp(a, b, t) { return a + (b - a) * t; }
+function easeInOut(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+// ─── Canvas setup ──────────────────────────────────────────────────────────
+const cnN = document.getElementById('canvasNewton');
+const cnR = document.getElementById('canvasReal');
+const ctxN = cnN.getContext('2d');
+const ctxR = cnR.getContext('2d');
+const S = 400;
+const CX = S / 2, CY = S / 2;
+const EARTH_R = 100;
+const MOON_R = 24;
+
+let t = 0; // global time (seconds)
+let last = null;
+
+// ─── NEWTON CANVAS ─────────────────────────────────────────────────────────
+function drawNewton(dt) {
+  const ctx = ctxN;
+  ctx.clearRect(0, 0, S, S);
+
+  // Background
+  ctx.fillStyle = '#1a0f08';
+  ctx.fillRect(0, 0, S, S);
+
+  // Starfield (static)
+  drawStars(ctx, 42);
+
+  // Moon position (orbits slowly above)
+  const moonAngle = -Math.PI/2 + Math.sin(t * 0.15 * SPEED) * 0.18;
+  const moonDist = 155;
+  const moonX = CX + Math.cos(moonAngle) * moonDist;
+  const moonY = CY + Math.sin(moonAngle) * moonDist;
+
+  // Gravitational pull direction (from earth center toward moon)
+  const dx = moonX - CX, dy = moonY - CY;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  const nx = dx/dist, ny = dy/dist; // unit vector toward moon
+
+  // ── Ocean ring with vertical bulge (Newton's wrong model) ──
+  // Tide height oscillates as moon moves
+  const tidePhase = t * 0.15 * SPEED;
+  const bulgeAmt = 28 + 6 * Math.sin(tidePhase * 1.3);
+
+  ctx.save();
+  ctx.translate(CX, CY);
+  ctx.rotate(Math.atan2(ny, nx)); // align bulge toward moon
+
+  // Draw ocean shape
+  const oceanGrad = ctx.createRadialGradient(0, 0, EARTH_R - 4, 0, 0, EARTH_R + bulgeAmt + 4);
+  oceanGrad.addColorStop(0, 'rgba(90,40,10,0.0)');
+  oceanGrad.addColorStop(0.5, 'rgba(139,69,19,0.55)');
+  oceanGrad.addColorStop(1, 'rgba(139,69,19,0.0)');
+
+  // Oval-shaped ocean (bulged on moon-facing and opposite side = Newton's model)
+  ctx.beginPath();
+  ctx.ellipse(0, 0, EARTH_R + bulgeAmt * 0.4, EARTH_R + bulgeAmt, 0, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(100, 50, 10, 0.22)';
+  ctx.fill();
+
+  // Animated water surface particles flowing vertically toward bulge
+  const particleCount = 18;
+  for (let i = 0; i < particleCount; i++) {
+    const angle = (i / particleCount) * Math.PI * 2;
+    const phase = (t * SPEED * 0.8 + i * 0.4) % (Math.PI * 2);
+    // Vertical flow: particles on top/bottom flow outward, sides flow inward
+    const verticalness = Math.abs(Math.cos(angle)); // cos = 1 at top/bottom
+    const flow = Math.sin(phase) * verticalness;
+    const r = EARTH_R + 8 + flow * 22;
+    const px = Math.cos(angle) * r * 0.55; // squish horizontally
+    const py = Math.sin(angle) * r;
+    const alpha = 0.3 + 0.4 * verticalness * Math.max(0, Math.sin(phase));
+    ctx.beginPath();
+    ctx.arc(px, py, 1.8, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(180, 100, 50, ${alpha})`;
+    ctx.fill();
+  }
+
+  ctx.restore();
+
+  // ── Earth ──
+  const earthGrad = ctx.createRadialGradient(CX - 20, CY - 20, 10, CX, CY, EARTH_R);
+  earthGrad.addColorStop(0, '#5a3a2a');
+  earthGrad.addColorStop(0.5, '#3a2218');
+  earthGrad.addColorStop(1, '#1e100a');
+  ctx.beginPath();
+  ctx.arc(CX, CY, EARTH_R, 0, Math.PI * 2);
+  ctx.fillStyle = earthGrad;
+  ctx.fill();
+
+  // Earth continents (rough)
+  ctx.fillStyle = 'rgba(80,55,30,0.6)';
+  ctx.beginPath(); ctx.ellipse(CX-25, CY-20, 28, 18, -0.4, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(CX+20, CY+15, 20, 28, 0.3, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(CX-10, CY+35, 32, 14, 0.1, 0, Math.PI*2); ctx.fill();
+
+  // Earth border
+  ctx.beginPath();
+  ctx.arc(CX, CY, EARTH_R, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(180,100,50,0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // ── Vertical force arrows (Newton's error) ──
+  // Arrow from ocean top toward moon
+  const topX = CX + nx * (EARTH_R + bulgeAmt + 2);
+  const topY = CY + ny * (EARTH_R + bulgeAmt + 2);
+  drawArrow(ctx, topX, topY, moonX, moonY, '#c94f2a', 2.5, 0.85);
+
+  // Arrow at bottom (opposite side bulge, arrow away from moon)
+  const botX = CX - nx * (EARTH_R + bulgeAmt * 0.7 + 2);
+  const botY = CY - ny * (EARTH_R + bulgeAmt * 0.7 + 2);
+  drawArrow(ctx, botX, botY, CX - nx * (EARTH_R + bulgeAmt * 0.7 + 38), CY - ny * (EARTH_R + bulgeAmt * 0.7 + 38), '#c94f2a', 2, 0.65);
+
+  // Label "수직력"
+  ctx.font = '11px Noto Serif KR, serif';
+  ctx.fillStyle = 'rgba(201,79,42,0.8)';
+  ctx.textAlign = 'center';
+  ctx.fillText('수직력 ↕', CX + nx * (EARTH_R + bulgeAmt + 50), CY + ny * (EARTH_R + bulgeAmt + 50));
+
+  // ── Moon ──
+  drawMoon(ctx, moonX, moonY, MOON_R, '#d4a853', '#f0c87a');
+
+  // Moon label
+  ctx.font = '11px Noto Serif KR, serif';
+  ctx.fillStyle = 'rgba(212,168,83,0.9)';
+  ctx.textAlign = 'left';
+  ctx.fillText('달', moonX + MOON_R + 4, moonY + 4);
+}
+
+// ─── REAL CANVAS ───────────────────────────────────────────────────────────
+// Particle system for horizontal tractive force
+const tractiveParticles = [];
+for (let i = 0; i < 40; i++) {
+  const angle = Math.random() * Math.PI * 2;
+  const r = EARTH_R + 5 + Math.random() * 30;
+  tractiveParticles.push({
+    angle,
+    r,
+    speed: 0.4 + Math.random() * 0.6,
+    phase: Math.random() * Math.PI * 2,
+    size: 1.2 + Math.random() * 1.6,
+  });
+}
+
+function drawReal(dt) {
+  const ctx = ctxR;
+  ctx.clearRect(0, 0, S, S);
+
+  ctx.fillStyle = '#050e1a';
+  ctx.fillRect(0, 0, S, S);
+
+  drawStars(ctx, 55);
+
+  const moonAngle = -Math.PI/2 + Math.sin(t * 0.15 * SPEED) * 0.18;
+  const moonDist = 155;
+  const moonX = CX + Math.cos(moonAngle) * moonDist;
+  const moonY = CY + Math.sin(moonAngle) * moonDist;
+
+  const dx = moonX - CX, dy = moonY - CY;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  const nx = dx/dist, ny = dy/dist;
+
+  // ── Animated ocean ring with horizontal flow ──
+  const tidePhase = t * 0.15 * SPEED;
+
+  // Draw animated water layer
+  const layers = 8;
+  for (let l = 0; l < layers; l++) {
+    const frac = l / layers;
+    const r = EARTH_R + 2 + frac * 36;
+    const alpha = 0.12 - frac * 0.012;
+    ctx.beginPath();
+    // Slightly bulged on moon & anti-moon sides
+    const pts = 120;
+    for (let j = 0; j <= pts; j++) {
+      const a = (j / pts) * Math.PI * 2;
+      const cosA = Math.cos(a - moonAngle);
+      const bulge = 1 + 0.08 * (cosA * cosA) * Math.sin(tidePhase + l * 0.3);
+      const pr = r * bulge;
+      const px = CX + Math.cos(a) * pr;
+      const py = CY + Math.sin(a) * pr;
+      j === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fillStyle = `rgba(27, 95, 138, ${alpha})`;
+    ctx.fill();
+  }
+
+  // ── Tractive force: horizontal flow particles ──
+  for (const p of tractiveParticles) {
+    // Each particle flows HORIZONTALLY toward the moon-axis poles
+    // (tractive force converges water toward the sub-lunar/anti-lunar points)
+    const target = p.angle; // particle's current angle on the ocean ring
+    const moonFacing = moonAngle; // direction to moon
+    const antiMoon = moonAngle + Math.PI;
+
+    // Compute angular distance to nearest pole (moon or anti-moon)
+    let dToMoon = moonFacing - target;
+    dToMoon = ((dToMoon % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+    if (dToMoon > Math.PI) dToMoon -= Math.PI*2;
+
+    // Flow direction: move toward nearest pole
+    const flowDir = dToMoon > 0 ? 1 : -1;
+    const nearDist = Math.abs(dToMoon);
+    const nearPole = nearDist < Math.PI/2; // near a bulge pole
+
+    // Speed up near poles, slow at equators
+    const speed = SPEED * p.speed * (0.3 + 0.9 * Math.abs(Math.sin(target - moonAngle))) * dt;
+    p.angle += flowDir * speed * 0.015;
+
+    // Radial pulsing
+    const rPulse = Math.sin(t * SPEED * 0.6 + p.phase);
+    const pr = p.r + rPulse * 8;
+
+    const px = CX + Math.cos(p.angle) * pr;
+    const py = CY + Math.sin(p.angle) * pr;
+
+    // Color: warm near poles (converging), cool elsewhere
+    const proximity = Math.max(0, 1 - nearDist / (Math.PI/2));
+    const r = Math.round(27 + proximity * 60);
+    const g = Math.round(95 + proximity * 60);
+    const b = Math.round(138 + proximity * 40);
+    const a = 0.4 + proximity * 0.45;
+
+    ctx.beginPath();
+    ctx.arc(px, py, p.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${r},${g},${b},${a})`;
+    ctx.fill();
+  }
+
+  // ── Tractive force arrows (horizontal, converging to poles) ──
+  // 4 arrows on the ocean ring, perpendicular to the radial → flowing along surface
+  const arrowAngles = [
+    moonAngle + Math.PI/2.2,
+    moonAngle - Math.PI/2.2,
+    moonAngle + Math.PI + Math.PI/2.2,
+    moonAngle + Math.PI - Math.PI/2.2,
+  ];
+  const arrowLen = 32;
+  for (const aa of arrowAngles) {
+    const rr = EARTH_R + 18;
+    const ax = CX + Math.cos(aa) * rr;
+    const ay = CY + Math.sin(aa) * rr;
+    // Direction: tangent flowing toward nearest pole
+    let dPole = moonAngle - aa;
+    dPole = ((dPole % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+    if (dPole > Math.PI) dPole -= Math.PI*2;
+    const dir = dPole > 0 ? 1 : -1;
+    // Tangent direction
+    const tx = -Math.sin(aa) * dir;
+    const ty =  Math.cos(aa) * dir;
+    drawArrow(ctx, ax, ay, ax + tx * arrowLen, ay + ty * arrowLen, '#1a8a6e', 2.2, 0.9);
+  }
+
+  // Label
+  ctx.font = '11px Noto Serif KR, serif';
+  ctx.fillStyle = 'rgba(26,138,110,0.85)';
+  ctx.textAlign = 'center';
+  const lblX = CX + nx * (EARTH_R + 62);
+  const lblY = CY + ny * (EARTH_R + 62);
+  ctx.fillText('수평 기조력 ↔', lblX, lblY);
+
+  // ── Earth ──
+  const earthGrad = ctx.createRadialGradient(CX - 20, CY - 25, 8, CX, CY, EARTH_R);
+  earthGrad.addColorStop(0, '#1a3a5a');
+  earthGrad.addColorStop(0.5, '#0d2240');
+  earthGrad.addColorStop(1, '#060f1e');
+  ctx.beginPath();
+  ctx.arc(CX, CY, EARTH_R, 0, Math.PI * 2);
+  ctx.fillStyle = earthGrad;
+  ctx.fill();
+
+  ctx.fillStyle = 'rgba(20,80,50,0.5)';
+  ctx.beginPath(); ctx.ellipse(CX-28, CY-18, 26, 17, -0.3, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(CX+22, CY+14, 19, 27, 0.4, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(CX-8, CY+34, 30, 13, 0.1, 0, Math.PI*2); ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(CX, CY, EARTH_R, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(26,138,110,0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // ── Moon ──
+  drawMoon(ctx, moonX, moonY, MOON_R, '#c8d4e0', '#e8f0f8');
+
+  ctx.font = '11px Noto Serif KR, serif';
+  ctx.fillStyle = 'rgba(200,212,224,0.9)';
+  ctx.textAlign = 'left';
+  ctx.fillText('달', moonX + MOON_R + 4, moonY + 4);
+}
+
+// ─── Helpers ───────────────────────────────────────────────────────────────
+const starCache = { newton: null, real: null };
+
+function drawStars(ctx, count) {
+  // Static star drawing (seeded)
+  const seed = (count === 42) ? 'n' : 'r';
+  if (!starCache[seed === 'n' ? 'newton' : 'real']) {
+    const stars = [];
+    let s = count * 137;
+    for (let i = 0; i < 60; i++) {
+      s = (s * 1664525 + 1013904223) & 0xffffffff;
+      const x = ((s >>> 16) / 65535) * S;
+      s = (s * 1664525 + 1013904223) & 0xffffffff;
+      const y = ((s >>> 16) / 65535) * S;
+      s = (s * 1664525 + 1013904223) & 0xffffffff;
+      const r = 0.5 + ((s >>> 16) / 65535) * 1.2;
+      s = (s * 1664525 + 1013904223) & 0xffffffff;
+      const a = 0.3 + ((s >>> 16) / 65535) * 0.5;
+      stars.push({x, y, r, a});
+    }
+    starCache[seed === 'n' ? 'newton' : 'real'] = stars;
+  }
+  const stars = starCache[seed === 'n' ? 'newton' : 'real'];
+  for (const s of stars) {
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${s.a})`;
+    ctx.fill();
+  }
+}
+
+function drawArrow(ctx, x1, y1, x2, y2, color, width, alpha) {
+  const dx = x2 - x1, dy = y2 - y1;
+  const d = Math.sqrt(dx*dx+dy*dy);
+  if (d < 1) return;
+  const nx = dx/d, ny = dy/d;
+  const headLen = 10;
+
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = width;
+  ctx.lineCap = 'round';
+
+  // Shaft (stop before head)
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2 - nx * headLen, y2 - ny * headLen);
+  ctx.stroke();
+
+  // Head
+  const hx = x2, hy = y2;
+  const lx = hx - nx * headLen - ny * 5;
+  const ly = hy - ny * headLen + nx * 5;
+  const rx = hx - nx * headLen + ny * 5;
+  const ry = hy - ny * headLen - nx * 5;
+  ctx.beginPath();
+  ctx.moveTo(hx, hy);
+  ctx.lineTo(lx, ly);
+  ctx.lineTo(rx, ry);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawMoon(ctx, x, y, r, baseColor, glowColor) {
+  // Glow
+  const grd = ctx.createRadialGradient(x, y, r * 0.5, x, y, r * 2.5);
+  grd.addColorStop(0, baseColor + '33');
+  grd.addColorStop(1, 'transparent');
+  ctx.beginPath();
+  ctx.arc(x, y, r * 2.5, 0, Math.PI * 2);
+  ctx.fillStyle = grd;
+  ctx.fill();
+
+  // Body
+  const bodyGrd = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+  bodyGrd.addColorStop(0, glowColor);
+  bodyGrd.addColorStop(1, baseColor);
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = bodyGrd;
+  ctx.fill();
+}
+
+// ─── Animation loop ────────────────────────────────────────────────────────
+function loop(now) {
+  if (!last) last = now;
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  t += dt;
+
+  drawNewton(dt);
+  drawReal(dt);
+
+  requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
