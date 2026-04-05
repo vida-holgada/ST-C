@@ -1,0 +1,241 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.screen{padding:24px 20px 32px}
+.step{display:none}
+.step.active{display:block}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:28px}
+.nav button{font-size:13px;padding:7px 18px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-primary);cursor:pointer}
+.nav button:hover{background:var(--color-background-secondary)}
+.nav button:disabled{opacity:0.3;cursor:default}
+.dots{display:flex;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--color-border-secondary);transition:background .2s}
+.dot.on{background:var(--color-text-secondary)}
+.label{font-size:12px;color:var(--color-text-tertiary);text-align:center;margin-top:6px}
+.pgrid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:20px 0}
+.particle{display:flex;flex-direction:column;align-items:center;gap:5px;width:72px}
+.pcircle{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;border:0.5px solid transparent;transition:all .4s}
+.pname{font-size:11px;color:var(--color-text-secondary);text-align:center;line-height:1.3}
+.known .pcircle{background:#E1F5EE;border-color:#5DCAA5;color:#085041}
+.partner .pcircle{background:#EEEDFE;border-color:#7F77DD;color:#3C3489}
+.ghost .pcircle{background:transparent;border:1.5px dashed var(--color-border-secondary);color:var(--color-text-tertiary)}
+.ghost .pname{color:var(--color-text-tertiary)}
+.pill{display:inline-block;font-size:11px;padding:2px 10px;border-radius:20px;font-weight:500}
+.pill-teal{background:#E1F5EE;color:#085041}
+.pill-purple{background:#EEEDFE;color:#3C3489}
+.pill-gray{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.bignum{font-size:42px;font-weight:500;color:var(--color-text-primary);text-align:center;margin:12px 0 4px}
+.bignumsub{font-size:13px;color:var(--color-text-secondary);text-align:center;margin-bottom:16px}
+.question-box{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:18px 20px;margin:16px 0;background:var(--color-background-secondary)}
+.question-box p{font-size:14px;color:var(--color-text-primary);line-height:1.7}
+.timeline{position:relative;margin:20px 8px}
+.tl-line{height:4px;background:var(--color-background-secondary);border-radius:2px;position:relative}
+.tl-fill{height:4px;background:#7F77DD;border-radius:2px;width:0;transition:width 1s ease}
+.tl-dots{display:flex;justify-content:space-between;margin-top:10px}
+.tl-dot-wrap{display:flex;flex-direction:column;align-items:center;gap:4px}
+.tl-dot-c{width:10px;height:10px;border-radius:50%}
+.tl-dot-label{font-size:11px;color:var(--color-text-tertiary);text-align:center}
+.tl-dot-sub{font-size:10px;color:var(--color-text-tertiary);text-align:center;margin-top:1px}
+.vs-row{display:flex;gap:12px;margin:16px 0}
+.vs-card{flex:1;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px}
+.vs-card h4{font-size:13px;font-weight:500;margin-bottom:8px}
+.vs-card p{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+.step-title{font-size:17px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
+.step-sub{font-size:13px;color:var(--color-text-secondary);line-height:1.7;margin-bottom:16px}
+/* 성공사례 카드 */
+.success-card{border:0.5px solid #5DCAA5;border-radius:var(--border-radius-lg);padding:13px 15px;background:#F4FCF8;margin-bottom:10px}
+.success-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.success-card-title{font-size:12px;font-weight:600;color:#085041}
+.success-card p{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+.wait-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;background:#E1F5EE;color:#085041;white-space:nowrap}
+.arrow-row{display:flex;align-items:flex-start;gap:6px;margin-top:5px}
+.arrow-label{font-size:11px;color:#5DCAA5;font-weight:600;margin-top:1px;flex-shrink:0}
+.arrow-text{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+</style>
+
+<div class="screen">
+
+<!-- s0 -->
+<div class="step active" id="s0">
+  <p class="step-title">우주는 무엇으로 만들어졌을까?</p>
+  <p class="step-sub">물질의 가장 작은 단위. 원자 안에 전자, 원자핵 안에 양성자·중성자, 그 안에 쿼크가 있어요. 물리학자들은 이런 입자들을 오랜 실험으로 하나씩 발견해왔어요.</p>
+  <div class="pgrid">
+    <div class="particle known"><div class="pcircle">e⁻</div><div class="pname">전자</div></div>
+    <div class="particle known"><div class="pcircle">u</div><div class="pname">업 쿼크</div></div>
+    <div class="particle known"><div class="pcircle">d</div><div class="pname">다운 쿼크</div></div>
+    <div class="particle known"><div class="pcircle">γ</div><div class="pname">광자 (빛)</div></div>
+    <div class="particle known"><div class="pcircle">H</div><div class="pname">힉스 입자</div></div>
+  </div>
+  <div style="text-align:center;margin-top:4px">
+    <span class="pill pill-teal">실험으로 확인된 입자들</span>
+  </div>
+</div>
+
+<!-- s1 -->
+<div class="step" id="s1">
+  <p class="step-title">1980년대, 물리학자들이 발견한 것</p>
+  <p class="step-sub">수식을 계속 다듬다 보니 이상한 게 나왔어요. 방정식의 구조가 너무 아름다웠거든요. 모든 입자에 <b style="color:#3C3489">짝꿍</b>이 있으면 수식이 완벽하게 대칭이 돼요.</p>
+  <div class="pgrid">
+    <div class="particle known"><div class="pcircle">e⁻</div><div class="pname">전자</div></div>
+    <div style="display:flex;align-items:center;font-size:18px;color:var(--color-text-tertiary);padding-top:14px">↔</div>
+    <div class="particle partner"><div class="pcircle">ẽ</div><div class="pname">셀렉트론<br>(짝꿍)</div></div>
+    <div style="width:100%;"></div>
+    <div class="particle known"><div class="pcircle">γ</div><div class="pname">광자</div></div>
+    <div style="display:flex;align-items:center;font-size:18px;color:var(--color-text-tertiary);padding-top:14px">↔</div>
+    <div class="particle partner"><div class="pcircle">γ̃</div><div class="pname">포티노<br>(짝꿍)</div></div>
+  </div>
+  <div style="text-align:center;margin-top:8px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <span class="pill pill-teal">발견된 입자</span>
+    <span class="pill pill-purple">이론이 예측한 짝꿍</span>
+  </div>
+  <div class="question-box" style="margin-top:16px">
+    <p>이 이론을 <b>초대칭(Supersymmetry)</b>이라고 해요. 수식이 너무 우아해서 "이게 맞을 것 같다"고 느꼈어요. 실험 결과 없이요.</p>
+  </div>
+</div>
+
+<!-- s2 : 신규 — 아름다운 수식이 맞았던 역사 -->
+<div class="step" id="s2">
+  <p class="step-title">그런데, 이런 일이 전에도 있었어요</p>
+  <p class="step-sub">"수식이 너무 아름다워서 이게 맞을 것 같다" — 이 직관이 실제로 들어맞은 경우들이에요. 실험보다 수식이 먼저였어요.</p>
+
+  <div class="success-card">
+    <div class="success-card-head">
+      <span class="success-card-title">디랙 방정식 (1928)</span>
+      <span class="wait-badge">4년 후 확인</span>
+    </div>
+    <p>"전자 방정식에 상대성이론을 합쳤더니 음의 에너지 해가 나왔어. 전자의 <b>반물질</b>이 존재해야 해."<br>아무도 반물질을 본 적 없었어요.</p>
+    <div class="arrow-row">
+      <span class="arrow-label">→</span>
+      <span class="arrow-text">1932년 앤더슨, 우주선(cosmic ray)에서 <b>포지트론(반전자)</b> 발견. 디랙이 노벨상.</span>
+    </div>
+  </div>
+
+  <div class="success-card">
+    <div class="success-card-head">
+      <span class="success-card-title">맥스웰 방정식 (1865)</span>
+      <span class="wait-badge">22년 후 확인</span>
+    </div>
+    <p>"전기와 자기를 하나의 방정식으로 합쳤더니 파동이 나왔어. 빛의 속도와 정확히 같네 — <b>전자기파</b>가 있어야 해."</p>
+    <div class="arrow-row">
+      <span class="arrow-label">→</span>
+      <span class="arrow-text">1887년 헤르츠, 실험실에서 <b>전파</b> 발생·검출 성공. 라디오·와이파이의 시작.</span>
+    </div>
+  </div>
+
+  <div class="success-card">
+    <div class="success-card-head">
+      <span class="success-card-title">아인슈타인 일반 상대성 (1915)</span>
+      <span class="wait-badge">100년 후 확인</span>
+    </div>
+    <p>"시공간이 휜다면 물결처럼 퍼지는 <b>중력파</b>가 있어야 해." 당시엔 검출 자체가 불가능해 보였어요.</p>
+    <div class="arrow-row">
+      <span class="arrow-label">→</span>
+      <span class="arrow-text">2015년 LIGO, 블랙홀 충돌로 생긴 <b>중력파</b> 첫 검출. 100년 만의 확인.</span>
+    </div>
+  </div>
+
+  <div class="question-box" style="margin-top:4px">
+    <p>세 경우 모두 <b>수식의 아름다움 → 예측 → 나중에 실험 확인</b> 순서였어요. 초대칭을 믿는 물리학자들이 포기 못하는 이유가 여기 있어요.</p>
+  </div>
+</div>
+
+<!-- s3 (구 s2) -->
+<div class="step" id="s3">
+  <p class="step-title">그래서 짝꿍을 찾기 시작했어요</p>
+  <p class="step-sub">이론이 예측한 짝꿍 입자는 수십 개. 하나라도 발견되면 초대칭이 맞다는 증거가 돼요. 2012년, 세계 최대 입자가속기 LHC가 가동됐어요.</p>
+  <div class="timeline">
+    <div class="tl-line"><div class="tl-fill" id="tlfill"></div></div>
+    <div class="tl-dots">
+      <div class="tl-dot-wrap">
+        <div class="tl-dot-c" style="background:#7F77DD"></div>
+        <div class="tl-dot-label">1981</div>
+        <div class="tl-dot-sub">초대칭<br>이론 제안</div>
+      </div>
+      <div class="tl-dot-wrap">
+        <div class="tl-dot-c" style="background:#7F77DD"></div>
+        <div class="tl-dot-label">2008</div>
+        <div class="tl-dot-sub">LHC<br>건설 시작</div>
+      </div>
+      <div class="tl-dot-wrap">
+        <div class="tl-dot-c" style="background:#7F77DD"></div>
+        <div class="tl-dot-label">2012</div>
+        <div class="tl-dot-sub">힉스 발견<br>그러나...</div>
+      </div>
+      <div class="tl-dot-wrap">
+        <div class="tl-dot-c" style="background:var(--color-border-secondary)"></div>
+        <div class="tl-dot-label">2024</div>
+        <div class="tl-dot-sub" style="color:#A32D2D">짝꿍 입자<br>0개 발견</div>
+      </div>
+    </div>
+  </div>
+  <div class="bignum" id="yearcount">43</div>
+  <div class="bignumsub">년째 기다리는 중 (1981→2024)</div>
+  <div style="text-align:center">
+    <span class="pill" style="background:#FCEBEB;color:#A32D2D">발견된 짝꿍 입자: 0개</span>
+  </div>
+</div>
+
+<!-- s4 (구 s3) -->
+<div class="step" id="s4">
+  <p class="step-title">그래도 대부분의 물리학자는 포기하지 않아요</p>
+  <p class="step-sub">왜일까요? 두 입장이 있어요.</p>
+  <div class="vs-row">
+    <div class="vs-card" style="border-color:#7F77DD">
+      <h4 style="color:#3C3489">계속 믿는 쪽</h4>
+      <p>"가속기 에너지가 아직 부족해. 더 강한 장비로 찾으면 나올 거야. 디랙도 4년 걸렸고 아인슈타인은 100년 걸렸는데."</p>
+    </div>
+    <div class="vs-card" style="border-color:#F0997B">
+      <h4 style="color:#712B13">회의적인 쪽</h4>
+      <p>"40년이 지났어. 나올 에너지 범위는 다 뒤졌어. 아름다운 수식이 자연과 다를 수도 있어."</p>
+    </div>
+  </div>
+  <div class="question-box">
+    <p><b>토론 질문:</b> 수식이 아름답다는 이유만으로 이론을 계속 믿는 것, 이건 과학인가요 — 아니면 믿음인가요?</p>
+  </div>
+</div>
+
+<!-- s5 (구 s4) -->
+<div class="step" id="s5">
+  <p class="step-title">코페르니쿠스와 비교해보면</p>
+  <p class="step-sub">같은 구조의 질문이에요. 한쪽은 결과가 나왔고, 한쪽은 아직이에요.</p>
+  <div class="vs-row">
+    <div class="vs-card" style="border-color:#5DCAA5">
+      <h4 style="color:#085041">코페르니쿠스 (1543)</h4>
+      <p>데이터 없이 "태양 중심이 더 단순하고 아름답다"고 주장.<br><br>→ 케플러가 나중에 데이터로 확인.</p>
+    </div>
+    <div class="vs-card" style="border-color:#7F77DD">
+      <h4 style="color:#3C3489">초대칭 (1981~)</h4>
+      <p>데이터 없이 "수식이 너무 아름답다"고 주장.<br><br>→ 43년째 데이터가 안 나옴.</p>
+    </div>
+  </div>
+  <div class="question-box">
+    <p>둘의 차이는 뭘까요? 코페르니쿠스는 운이 좋았던 걸까요 — 아니면 아름다움이 진짜 신호였던 걸까요?</p>
+  </div>
+</div>
+
+<div class="nav">
+  <button id="prev" onclick="move(-1)" disabled>← 이전</button>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="dots" id="dots"></div>
+    <span style="font-size:11px;color:var(--color-text-tertiary)" id="stepcount">1 / 6</span>
+  </div>
+  <button id="next" onclick="move(1)">다음 →</button>
+</div>
+</div>
+
+<script>
+const total = 6;
+let cur = 0;
+const dotsEl = document.getElementById('dots');
+for(let i=0;i<total;i++){const d=document.createElement('div');d.className='dot'+(i===0?' on':'');dotsEl.appendChild(d);}
+function move(d){
+  document.getElementById('s'+cur).classList.remove('active');
+  cur = Math.max(0,Math.min(total-1,cur+d));
+  document.getElementById('s'+cur).classList.add('active');
+  document.querySelectorAll('.dot').forEach((el,i)=>el.classList.toggle('on',i===cur));
+  document.getElementById('prev').disabled = cur===0;
+  document.getElementById('next').disabled = cur===total-1;
+  document.getElementById('stepcount').textContent = (cur+1)+' / '+total;
+  if(cur===3){setTimeout(()=>{document.getElementById('tlfill').style.width='75%'},100);}
+}
+</script>

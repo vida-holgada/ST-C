@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>초대칭과 이론 선택 — wrap-up용</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --tp: #1a1a18; --ts: #5f5e5a; --tt: #888780;
+  --bg: #ffffff; --bg2: #f4f2eb; --bg3: #edeae0;
+  --bd: rgba(0,0,0,0.10); --bd2: rgba(0,0,0,0.20);
+  --teal: #1D9E75; --teal-bg: #E1F5EE; --teal-bd: #5DCAA5; --teal-t: #085041;
+  --purple: #7F77DD; --purple-bg: #EEEDFE; --purple-bd: #AFA9EC; --purple-t: #3C3489; --purple-dk: #26215C;
+  --amber-bg: #FAEEDA; --amber-bd: #EF9F27; --amber-t: #633806;
+  --coral-bg: #FAECE7; --coral-bd: #F0997B; --coral-t: #712B13;
+  --red-bg: #FCEBEB; --red-t: #A32D2D;
+  --r-md: 8px; --r-lg: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tp: #e8e6de; --ts: #a8a69e; --tt: #6e6d68;
+    --bg: #1a1a18; --bg2: #242420; --bg3: #2c2c28;
+    --bd: rgba(255,255,255,0.09); --bd2: rgba(255,255,255,0.16);
+    --teal-bg: #04342C; --teal-bd: #1D9E75; --teal-t: #9FE1CB;
+    --purple-bg: #26215C; --purple-bd: #7F77DD; --purple-t: #CECBF6; --purple-dk: #EEEDFE;
+    --amber-bg: #412402; --amber-bd: #BA7517; --amber-t: #FAC775;
+    --coral-bg: #4A1B0C; --coral-bd: #D85A30; --coral-t: #F5C4B3;
+    --red-bg: #501313; --red-t: #F7C1C1;
+  }
+}
+body { font-family:var(--sans); background:var(--bg); color:var(--tp); min-height:100vh; display:flex; justify-content:center; padding:44px 20px 64px; }
+.wrap { width:100%; max-width:580px; }
+.step { display:none; }
+.step.active { display:block; animation:fi .22s ease; }
+@keyframes fi { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+.lbl { font-size:11px; font-weight:500; letter-spacing:.07em; color:var(--tt); text-transform:uppercase; margin-bottom:10px; }
+.ttl { font-size:22px; font-weight:500; color:var(--tp); line-height:1.3; margin-bottom:10px; }
+.body { font-size:14px; color:var(--ts); line-height:1.78; margin-bottom:20px; }
+.hr { height:1px; background:var(--bd); margin:20px 0; }
+
+.tag { display:inline-block; font-size:11px; font-weight:500; padding:3px 11px; border-radius:20px; margin-bottom:14px; }
+.tag-teal { background:var(--teal-bg); color:var(--teal-t); }
+.tag-purple { background:var(--purple-bg); color:var(--purple-t); }
+.tag-amber { background:var(--amber-bg); color:var(--amber-t); }
+.tag-gray { background:var(--bg3); color:var(--ts); }
+.tag-red { background:var(--red-bg); color:var(--red-t); }
+
+.card { border:0.5px solid var(--bd2); border-radius:var(--r-lg); padding:18px 20px; margin:12px 0; background:var(--bg2); }
+.card.tl { border-left:3px solid var(--teal); border-radius:0 var(--r-lg) var(--r-lg) 0; }
+.card.pl { border-left:3px solid var(--purple); border-radius:0 var(--r-lg) var(--r-lg) 0; }
+.card.al { border-left:3px solid var(--amber-bd); border-radius:0 var(--r-lg) var(--r-lg) 0; }
+.card.cl { border-left:3px solid var(--coral-bd); border-radius:0 var(--r-lg) var(--r-lg) 0; }
+.card.pfill { background:var(--purple-bg); border-color:var(--purple-bd); }
+.card.tfill { background:var(--teal-bg); border-color:var(--teal-bd); }
+.clb { font-size:11px; font-weight:500; letter-spacing:.06em; color:var(--tt); margin-bottom:8px; }
+.clb.t { color:var(--teal-t); }
+.clb.p { color:var(--purple-t); }
+.clb.a { color:var(--amber-t); }
+.card p { font-size:13px; color:var(--ts); line-height:1.72; }
+.card.pfill p { color:var(--purple-t); }
+.card.tfill p { color:var(--teal-t); }
+.card b { font-weight:500; color:var(--tp); }
+.card.pfill b { color:var(--purple-dk); }
+.crule { height:0.5px; background:var(--bd); margin:12px 0; }
+.csub { font-size:12px; color:var(--tt); line-height:1.6; }
+.card.pfill .csub { color:var(--purple-t); opacity:.8; }
+
+.pgrid { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:18px 0; }
+.particle { display:flex; flex-direction:column; align-items:center; gap:6px; width:72px; }
+.pc { width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:500; border:1px solid transparent; }
+.pn { font-size:10px; color:var(--ts); text-align:center; line-height:1.3; }
+.known .pc { background:var(--teal-bg); border-color:var(--teal-bd); color:var(--teal-t); }
+.partner .pc { background:var(--purple-bg); border:1.5px dashed var(--purple-bd); color:var(--purple-t); }
+.amid { display:flex; align-items:center; font-size:15px; color:var(--tt); padding-top:16px; width:24px; justify-content:center; }
+
+.two { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; }
+.two .card { margin:0; }
+
+.vs-row { display:flex; gap:10px; margin:14px 0; align-items:stretch; }
+.vs-lbl { writing-mode:vertical-rl; font-size:10px; font-weight:500; letter-spacing:.08em; color:var(--tt); text-transform:uppercase; padding:10px 8px; background:var(--bg3); border-radius:var(--r-md); display:flex; align-items:center; justify-content:center; }
+.vs-col { flex:1; display:flex; flex-direction:column; gap:10px; }
+.vc { border:0.5px solid var(--bd); border-radius:var(--r-lg); padding:14px 16px; background:var(--bg); }
+.vc h4 { font-size:13px; font-weight:500; margin-bottom:6px; }
+.vc p { font-size:12px; color:var(--ts); line-height:1.65; }
+.vc .sub { font-size:11px; color:var(--tt); margin-top:8px; padding-top:8px; border-top:0.5px solid var(--bd); }
+
+.bignum { text-align:center; padding:20px 0 8px; }
+.bignum .n { font-size:54px; font-weight:500; color:var(--tp); line-height:1; letter-spacing:-.02em; }
+.bignum .s { font-size:13px; color:var(--ts); margin-top:6px; }
+
+.tl-wrap { margin:22px 4px 10px; }
+.tl-track { height:3px; background:var(--bg3); border-radius:2px; }
+.tl-fill { height:3px; background:var(--purple); border-radius:2px; width:0; transition:width 1.2s cubic-bezier(.4,0,.2,1); }
+.tl-nodes { display:flex; justify-content:space-between; margin-top:14px; }
+.tl-node { display:flex; flex-direction:column; align-items:center; gap:5px; }
+.tl-dot { width:9px; height:9px; border-radius:50%; }
+.tl-yr { font-size:11px; font-weight:500; color:var(--ts); }
+.tl-desc { font-size:10px; color:var(--tt); text-align:center; line-height:1.4; max-width:64px; }
+
+.flow { display:flex; align-items:center; gap:8px; margin:8px 0; }
+.fb { flex:1; border:0.5px solid var(--bd2); border-radius:var(--r-md); padding:10px 12px; background:var(--bg); font-size:12px; color:var(--ts); text-align:center; line-height:1.4; }
+.fb b { font-weight:500; color:var(--tp); display:block; font-size:13px; margin-bottom:2px; }
+.fa { font-size:15px; color:var(--tt); flex-shrink:0; }
+
+.qbox { border:0.5px solid var(--bd2); border-radius:var(--r-lg); padding:18px 20px; margin:20px 0; background:var(--bg); }
+.qlbl { font-size:11px; font-weight:500; letter-spacing:.06em; color:var(--tt); margin-bottom:8px; }
+.qbox p { font-size:14px; color:var(--tp); line-height:1.75; font-weight:500; }
+
+.qb { border-left:3px solid var(--bd2); padding:12px 16px; margin:14px 0; background:var(--bg2); border-radius:0 var(--r-md) var(--r-md) 0; }
+.qb p { font-size:14px; color:var(--tp); line-height:1.75; font-style:italic; }
+.qb .at { font-size:11px; color:var(--tt); margin-top:7px; font-style:normal; }
+
+.nav { display:flex; align-items:center; justify-content:space-between; margin-top:36px; padding-top:20px; border-top:0.5px solid var(--bd); }
+.nav button { font-size:13px; padding:8px 20px; border:0.5px solid var(--bd2); border-radius:var(--r-md); background:transparent; color:var(--tp); cursor:pointer; font-family:var(--sans); transition:background .15s; }
+.nav button:hover { background:var(--bg2); }
+.nav button:disabled { opacity:.22; cursor:default; }
+.nav-mid { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.dots { display:flex; gap:7px; }
+.dot { width:6px; height:6px; border-radius:50%; background:var(--bd2); transition:all .2s; }
+.dot.on { background:var(--ts); width:18px; border-radius:3px; }
+.sc { font-size:11px; color:var(--tt); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- 1: 표준모형 -->
+<div class="step active" id="s0">
+  <div class="lbl">1 / 6 · 배경</div>
+  <h1 class="ttl">우주를 구성하는 입자들 — 표준모형</h1>
+  <p class="body">20세기 물리학의 최대 성과는 우주를 구성하는 기본 입자들의 목록을 완성한 것이다. 이것을 표준모형(Standard Model)이라 한다. 수십 년의 실험으로 하나씩 확인되었다.</p>
+  <div class="pgrid">
+    <div class="particle known"><div class="pc">e⁻</div><div class="pn">전자<br><span style="font-size:9px;color:var(--tt)">1897년 발견</span></div></div>
+    <div class="particle known"><div class="pc">u</div><div class="pn">업 쿼크<br><span style="font-size:9px;color:var(--tt)">1968년</span></div></div>
+    <div class="particle known"><div class="pc">d</div><div class="pn">다운 쿼크<br><span style="font-size:9px;color:var(--tt)">1968년</span></div></div>
+    <div class="particle known"><div class="pc">γ</div><div class="pn">광자<br><span style="font-size:9px;color:var(--tt)">1905년</span></div></div>
+    <div class="particle known"><div class="pc">H</div><div class="pn">힉스<br><span style="font-size:9px;color:var(--tt)">2012년</span></div></div>
+  </div>
+  <div style="text-align:center;margin-bottom:18px"><span class="tag tag-teal">모두 실험으로 확인됨</span></div>
+  <div class="card al">
+    <div class="clb a">그런데 표준모형에는 문제가 있다</div>
+    <p>힉스 입자의 질량이 이론적으로 예상한 값과 10³⁰배 차이가 난다. 방정식의 여러 항들이 소수점 이하 30자리 이상에서 서로 거의 완벽하게 상쇄되어야 이 값이 나온다. 이것을 <b>계층 문제(Hierarchy Problem)</b>라 한다. 물리학자들은 이것을 이론이 불완전하다는 신호로 읽었다.</p>
+  </div>
+</div>
+
+<!-- 2: 초대칭 아이디어 -->
+<div class="step" id="s1">
+  <div class="lbl">2 / 6 · 이론 제안</div>
+  <h1 class="ttl">초대칭: 모든 입자에 짝꿍이 있다면</h1>
+  <p class="body">1981년, 물리학자들이 발견했다. 모든 입자에 짝꿍이 있다고 가정하면 계층 문제가 자연스럽게 사라진다. 짝꿍 입자들이 서로 상쇄해버리기 때문이다. 그리고 수식이 완벽하게 대칭이 된다.</p>
+  <div class="pgrid">
+    <div class="particle known"><div class="pc">e⁻</div><div class="pn">전자<br><span style="font-size:9px;color:var(--tt)">확인됨</span></div></div>
+    <div class="amid">↔</div>
+    <div class="particle partner"><div class="pc">ẽ</div><div class="pn">셀렉트론<br><span style="font-size:9px;color:var(--purple-t)">예측만</span></div></div>
+    <div style="width:100%"></div>
+    <div class="particle known"><div class="pc">u</div><div class="pn">업 쿼크<br><span style="font-size:9px;color:var(--tt)">확인됨</span></div></div>
+    <div class="amid">↔</div>
+    <div class="particle partner"><div class="pc">ũ</div><div class="pn">스쿼크<br><span style="font-size:9px;color:var(--purple-t)">예측만</span></div></div>
+    <div style="width:100%"></div>
+    <div class="particle known"><div class="pc">γ</div><div class="pn">광자<br><span style="font-size:9px;color:var(--tt)">확인됨</span></div></div>
+    <div class="amid">↔</div>
+    <div class="particle partner"><div class="pc">γ̃</div><div class="pn">포티노<br><span style="font-size:9px;color:var(--purple-t)">예측만</span></div></div>
+  </div>
+  <div style="text-align:center;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:16px">
+    <span class="tag tag-teal">발견된 입자</span>
+    <span class="tag tag-purple">예측된 짝꿍 (미발견)</span>
+  </div>
+  <div class="card pl">
+    <div class="clb">초대칭이 해결하는 문제들</div>
+    <p>① <b>계층 문제 해결</b> — 힉스 질량의 엄청난 우연을 짝꿍 입자들이 상쇄로 자연스럽게 설명한다.<br>② <b>암흑물질 후보</b> — 가장 가벼운 초대칭 입자가 암흑물질일 수 있다.<br>③ <b>힘의 통일</b> — 초대칭을 넣으면 강력·약력·전자기력이 하나의 에너지 척도에서 정확히 만난다.</p>
+    <div class="crule"></div>
+    <div class="csub">이 세 가지는 독립적인 문제였다. 초대칭 하나로 동시에 해결된다 — 이것이 물리학자들이 아름답다고 느낀 이유다.</div>
+  </div>
+</div>
+
+<!-- 3: 왜 아름다운가 -->
+<div class="step" id="s2">
+  <div class="lbl">3 / 6 · 아름다움의 근거</div>
+  <h1 class="ttl">왜 아름다운가 — 구체적으로</h1>
+  <p class="body">물리학자들이 초대칭을 "아름답다"고 말할 때, 그것은 단순한 미적 감상이 아니다. 구체적인 수학적·구조적 근거가 있다.</p>
+  <div class="card tl">
+    <div class="clb t">① 대칭성 — 자연의 가장 깊은 원리</div>
+    <p>20세기 물리학은 대칭성이 자연법칙을 만든다는 것을 발견했다. 전자기력은 게이지 대칭에서, 상대성이론은 시공간 대칭에서 나온다. 초대칭은 이 대칭성의 논리적 확장이다 — <b>물질 입자(페르미온)와 힘 입자(보손) 사이의 대칭.</b></p>
+  </div>
+  <div class="card pl">
+    <div class="clb p">② 설명의 통일성 — 세 문제, 하나의 답</div>
+    <p>계층 문제, 암흑물질, 힘의 통일은 서로 관계없어 보이는 문제들이다. 초대칭은 이 세 가지를 동시에 설명한다. 물리학에서 이런 통일은 역사적으로 깊은 진리의 신호였다 — 맥스웰이 전기와 자기를 하나로 묶었을 때처럼.</p>
+  </div>
+  <div class="card al">
+    <div class="clb a">③ 디랙의 선례</div>
+    <p>1928년 디랙은 방정식의 대칭성만 보고 반물질의 존재를 예측했다. 실험 결과 없이. 4년 뒤 양전자가 발견되었다. 초대칭 물리학자들은 같은 논리로 — <b>수식이 이렇게 대칭적이고 통일적인데, 자연이 이것을 구현하지 않을 리 없다</b>고 느꼈다.</p>
+  </div>
+</div>
+
+<!-- 4: 43년의 기다림 -->
+<div class="step" id="s3">
+  <div class="lbl">4 / 6 · 실험 결과</div>
+  <h1 class="ttl">43년째 기다리고 있다</h1>
+  <p class="body">2008년 LHC가 완성되었다. 양성자를 빛의 속도 99.9999991%로 가속해 충돌시키는 장치다. 초대칭 입자가 존재한다면 이 에너지 범위에서 반드시 나왔어야 했다.</p>
+  <div class="tl-wrap">
+    <div class="tl-track"><div class="tl-fill" id="tlfill"></div></div>
+    <div class="tl-nodes">
+      <div class="tl-node"><div class="tl-dot" style="background:var(--purple)"></div><div class="tl-yr">1981</div><div class="tl-desc">초대칭 이론 제안</div></div>
+      <div class="tl-node"><div class="tl-dot" style="background:var(--purple)"></div><div class="tl-yr">2008</div><div class="tl-desc">LHC 건설 완료</div></div>
+      <div class="tl-node"><div class="tl-dot" style="background:var(--teal)"></div><div class="tl-yr">2012</div><div class="tl-desc">힉스 발견, 그러나...</div></div>
+      <div class="tl-node"><div class="tl-dot" style="background:var(--bd2)"></div><div class="tl-yr" style="color:var(--red-t)">2024</div><div class="tl-desc" style="color:var(--red-t)">짝꿍 0개</div></div>
+    </div>
+  </div>
+  <div class="bignum">
+    <div class="n">43</div>
+    <div class="s">년째 기다리는 중 &nbsp;·&nbsp; 발견된 짝꿍 입자 <span style="color:var(--red-t);font-weight:500">0개</span></div>
+  </div>
+  <div class="hr"></div>
+  <div class="vs-row">
+    <div class="vs-lbl">현재 논쟁</div>
+    <div class="vs-col">
+      <div class="vc" style="border-color:var(--purple-bd)">
+        <h4 style="color:var(--purple-t)">계속 믿는 쪽</h4>
+        <p>"에너지가 아직 부족하다. 더 강한 장비면 나온다. 이렇게 아름다운 이론이 틀릴 수 없다."</p>
+        <div class="sub">디랙도 실험 없이 믿었고 맞았다.</div>
+      </div>
+      <div class="vc" style="border-color:var(--coral-bd)">
+        <h4 style="color:var(--coral-t)">회의적인 쪽</h4>
+        <p>"43년이다. 나올 에너지 범위는 다 뒤졌다. 아름다운 수식이 자연과 다를 수 있다."</p>
+        <div class="sub">리 스몰린: "아름다움은 공동체의 집단 취향일 수 있다."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5: 코페르니쿠스 vs 프톨레마이오스 -->
+<div class="step" id="s4">
+  <div class="lbl">5 / 6 · 역사 비교</div>
+  <h1 class="ttl">코페르니쿠스 vs 프톨레마이오스 — 같은 구조</h1>
+  <p class="body">초대칭 논쟁은 역사에서 한 번 있었던 일이다. 1543년, 코페르니쿠스와 프톨레마이오스 사이의 논쟁이 정확히 같은 구조였다.</p>
+
+  <div class="two">
+    <div class="card" style="margin:0;border-color:var(--coral-bd)">
+      <div class="clb" style="color:var(--coral-t)">프톨레마이오스 모델</div>
+      <p>주전원 수십 개로 행성 위치를 맞췄다. 1500년간 사용된 검증된 모델. 예측 정확도가 높았다.</p>
+      <div class="crule"></div>
+      <div class="csub">목성-토성 합 오차: 약 한 달</div>
+    </div>
+    <div class="card" style="margin:0;border-color:var(--teal-bd)">
+      <div class="clb" style="color:var(--teal-t)">코페르니쿠스 모델</div>
+      <p>태양 중심 + 원 궤도. 파라미터가 덜 정밀해 일부 예측은 오히려 나빴다.</p>
+      <div class="crule"></div>
+      <div class="csub">같은 합 오차: 이틀 — 낫지만 여전히 틀렸다</div>
+    </div>
+  </div>
+
+  <div class="card al" style="margin-top:4px">
+    <div class="clb a">결정적 사실 — 두 모델은 수학적으로 동치였다</div>
+    <p>좌표 변환 하나로 두 모델이 서로 전환된다. <b>어떤 관측을 해도 구별할 수 없었다.</b> 데이터는 결정적 기준이 되지 못했다. 코페르니쿠스를 선택한 실질적 이유는 하나였다 — 더 단순하고 통일적이었다. 각 행성을 따로 설명하지 않고 하나의 원리로 묶었다.</p>
+  </div>
+
+  <div class="flow" style="margin-top:16px">
+    <div class="fb"><b>코페르니쿠스 선택</b>증거 아닌 단순함·통일성</div>
+    <div class="fa">→</div>
+    <div class="fb"><b>케플러 (60년 후)</b>티코 데이터로 타원 궤도 발견</div>
+    <div class="fa">→</div>
+    <div class="fb"><b>결국 옳았다</b>그런데 선택 당시 합리적이었나?</div>
+  </div>
+</div>
+
+<!-- 6: 철학적 함의 wrap-up -->
+<div class="step" id="s5">
+  <div class="lbl">6 / 6 · wrap-up</div>
+  <h1 class="ttl">같은 질문, 두 가지 답</h1>
+  <p class="body">코페르니쿠스와 초대칭은 정확히 같은 구조의 상황이다. 데이터가 결정적이지 않을 때, 아름다움과 단순함으로 이론을 선택했다. 철학자들은 이것을 어떻게 평가하는가.</p>
+
+  <div class="card tl">
+    <div class="clb t">맥앨리스터 (McAllister, 1996) — 학습된 편견</div>
+    <p>물리학자들이 "대칭적 수식 = 진리"라고 느끼는 것은, 20세기에 대칭적 이론들이 반복 성공하면서 형성된 <b>훈련된 패턴 인식</b>이다. 아름다움이 진리를 가리키는 게 아니라, 성공한 이론들이 우리의 미적 기준을 만들었다.</p>
+    <div class="crule"></div>
+    <div class="csub">코페르니쿠스는 운이 좋았다. 초대칭은 운이 좋지 않을 수 있다. 보장은 없다.</div>
+  </div>
+
+  <div class="card pl pfill">
+    <div class="clb p">머피 (Murphy, 2023) — 탐색의 발판</div>
+    <p>"맞느냐 틀리느냐"라는 질문을 바꾼다. 아름다운 이론은 진리가 아니라 <b>과학자들이 올바른 방향으로 탐색하게 하는 구조</b>를 제공한다. 그것이 독립적 가치다.</p>
+    <div class="crule"></div>
+    <div class="csub">코페르니쿠스가 틀렸더라도, 케플러는 그 프레임으로 티코의 데이터를 해석했다. 초대칭이 틀려도, 40년간의 탐색이 다른 무언가를 향할 수 있다.</div>
+  </div>
+
+  <div class="qbox">
+    <div class="qlbl">오늘 토론 — 최종 질문</div>
+    <p>코페르니쿠스와 초대칭 물리학자들이 한 선택은 같다. 한쪽은 결과적으로 옳았고, 한쪽은 아직 모른다. 그렇다면 — 아름다움과 단순함은 과학 이론을 고르는 정당한 기준인가?</p>
+  </div>
+</div>
+
+<div class="nav">
+  <button id="prev" onclick="move(-1)" disabled>← 이전</button>
+  <div class="nav-mid">
+    <div class="dots" id="dots"></div>
+    <span class="sc" id="sc">1 / 6</span>
+  </div>
+  <button id="next" onclick="move(1)">다음 →</button>
+</div>
+
+</div>
+<script>
+const N=6; let c=0;
+const de=document.getElementById('dots');
+for(let i=0;i<N;i++){const d=document.createElement('div');d.className='dot'+(i===0?' on':'');de.appendChild(d);}
+function move(dir){
+  document.getElementById('s'+c).classList.remove('active');
+  c=Math.max(0,Math.min(N-1,c+dir));
+  document.getElementById('s'+c).classList.add('active');
+  document.querySelectorAll('.dot').forEach((el,i)=>el.classList.toggle('on',i===c));
+  document.getElementById('prev').disabled=c===0;
+  document.getElementById('next').disabled=c===N-1;
+  document.getElementById('sc').textContent=(c+1)+' / '+N;
+  if(c===3)setTimeout(()=>{document.getElementById('tlfill').style.width='76%'},120);
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')move(1);
+  if(e.key==='ArrowLeft')move(-1);
+});
+</script>
+</body>
+</html>

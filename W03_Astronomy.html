@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>천문학 체계 비교: 기하학적 필연성과 변혁</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@300;500;800&display=swap');
+        
+        body { 
+            background-color: #000000; 
+            color: #ffffff; 
+            font-family: 'Inter', 'Noto Sans KR', sans-serif; 
+            overflow-x: hidden;
+        }
+        
+        canvas { 
+            width: 100%; 
+            height: auto; 
+            background-color: #000000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+        }
+
+        .glass { 
+            background: rgba(5, 5, 5, 0.95); 
+            backdrop-filter: blur(15px); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+        }
+
+        .accent-ptolemy { color: #FFD700; }
+        .accent-copernicus { color: #4299E1; }
+        .accent-tycho { color: #ED64A6; }
+        .accent-kepler { color: #48BB78; }
+
+        .heading-gradient { 
+            background: linear-gradient(to right, #6366f1, #a855f7, #ec4899, #f59e0b); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+
+        .data-panel {
+            font-family: monospace;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="p-4 lg:p-6 min-h-screen flex flex-col overflow-y-auto text-sm">
+    <div class="max-w-[1700px] mx-auto w-full">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl lg:text-6xl font-black tracking-tighter mb-2 heading-gradient uppercase">
+                Celestial Revolution
+            </h1>
+            <p class="text-slate-500 text-sm font-light tracking-widest italic uppercase">Ptolemy • Copernicus • Tycho • Kepler</p>
+        </div>
+
+        <!-- Simulation Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <!-- 1. Ptolemy -->
+            <div class="glass p-5 rounded-3xl relative shadow-2xl border-t border-amber-500/20">
+                <h2 class="text-xl font-bold accent-ptolemy italic mb-4 border-b border-white/10 pb-2">Geocentric (Ptolemy)</h2>
+                <canvas id="canvasPtolemy" width="800" height="800"></canvas>
+                <div class="data-panel">
+                    [주전원] 수성: 0.38R / 화성: 0.65R <br>
+                    [이심률] 이심점(Equant) 중심 보정 <br>
+                    [특징] 지구 고정, 태양-지구 선상에 내행성 주전원 위치함
+                </div>
+            </div>
+            <!-- 2. Copernicus -->
+            <div class="glass p-5 rounded-3xl relative shadow-2xl border-t border-blue-500/20">
+                <h2 class="text-xl font-bold accent-copernicus italic mb-4 border-b border-white/10 pb-2">Heliocentric (Copernicus)</h2>
+                <canvas id="canvasCopernicus" width="800" height="800"></canvas>
+                <div class="data-panel">
+                    [공전주기] 수성: 88일 / 지구: 365일 / 화성: 687일 <br>
+                    [기하학] 완벽한 원운동 고수, 소주전원(Minor Epicycle) 사용함 <br>
+                    [항성시차] 지구 이동에 따른 시각 변화(시뮬레이션 가이드라인)
+                </div>
+            </div>
+            <!-- 3. Tycho Brahe -->
+            <div class="glass p-5 rounded-3xl relative shadow-2xl border-t border-pink-500/20">
+                <h2 class="text-xl font-bold accent-tycho italic mb-4 border-b border-white/10 pb-2">Hybrid (Tycho Brahe)</h2>
+                <canvas id="canvasTycho" width="800" height="800"></canvas>
+                <div class="data-panel">
+                    [구조] 행성은 태양을, 태양은 지구를 공전함 <br>
+                    [시차] 항성시차 관측 실패로 인해 지구 정지 모델 채택함 <br>
+                    [의의] 수정천구 개념 파괴의 기하학적 근거 제공함
+                </div>
+            </div>
+            <!-- 4. Kepler -->
+            <div class="glass p-5 rounded-3xl relative shadow-2xl border-t border-emerald-500/20">
+                <h2 class="text-xl font-bold accent-kepler italic mb-4 border-b border-white/10 pb-2">Elliptical (Kepler)</h2>
+                <canvas id="canvasKepler" width="800" height="800"></canvas>
+                <div class="data-panel">
+                    [이심률] 수성: 0.206 / 화성: 0.093 / 지구: 0.017 <br>
+                    [속도] 면적 속도 일정의 법칙(근일점에서 가속됨) <br>
+                    [완성] 주전원 전면 폐기, 단일 타원 궤도로 모든 운동 설명함
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="glass p-6 rounded-3xl flex flex-wrap items-center justify-between gap-6 mb-12 border-white/10 shadow-xl">
+            <div class="flex items-center gap-8">
+                <button id="btnPlay" class="w-14 h-14 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all border border-white/10 active:scale-95 group">
+                    <svg id="playIcon" class="w-6 h-6 fill-white group-hover:scale-110" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg id="pauseIcon" class="w-6 h-6 fill-white hidden" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black text-slate-500 uppercase italic">Temporal Speed</label>
+                    <input type="range" id="speedRange" min="0" max="4" step="0.1" value="1" class="block w-40 accent-white">
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-4">
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" id="checkTrace" checked class="w-4 h-4 rounded-full bg-black border-white/20">
+                    <span class="text-xs font-bold text-slate-400 group-hover:text-white transition uppercase italic">Paths (Traces)</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" id="checkParallax" checked class="w-4 h-4 rounded-full bg-black border-white/20">
+                    <span class="text-xs font-bold text-blue-400 group-hover:text-blue-300 transition uppercase italic">Stellar Parallax</span>
+                </label>
+                <button id="btnClearTrace" class="px-6 py-2 border border-red-500/40 text-red-500 rounded-xl hover:bg-red-500/10 transition text-xs font-bold uppercase tracking-widest">Reset Path</button>
+            </div>
+        </div>
+
+        <!-- Analysis Board -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-20 px-4">
+            <!-- (1) Ptolemy vs Copernicus: Harmony -->
+            <div class="glass p-8 rounded-3xl border-l-4 border-indigo-500">
+                <h3 class="text-xl font-black mb-4 uppercase italic tracking-tighter">1. 조화로움과 정합성 비교</h3>
+                <div class="space-y-4 text-sm leading-relaxed text-slate-400">
+                    <p>• <strong class="text-amber-400">프톨레미오스:</strong> 각 행성마다 독립적인 모델을 설계함. 전체 우주를 관통하는 통합적인 궤도 반지름 비를 결정할 수 없는 파편화된 구조임. 현상을 맞추기 위해 내행성 주전원을 태양-지구 선상에 강제로 묶어둔 임시방편적 체계임.</p>
+                    <p>• <strong class="text-blue-400">코페르니쿠스:</strong> 태양 중심 배치를 통해 전 우주가 하나의 기하학적 대칭(Symmetria)을 이룸을 입증함. 내행성의 최대 이각과 외행성의 역행을 별도 가설 없이 단일 구조의 필연적 결과로 변모시킴.</p>
+                </div>
+            </div>
+
+            <!-- (2) Copernican Limitations & Tycho's Hesitation -->
+            <div class="glass p-8 rounded-3xl border-l-4 border-red-500">
+                <h3 class="text-xl font-black mb-4 uppercase italic tracking-tighter">2. 코페르니쿠스의 한계와 티코의 망설임</h3>
+                <div class="space-y-4 text-sm leading-relaxed text-slate-400">
+                    <p>• <strong class="text-white">코페르니쿠스의 오차:</strong> '완벽한 원 운동'에 집착하여 실제 타원형 궤도에서 발생하는 오차를 해결하지 못함. 이심점을 대신하기 위해 수십 개의 **소주전원**을 사용한 결과, 계산 복잡도는 지심설과 대동소이함.</p>
+                    <p>• <strong class="text-pink-400">티코 브라헤의 망설임:</strong> 지구가 움직인다면 관측되어야 할 **항성시차**를 당대 최고 정밀 기구로도 발견하지 못함. 시차가 보이지 않는다면 별이 터무니없이 멀거나 지구가 정지해야 하는데, 그는 물리적 직관에 따라 **"지구 정지"**를 선택함. 지동설의 수학적 이점을 취하면서도 지심설의 물리적 안정성을 유지하려 한 절충적 시도임.</p>
+                </div>
+            </div>
+
+            <!-- (3) Kepler's Completion -->
+            <div class="glass p-8 rounded-3xl border-l-4 border-emerald-500">
+                <h3 class="text-xl font-black mb-4 uppercase italic tracking-tighter">3. 케플러의 기하학적 완성</h3>
+                <div class="space-y-4 text-sm leading-relaxed text-slate-400">
+                    <p>• <strong class="text-emerald-400 italic font-bold">화성의 8분 오차:</strong> 티코가 남긴 정밀 관측치와 원 궤도 사이의 '8분' 오차를 묵과하지 않음. 수천 년간의 원 운동 미신을 타파하고 **타원 궤도**를 도입함 (『신천문학』, 1609).</p>
+                    <p>• <strong class="text-emerald-400 italic font-bold">물리적 실재:</strong> 태양을 단순한 기하학적 점이 아닌 동력의 원천으로 인식함. 면적 속도 일정의 법칙을 통해 행성의 가속과 감속을 물리적으로 정당화하며 모든 주전원을 완전히 폐기함.</p>
+                </div>
+            </div>
+
+            <!-- (4) Comparison of Accuracy -->
+            <div class="glass p-8 rounded-3xl border-l-4 border-blue-300">
+                <h3 class="text-xl font-black mb-4 uppercase italic tracking-tighter">4. 체계별 예측 정확도 비교</h3>
+                <div class="space-y-4 text-sm leading-relaxed text-slate-400">
+                    <p>• <strong class="text-slate-200">초기 지동설의 정체:</strong> 코페르니쿠스의 프루테닉 표(1551)는 기존 알폰소 표보다 획기적으로 정밀하지 않았음. 구조적 혁신에도 불구하고 수치적 예측력은 지심설을 압도하지 못함.</p>
+                    <p>• <strong class="text-white font-bold">케플러의 승리:</strong> 타원 궤도를 기반으로 한 루돌프 표(1627)는 기존 대비 예측력을 10배 이상 향상시킴. 관측 오차 범위 내에서 완벽한 일치를 보여주며 지동설을 과학적 정설로 확정 지음.</p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="text-center pb-20 text-slate-800 text-[10px] font-mono tracking-[0.4em] uppercase">
+            Historical Astronomy Visualization • Systematic Comparison
+        </footer>
+    </div>
+
+    <script>
+        const canvasIds = ['canvasPtolemy', 'canvasCopernicus', 'canvasTycho', 'canvasKepler'];
+        const canvases = {}; const ctxs = {};
+        canvasIds.forEach(id => { 
+            const canvas = document.getElementById(id);
+            if (canvas) {
+                canvases[id] = canvas;
+                ctxs[id] = canvas.getContext('2d');
+            }
+        });
+
+        let time = 0; let isRunning = true; let speedMult = 1; let showTrace = true; let showParallax = true;
+        const COLORS = { earth: '#3182CE', sun: '#F6AD55', mercury: '#94A3B8', mars: '#F56565', orbit: 'rgba(255, 255, 255, 0.05)', trace: 'rgba(255, 255, 255, 0.7)', sphere: 'rgba(255, 255, 255, 0.1)', starLine: 'rgba(255, 255, 255, 0.08)', parallax: 'rgba(66, 153, 225, 0.4)' };
+        const SIZES = { sun: 11, earth: 8, mars: 7, mercury: 5 };
+        let traces = { p: { me: [], ma: [] }, c: { me: [], ea: [], ma: [] }, t: { me: [], ma: [] }, k: { me: [], ea: [], ma: [] } };
+
+        const constellations = [
+            { points: [[0.1, 0.2], [0.15, 0.22], [0.2, 0.25], [0.25, 0.24], [0.27, 0.2], [0.25, 0.16]] },
+            { points: [[0.8, 0.1], [0.85, 0.15], [0.82, 0.18], [0.87, 0.22]] },
+            { points: [[0.5, 0.8], [0.55, 0.85], [0.52, 0.75], [0.48, 0.7]] }
+        ];
+
+        function drawPlanet(ctx, x, y, size, color, label) {
+            ctx.shadowBlur = 10; ctx.shadowColor = color;
+            ctx.beginPath(); ctx.arc(x, y, size, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+            ctx.shadowBlur = 0; ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.font = "bold 11px Inter";
+            ctx.fillText(label, x + size + 5, y + 4);
+        }
+
+        function drawCelestialSphere(ctx, cx, cy, r) {
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.strokeStyle = COLORS.sphere; ctx.setLineDash([10, 20]); ctx.stroke(); ctx.setLineDash([]);
+            constellations.forEach(c => {
+                ctx.beginPath(); ctx.strokeStyle = COLORS.starLine; ctx.lineWidth = 0.5;
+                c.points.forEach((p, i) => {
+                    const angle = p[0] * Math.PI * 2; const sx = cx + Math.cos(angle) * r, sy = cy + Math.sin(angle) * r;
+                    if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+                    ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(sx, sy, 1.5, 0, Math.PI * 2); ctx.fill();
+                });
+                ctx.stroke();
+            });
+        }
+
+        function drawTrace(ctx, points) {
+            if (!showTrace || points.length < 2) return;
+            ctx.beginPath(); ctx.moveTo(points[0].x, points[0].y);
+            for(let i=1; i<points.length; i++) ctx.lineTo(points[i].x, points[i].y);
+            ctx.strokeStyle = COLORS.trace; ctx.lineWidth = 1; ctx.stroke();
+        }
+
+        function drawParallaxLine(ctx, earthX, earthY, r) {
+            if (!showParallax) return;
+            const targetStarAngle = -Math.PI / 2.5;
+            const sx = 400 + Math.cos(targetStarAngle) * r;
+            const sy = 400 + Math.sin(targetStarAngle) * r;
+            ctx.beginPath(); ctx.moveTo(earthX, earthY); ctx.lineTo(sx, sy);
+            ctx.strokeStyle = COLORS.parallax; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
+            ctx.beginPath(); ctx.arc(sx, sy, 4, 0, Math.PI*2); ctx.fillStyle = COLORS.parallax; ctx.fill();
+        }
+
+        function renderPtolemy() {
+            const ctx = ctxs.canvasPtolemy; if (!ctx) return; const cx = 400, cy = 400; ctx.clearRect(0, 0, 800, 800);
+            drawCelestialSphere(ctx, cx, cy, 380);
+            drawPlanet(ctx, cx, cy, SIZES.earth, COLORS.earth, "지구(Center)");
+            const sunDist = 200, sunAng = time * 0.4;
+            const sunX = cx + Math.cos(sunAng) * sunDist, sunY = cy + Math.sin(sunAng) * sunDist;
+            drawPlanet(ctx, sunX, sunY, SIZES.sun, COLORS.sun, "태양");
+            const meDefR = 100, meEpiR = 45;
+            const meEx = cx + Math.cos(sunAng) * meDefR, meEy = cy + Math.sin(sunAng) * meDefR;
+            const mex = meEx + Math.cos(time * 3) * meEpiR, mey = meEy + Math.sin(time * 3) * meEpiR;
+            drawPlanet(ctx, mex, mey, SIZES.mercury, COLORS.mercury, "수성");
+            traces.p.me.push({x:mex, y:mey}); if(traces.p.me.length > 300) traces.p.me.shift();
+            drawTrace(ctx, traces.p.me);
+            const maDefR = 300, maEpiR = 60, maDefAng = time * 0.15;
+            const maEx = cx + Math.cos(maDefAng) * maDefR, maEy = cy + Math.sin(maDefAng) * maDefR;
+            const max = maEx + Math.cos(sunAng) * maEpiR, may = maEy + Math.sin(sunAng) * maEpiR;
+            drawPlanet(ctx, max, may, SIZES.mars, COLORS.mars, "화성");
+            traces.p.ma.push({x:max, y:may}); if(traces.p.ma.length > 600) traces.p.ma.shift();
+            drawTrace(ctx, traces.p.ma);
+        }
+
+        function renderCopernicus() {
+            const ctx = ctxs.canvasCopernicus; if (!ctx) return; const cx = 400, cy = 400; ctx.clearRect(0, 0, 800, 800);
+            drawCelestialSphere(ctx, cx, cy, 380);
+            drawPlanet(ctx, cx, cy, SIZES.sun, COLORS.sun, "태양(Center)");
+            const meDist = 80, meAng = time * 1.2;
+            const mex = cx + Math.cos(meAng) * meDist, mey = cy + Math.sin(meAng) * meDist;
+            drawPlanet(ctx, mex, mey, SIZES.mercury, COLORS.mercury, "수성");
+            traces.c.me.push({x:mex, y:mey}); if(traces.c.me.length > 200) traces.c.me.shift();
+            drawTrace(ctx, traces.c.me);
+            const eDist = 200, eAng = time * 0.4;
+            const ex = cx + Math.cos(eAng) * eDist, ey = cy + Math.sin(eAng) * eDist;
+            drawPlanet(ctx, ex, ey, SIZES.earth, COLORS.earth, "지구");
+            drawParallaxLine(ctx, ex, ey, 380);
+            traces.c.ea.push({x:ex, y:ey}); if(traces.c.ea.length > 400) traces.c.ea.shift();
+            drawTrace(ctx, traces.c.ea);
+            const maDist = 310, maAng = time * 0.22;
+            const mexM = cx + Math.cos(maAng) * maDist, meyM = cy + Math.sin(maAng) * maDist;
+            drawPlanet(ctx, mexM, meyM, SIZES.mars, COLORS.mars, "화성");
+            traces.c.ma.push({x:mexM, y:meyM}); if(traces.c.ma.length > 600) traces.c.ma.shift();
+            drawTrace(ctx, traces.c.ma);
+        }
+
+        function renderTycho() {
+            const ctx = ctxs.canvasTycho; if (!ctx) return; const cx = 400, cy = 400; ctx.clearRect(0, 0, 800, 800);
+            drawCelestialSphere(ctx, cx, cy, 380);
+            drawPlanet(ctx, cx, cy, SIZES.earth, COLORS.earth, "지구(Center)");
+            const sunDist = 180, sunAng = time * 0.4;
+            const sunX = cx + Math.cos(sunAng) * sunDist, sunY = cy + Math.sin(sunAng) * sunDist;
+            drawPlanet(ctx, sunX, sunY, SIZES.sun, COLORS.sun, "태양");
+            const meRSun = 60, mex = sunX + Math.cos(time * 1.5) * meRSun, mey = sunY + Math.sin(time * 1.5) * meRSun;
+            drawPlanet(ctx, mex, mey, SIZES.mercury, COLORS.mercury, "수성");
+            const maRSun = 220, max = sunX + Math.cos(time * 0.22) * maRSun, may = sunY + Math.sin(time * 0.22) * maRSun;
+            drawPlanet(ctx, max, may, SIZES.mars, COLORS.mars, "화성");
+        }
+
+        let k_meAng = 0, k_eaAng = 0, k_maAng = 0;
+        function renderKepler() {
+            const ctx = ctxs.canvasKepler; if (!ctx) return; const cx = 400, cy = 400; ctx.clearRect(0, 0, 800, 800);
+            drawCelestialSphere(ctx, cx, cy, 380);
+            const sunX = cx + 60, sunY = cy; drawPlanet(ctx, sunX, sunY, SIZES.sun, COLORS.sun, "태양");
+            const meA = 85, meE = 0.206, meF = meA * meE, meB = meA * Math.sqrt(1 - meE*meE), meCX = sunX - meF;
+            const dMe = Math.sqrt(Math.pow(meCX + Math.cos(k_meAng)*meA - sunX, 2) + Math.pow(cy + Math.sin(k_meAng)*meB - cy, 2));
+            k_meAng += (0.05 * speedMult) * (Math.pow(meA, 1.5) / Math.pow(dMe, 1.5));
+            const mex = meCX + Math.cos(k_meAng)*meA, mey = cy + Math.sin(k_meAng)*meB;
+            drawPlanet(ctx, mex, mey, SIZES.mercury, COLORS.mercury, "수성");
+            traces.k.me.push({x:mex, y:mey}); if(traces.k.me.length > 200) traces.k.me.shift();
+            drawTrace(ctx, traces.k.me);
+            const eaA = 190, eaE = 0.05, eaF = eaA * eaE, eaB = eaA * Math.sqrt(1 - eaE*eaE), eaCX = sunX - eaF;
+            const dEa = Math.sqrt(Math.pow(eaCX + Math.cos(k_eaAng)*eaA - sunX, 2) + Math.pow(cy + Math.sin(k_eaAng)*eaB - cy, 2));
+            k_eaAng += (0.018 * speedMult) * (Math.pow(eaA, 1.5) / Math.pow(dEa, 1.5));
+            const ex = eaCX + Math.cos(k_eaAng)*eaA, ey = cy + Math.sin(k_eaAng)*eaB;
+            drawPlanet(ctx, ex, ey, SIZES.earth, COLORS.earth, "지구");
+            traces.k.ea.push({x:ex, y:ey}); if(traces.k.ea.length > 400) traces.k.ea.shift();
+            drawTrace(ctx, traces.k.ea);
+            const maA = 310, maE = 0.093, maF = maA * maE, maB = maA * Math.sqrt(1 - maE*maE), maCX = sunX - maF;
+            const dMa = Math.sqrt(Math.pow(maCX + Math.cos(k_maAng)*maA - sunX, 2) + Math.pow(cy + Math.sin(k_maAng)*maB - cy, 2));
+            k_maAng += (0.009 * speedMult) * (Math.pow(maA, 1.5) / Math.pow(dMa, 1.5));
+            const max = maCX + Math.cos(k_maAng)*maA, may = cy + Math.sin(k_maAng)*maB;
+            drawPlanet(ctx, max, may, SIZES.mars, COLORS.mars, "화성");
+            traces.k.ma.push({x:max, y:may}); if(traces.k.ma.length > 600) traces.k.ma.shift();
+            drawTrace(ctx, traces.k.ma);
+        }
+
+        function animate() { if (isRunning) { time += 0.02 * speedMult; renderPtolemy(); renderCopernicus(); renderTycho(); renderKepler(); } requestAnimationFrame(animate); }
+        
+        window.onload = function() {
+            const btnPlay = document.getElementById('btnPlay');
+            if (btnPlay) {
+                btnPlay.onclick = () => { 
+                    isRunning = !isRunning; 
+                    const playIcon = document.getElementById('playIcon');
+                    const pauseIcon = document.getElementById('pauseIcon');
+                    if (playIcon) playIcon.classList.toggle('hidden', isRunning); 
+                    if (pauseIcon) pauseIcon.classList.toggle('hidden', !isRunning); 
+                };
+            }
+            
+            const speedRange = document.getElementById('speedRange');
+            if (speedRange) speedRange.oninput = (e) => speedMult = e.target.value;
+            
+            const checkTrace = document.getElementById('checkTrace');
+            if (checkTrace) checkTrace.onchange = (e) => showTrace = e.target.checked;
+            
+            const checkParallax = document.getElementById('checkParallax');
+            if (checkParallax) checkParallax.onchange = (e) => showParallax = e.target.checked;
+            
+            const btnClearTrace = document.getElementById('btnClearTrace');
+            if (btnClearTrace) {
+                btnClearTrace.onclick = () => { 
+                    traces = { p: {me:[], ma:[]}, c: {me:[], ea:[], ma:[]}, t: {me:[], ma:[]}, k: {me:[], ea:[], ma:[]} }; 
+                };
+            }
+            
+            animate();
+        };
+    </script>
+</body>
+</html>

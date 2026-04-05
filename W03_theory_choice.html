@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이론 선택 기준 — 수업용 인터랙티브</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --tp: #1a1a18; --ts: #5f5e5a; --tt: #888780;
+  --bg: #ffffff; --bg2: #f4f2eb; --bg3: #edeae0;
+  --bd: rgba(0,0,0,0.10); --bd2: rgba(0,0,0,0.20);
+  --teal: #1D9E75; --teal-bg: #E1F5EE; --teal-bd: #5DCAA5; --teal-t: #085041;
+  --purple: #7F77DD; --purple-bg: #EEEDFE; --purple-bd: #AFA9EC; --purple-t: #3C3489; --purple-dk: #26215C;
+  --amber-bg: #FAEEDA; --amber-bd: #EF9F27; --amber-t: #633806;
+  --coral-bg: #FAECE7; --coral-bd: #F0997B; --coral-t: #712B13;
+  --r-md: 8px; --r-lg: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tp: #e8e6de; --ts: #a8a69e; --tt: #6e6d68;
+    --bg: #1a1a18; --bg2: #242420; --bg3: #2c2c28;
+    --bd: rgba(255,255,255,0.09); --bd2: rgba(255,255,255,0.16);
+    --teal-bg: #04342C; --teal-bd: #1D9E75; --teal-t: #9FE1CB;
+    --purple-bg: #26215C; --purple-bd: #7F77DD; --purple-t: #CECBF6; --purple-dk: #EEEDFE;
+    --amber-bg: #412402; --amber-bd: #BA7517; --amber-t: #FAC775;
+    --coral-bg: #4A1B0C; --coral-bd: #D85A30; --coral-t: #F5C4B3;
+  }
+}
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--tp);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 44px 20px 64px;
+}
+.wrap { width: 100%; max-width: 580px; }
+
+.step { display: none; }
+.step.active { display: block; animation: fi .22s ease; }
+@keyframes fi { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+.step-label { font-size:11px; font-weight:500; letter-spacing:.07em; color:var(--tt); text-transform:uppercase; margin-bottom:10px; }
+.step-title { font-size:22px; font-weight:500; color:var(--tp); line-height:1.3; margin-bottom:10px; }
+.step-body { font-size:14px; color:var(--ts); line-height:1.78; margin-bottom:20px; }
+
+.hr { height:1px; background:var(--bd); margin:20px 0; }
+
+.tag {
+  display:inline-block; font-size:11px; font-weight:500;
+  padding:3px 11px; border-radius:20px; margin-bottom:16px;
+}
+.tag-teal { background:var(--teal-bg); color:var(--teal-t); }
+.tag-purple { background:var(--purple-bg); color:var(--purple-t); }
+.tag-amber { background:var(--amber-bg); color:var(--amber-t); }
+.tag-gray { background:var(--bg3); color:var(--ts); }
+
+.card { border:0.5px solid var(--bd2); border-radius:var(--r-lg); padding:18px 20px; margin:14px 0; background:var(--bg2); }
+.card.teal-l { border-left:3px solid var(--teal); border-radius:0 var(--r-lg) var(--r-lg) 0; }
+.card.purple-l { border-left:3px solid var(--purple); border-radius:0 var(--r-lg) var(--r-lg) 0; }
+.card.amber-l { border-left:3px solid var(--amber-bd); border-radius:0 var(--r-lg) var(--r-lg) 0; }
+.card.coral-l { border-left:3px solid var(--coral-bd); border-radius:0 var(--r-lg) var(--r-lg) 0; }
+.card.purple-fill { background:var(--purple-bg); border-color:var(--purple-bd); }
+.card.teal-fill { background:var(--teal-bg); border-color:var(--teal-bd); }
+.card-label { font-size:11px; font-weight:500; letter-spacing:.06em; color:var(--tt); margin-bottom:8px; }
+.card-label.teal { color:var(--teal-t); }
+.card-label.purple { color:var(--purple-t); }
+.card-label.amber { color:var(--amber-t); }
+.card p { font-size:13px; color:var(--ts); line-height:1.72; }
+.card.purple-fill p { color:var(--purple-t); }
+.card.teal-fill p { color:var(--teal-t); }
+.card b { font-weight:500; color:var(--tp); }
+.card.purple-fill b { color:var(--purple-dk); }
+.card.teal-fill b { color:var(--teal-t); }
+.card-rule { height:0.5px; background:var(--bd); margin:12px 0; }
+.card-sub { font-size:12px; color:var(--tt); line-height:1.6; }
+
+.quote-block {
+  border-left:3px solid var(--bd2);
+  padding:14px 18px; margin:16px 0;
+  background:var(--bg2); border-radius:0 var(--r-md) var(--r-md) 0;
+}
+.quote-block p { font-size:14px; color:var(--tp); line-height:1.75; font-style:italic; }
+.quote-block .attr { font-size:11px; color:var(--tt); margin-top:8px; font-style:normal; }
+
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:16px 0; }
+.two-col .card { margin:0; }
+
+.vs-row { display:flex; gap:10px; margin:16px 0; align-items:stretch; }
+.vs-label {
+  writing-mode:vertical-rl; text-orientation:mixed;
+  font-size:10px; font-weight:500; letter-spacing:.08em;
+  color:var(--tt); text-transform:uppercase;
+  padding:12px 8px; background:var(--bg3);
+  border-radius:var(--r-md); display:flex; align-items:center; justify-content:center;
+}
+.vs-cards { flex:1; display:flex; flex-direction:column; gap:10px; }
+.vs-card { border:0.5px solid var(--bd); border-radius:var(--r-lg); padding:14px 16px; background:var(--bg); }
+.vs-card h4 { font-size:13px; font-weight:500; margin-bottom:6px; }
+.vs-card p { font-size:12px; color:var(--ts); line-height:1.65; }
+.vs-card .aside { font-size:11px; color:var(--tt); margin-top:8px; padding-top:8px; border-top:0.5px solid var(--bd); }
+
+.flow-row {
+  display:flex; align-items:center; gap:10px; margin:6px 0;
+}
+.flow-box {
+  flex:1; border:0.5px solid var(--bd2); border-radius:var(--r-md);
+  padding:10px 14px; background:var(--bg);
+  font-size:12px; color:var(--ts); line-height:1.5; text-align:center;
+}
+.flow-box b { font-weight:500; color:var(--tp); display:block; font-size:13px; margin-bottom:2px; }
+.flow-arrow { font-size:16px; color:var(--tt); flex-shrink:0; }
+
+.q-box { border:0.5px solid var(--bd2); border-radius:var(--r-lg); padding:18px 20px; margin:20px 0; background:var(--bg); }
+.q-label { font-size:11px; font-weight:500; letter-spacing:.06em; color:var(--tt); margin-bottom:8px; }
+.q-box p { font-size:14px; color:var(--tp); line-height:1.75; font-weight:500; }
+
+.result-row { display:flex; gap:8px; margin:12px 0; align-items:center; }
+.result-badge {
+  font-size:11px; font-weight:500; padding:4px 12px; border-radius:20px; white-space:nowrap;
+}
+.result-text { font-size:12px; color:var(--ts); line-height:1.5; }
+
+.nav { display:flex; align-items:center; justify-content:space-between; margin-top:36px; padding-top:20px; border-top:0.5px solid var(--bd); }
+.nav button { font-size:13px; padding:8px 20px; border:0.5px solid var(--bd2); border-radius:var(--r-md); background:transparent; color:var(--tp); cursor:pointer; font-family:var(--sans); transition:background .15s; }
+.nav button:hover { background:var(--bg2); }
+.nav button:disabled { opacity:.22; cursor:default; }
+.nav-mid { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.dots { display:flex; gap:7px; }
+.dot { width:6px; height:6px; border-radius:50%; background:var(--bd2); transition:all .2s; }
+.dot.on { background:var(--ts); width:18px; border-radius:3px; }
+.sc { font-size:11px; color:var(--tt); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- 슬라이드 1: 질문 -->
+<div class="step active" id="s0">
+  <div class="step-label">1 / 7 &nbsp;·&nbsp; 도입</div>
+  <h1 class="step-title">과학 이론을 고를 때 무엇이 더 좋은 기준인가</h1>
+  <p class="step-body">두 이론이 경쟁할 때 과학자는 무엇을 보고 선택하는가. "실험으로 확인된 쪽"이라는 답은 너무 단순하다. 역사를 보면 증거가 불충분할 때도, 심지어 증거와 어긋날 때도 특정 이론이 선택되었다.</p>
+
+  <div class="two-col">
+    <div class="card teal-l">
+      <div class="card-label teal">증거·실험 기준</div>
+      <p>관측 데이터와 더 잘 맞는 이론을 선택한다. 반증 가능하고 예측이 정확할수록 좋다.</p>
+    </div>
+    <div class="card purple-l">
+      <div class="card-label purple">아름다움·단순함 기준</div>
+      <p>수학적으로 우아하고 통일적인 이론을 선택한다. 설명이 단순할수록 더 깊은 진리에 가깝다.</p>
+    </div>
+  </div>
+
+  <div class="card amber-l" style="margin-top:8px">
+    <div class="card-label amber">오늘의 질문</div>
+    <p>이 두 기준은 항상 같은 이론을 가리키는가. 어긋날 때 과학자들은 어떻게 선택했는가. 그리고 그 선택은 정당한가.</p>
+  </div>
+</div>
+
+<!-- 슬라이드 2: 맥앨리스터 사례① 디랙 -->
+<div class="step" id="s1">
+  <div class="step-label">2 / 7 &nbsp;·&nbsp; 맥앨리스터 사례 ①</div>
+  <span class="tag tag-teal">McAllister, 1996</span>
+  <h1 class="step-title">디랙: "아름다움이 믿음의 진짜 이유였다"</h1>
+  <p class="step-body">1928년, 폴 디랙은 상대론적 양자역학 방정식을 풀다가 수학적으로 음의 에너지 해를 발견했다. 당시 관측된 적 없는 입자였다. 두 가지 선택이 있었다 — 이 항을 버리거나, 믿거나.</p>
+
+  <div class="quote-block">
+    <p>"나는 수식의 본질적인 아름다움이야말로 그것을 믿는 진짜 이유라고 느꼈다."</p>
+    <div class="attr">— 폴 디랙, 상대성 이론을 받아들인 이유를 설명하며</div>
+  </div>
+
+  <div class="flow-row">
+    <div class="flow-box"><b>수식의 대칭성</b>음의 에너지 해가 나옴</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box"><b>아름다움 때문에 믿음</b>증거 없이 유지</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box"><b>1932년</b>양전자(반물질) 실험 발견</div>
+  </div>
+
+  <div class="hr"></div>
+
+  <div class="card teal-l">
+    <div class="card-label">맥앨리스터의 해석</div>
+    <p>디랙이 틀렸을 수도 있었다. <b>그가 옳았던 것은 아름다움 덕분이 아니라 운이었을 수 있다.</b> 맥앨리스터의 핵심 질문은 이것이다 — 아름다움이 진리와 연결된다는 보장이 어디 있는가.</p>
+  </div>
+</div>
+
+<!-- 슬라이드 3: 맥앨리스터 사례② 양자역학 -->
+<div class="step" id="s2">
+  <div class="step-label">3 / 7 &nbsp;·&nbsp; 맥앨리스터 사례 ②</div>
+  <span class="tag tag-teal">McAllister, 1996</span>
+  <h1 class="step-title">양자역학: 처음엔 추했고, 성공하자 아름다워졌다</h1>
+  <p class="step-body">양자역학은 등장 당시 가장 저명한 물리학자들에게 미학적 혐오를 불러일으켰다. 결정론이 무너지고, 시각화가 불가능하며, 기계론적 세계관과 어긋났기 때문이다.</p>
+
+  <div class="vs-row">
+    <div class="vs-label">시간의 흐름</div>
+    <div class="vs-cards">
+      <div class="vs-card" style="border-color:var(--coral-bd)">
+        <h4 style="color:var(--coral-t)">1900~1920년대 — 초기 반응</h4>
+        <p>플랑크: 자신이 제안한 양자 가설을 "절망적인 행위"라 불렀다.<br>아인슈타인: 죽을 때까지 "신은 주사위를 던지지 않는다"며 거부했다.</p>
+        <div class="aside">아름답지 않다 → 진리일 수 없다는 직관</div>
+      </div>
+      <div class="vs-card" style="border-color:var(--teal-bd)">
+        <h4 style="color:var(--teal-t)">1950년대 이후 — 경험적 성공 후</h4>
+        <p>하이젠베르크: "정밀과학이 다시 조화로운 완전함을 되찾았다."<br>야머: "양자역학은 아름다운 지적 구조물이다."</p>
+        <div class="aside">성공하고 나자 → 갑자기 아름다워졌다</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card amber-l">
+    <div class="card-label amber">미적 귀납 (Aesthetic Induction)</div>
+    <p>이것이 맥앨리스터의 핵심 개념이다. 과학자들은 <b>경험적으로 성공한 이론의 미적 속성을 학습해서 다음 이론 선택에 기준으로 쓴다.</b> 아름다움이 진리를 가리키는 게 아니라, 성공이 아름다움의 기준을 만든다.</p>
+  </div>
+</div>
+
+<!-- 슬라이드 4: 맥앨리스터 결론과 딜레마 -->
+<div class="step" id="s3">
+  <div class="step-label">4 / 7 &nbsp;·&nbsp; 맥앨리스터 결론</div>
+  <span class="tag tag-teal">McAllister, 1996</span>
+  <h1 class="step-title">아름다움은 보수적 힘이다 — 그리고 딜레마</h1>
+  <p class="step-body">맥앨리스터가 내린 결론은 쿤과 정반대다. 쿤에게 미학은 혁명을 이끄는 힘이었지만, 맥앨리스터에게 미학은 기존 이론을 지키려는 보수적 힘이다.</p>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-label">케플러의 타원 궤도</div>
+      <p>원 궤도가 아름답다는 오랜 미학을 깼다. 처음엔 추했지만, 경험적으로 우월했기 때문에 결국 새로운 미적 기준이 됐다.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">양자역학의 비결정론</div>
+      <p>결정론이라는 미학을 깼다. 처음엔 혐오스러웠지만, 성공 후엔 "아름답다"는 평가를 받게 됐다.</p>
+    </div>
+  </div>
+
+  <div class="hr"></div>
+
+  <div class="card coral-l">
+    <div class="card-label">맥앨리스터의 딜레마 — 해결하지 못한 문제</div>
+    <p>미적 기준이 학습된 것이라면, 그것이 진리를 가리킨다는 보장은 없다. <b>"어떤 미적 속성이 진리의 신호라는 증거는 현재로서는 희박하다."</b> — 맥앨리스터 스스로의 고백이다. 아름다움을 쓰는 게 합리적인지 아닌지, 결론을 내리지 못했다.</p>
+    <div class="card-rule"></div>
+    <div class="card-sub">이 딜레마에서 다른 출구를 찾은 것이 머피(2023)다.</div>
+  </div>
+</div>
+
+<!-- 슬라이드 5: 머피 사례① 갈릴레오 -->
+<div class="step" id="s4">
+  <div class="step-label">5 / 7 &nbsp;·&nbsp; 머피 사례 ①</div>
+  <span class="tag tag-purple">Murphy, 2023</span>
+  <h1 class="step-title">갈릴레오의 낙체: "역사상 가장 아름다운 사고실험"</h1>
+  <p class="step-body">아리스토텔레스는 무거운 물체가 가벼운 물체보다 빨리 떨어진다고 했다. 갈릴레오는 실험 없이, 단지 생각만으로 이것이 틀렸음을 보였다.</p>
+
+  <div class="card purple-l">
+    <div class="card-label">갈릴레오의 사고실험</div>
+    <p>무거운 돌과 가벼운 돌을 끈으로 묶으면 어떻게 되는가. 아리스토텔레스대로라면 가벼운 쪽이 무거운 쪽을 늦추니까 중간 속도로 떨어져야 한다. 그런데 묶인 두 돌은 하나의 더 무거운 돌이기도 하다 — 그러면 더 빨리 떨어져야 한다. <b>모순이다.</b></p>
+    <div class="card-rule"></div>
+    <div class="card-sub">결론: 속도는 무게와 무관하다. 실험 없이 논리만으로 도달했다.</div>
+  </div>
+
+  <div class="hr"></div>
+
+  <div class="card purple-fill purple-l">
+    <div class="card-label purple">머피의 분석: 왜 이게 "아름다운가"</div>
+    <p>이 사고실험이 아름답다고 불리는 이유는 내용 때문이 아니다. <b>형식이 내용과 완벽하게 맞아떨어지기 때문이다.</b> 모순을 드러내는 방식 — 같은 돌을 두 가지 방식으로 동시에 기술하는 것 — 이 바로 하고자 하는 말을 가장 직접적으로 전달한다. 독자의 상상력이 자연스럽게 따라간다.</p>
+  </div>
+</div>
+
+<!-- 슬라이드 6: 머피 사례② 다윈 고래 -->
+<div class="step" id="s5">
+  <div class="step-label">6 / 7 &nbsp;·&nbsp; 머피 사례 ②</div>
+  <span class="tag tag-purple">Murphy, 2023</span>
+  <h1 class="step-title">다윈의 고래: "괴물 같다" — 그래도 가치 있다</h1>
+  <p class="step-body">다윈은 고래가 어떻게 육지 동물에서 진화했는지 설명하려 했다. 그가 제시한 사고실험은 당시 "monstrous(괴물 같다)", "gross(역겹다)"라는 반응을 들었다.</p>
+
+  <div class="card coral-l">
+    <div class="card-label">다윈의 원래 버전 (1859, 초판)</div>
+    <p>고래가 어떻게 진화했는지 보여주기 위해 <b>곰이 입을 벌리고 헤엄치는 장면</b>을 상상하게 했다. 입이 점점 커지고, 몸이 물에 적응해 결국 고래가 된다는 것이었다. 비평가 오웬(Owen)은 이 이미지를 "역겹다"고 했고, 다윈은 2판에서 이 구절을 삭제했다.</p>
+  </div>
+
+  <div class="hr"></div>
+
+  <div class="card purple-fill purple-l">
+    <div class="card-label purple">머피의 분석: 왜 이게 "추한가" — 그리고 그게 왜 중요한가</div>
+    <p>갈릴레오 사례와 비교하면 차이가 명확하다. 다윈의 버전은 <b>형식이 내용을 방해한다.</b> 곰이라는 구체적 이미지가 독자의 상상력을 "이 과정이 정말 일어날 수 있는가"로 이끌지 않고, "왜 하필 곰인가"로 이끈다. 목표와 다른 방향으로 상상력이 작동한다.</p>
+    <div class="card-rule"></div>
+    <p style="color:var(--purple-t)">그러나 머피는 여기서 멈추지 않는다. <b>이 "추한" 사고실험도 인식론적 가치가 있다.</b> 형식이 내용과 맞지 않아 실패한 사례를 보면, 왜 갈릴레오의 것이 성공했는지 더 명확하게 이해할 수 있기 때문이다.</p>
+  </div>
+</div>
+
+<!-- 슬라이드 7: 머피 결론 + 토론 연결 -->
+<div class="step" id="s6">
+  <div class="step-label">7 / 7 &nbsp;·&nbsp; 결론과 토론</div>
+  <h1 class="step-title">두 입장이 말하는 것 — 그리고 토론으로</h1>
+  <p class="step-body">맥앨리스터와 머피는 같은 사례들을 보면서 다른 결론에 도달했다. 이 차이가 오늘 토론의 핵심이다.</p>
+
+  <div class="vs-row">
+    <div class="vs-label">두 입장</div>
+    <div class="vs-cards">
+      <div class="vs-card" style="border-color:var(--teal-bd)">
+        <h4 style="color:var(--teal-t)">맥앨리스터 — 아름다움은 학습된 편견</h4>
+        <p>아름다움이 이론 선택에 개입하는 것은 사실이다. 그러나 그것은 과거 성공에서 학습된 패턴일 뿐이다. 디랙이 맞았던 것은 운이었을 수 있다. 아름다움이 진리를 보장한다는 증거는 없다.</p>
+        <div class="aside">사례: 디랙(운이었을 수 있음), 양자역학(성공 후 아름다워짐)</div>
+      </div>
+      <div class="vs-card" style="border-color:var(--purple-bd)">
+        <h4 style="color:var(--purple-t)">머피 — 아름다움은 이해의 조건</h4>
+        <p>진리와의 연결을 주장할 필요가 없다. 형식이 내용과 잘 맞는 이론은 과학자들이 올바른 방향으로 상상하고 탐색하게 돕는다. 그것이 독립적 인식론적 가치다.</p>
+        <div class="aside">사례: 갈릴레오(형식=내용→이해), 다윈(형식≠내용→이해 방해)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hr"></div>
+
+  <div class="card amber-l">
+    <div class="card-label amber">오늘 토론으로 돌아오면</div>
+    <p>코페르니쿠스와 티코 브라헤는 같은 데이터를 보고 다른 이론을 선택했다. 코페르니쿠스의 선택이 더 아름답고 단순했다. 그것이 합리적이었는가. <b>맥앨리스터라면 — 운이었다고 할 것이다. 머피라면 — 그 아름다움이 케플러의 탐색을 가능하게 했다고 할 것이다.</b></p>
+  </div>
+
+  <div class="q-box">
+    <div class="q-label">토론 질문</div>
+    <p>과학 이론을 고를 때 아름다움과 단순함은 정당한 기준인가 — 아니면 합리화된 편견인가?</p>
+  </div>
+</div>
+
+<div class="nav">
+  <button id="prev" onclick="move(-1)" disabled>← 이전</button>
+  <div class="nav-mid">
+    <div class="dots" id="dots"></div>
+    <span class="sc" id="sc">1 / 7</span>
+  </div>
+  <button id="next" onclick="move(1)">다음 →</button>
+</div>
+
+</div>
+<script>
+const N = 7; let c = 0;
+const dotsEl = document.getElementById('dots');
+for (let i = 0; i < N; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' on' : '');
+  dotsEl.appendChild(d);
+}
+function move(dir) {
+  document.getElementById('s' + c).classList.remove('active');
+  c = Math.max(0, Math.min(N - 1, c + dir));
+  document.getElementById('s' + c).classList.add('active');
+  document.querySelectorAll('.dot').forEach((el, i) => el.classList.toggle('on', i === c));
+  document.getElementById('prev').disabled = c === 0;
+  document.getElementById('next').disabled = c === N - 1;
+  document.getElementById('sc').textContent = (c + 1) + ' / ' + N;
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') move(1);
+  if (e.key === 'ArrowLeft') move(-1);
+});
+</script>
+</body>
+</html>
