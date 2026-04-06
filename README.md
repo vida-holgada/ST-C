@@ -6,7 +6,7 @@ Interactive HTML collection for multiple ST&C teaching modules.
 
 - `index.html`: course-wide hub for the materials in this repository
 - `W05_index.html`: preserved Week 5 hub
-- `W05_walking_ethnography_assignment.html`: standalone assignment brief
+- `W08_walking_ethnography_assignment.html`: standalone assignment brief
 
 ## Week 3 Files
 
@@ -22,7 +22,7 @@ Interactive HTML collection for multiple ST&C teaching modules.
 - `tonkin_tides.html`: Tonkin Gulf tides and wave interference
 - `tides_comparison.html`: Newton vs real tidal theory comparison
 - `newton_network.html`: Newton's information empire
-- `W05_walking_ethnography_assignment.html`: walking ethnography assignment brief
+- `W08_walking_ethnography_assignment.html`: walking ethnography assignment brief
 
 ## Notes
 
