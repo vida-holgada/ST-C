@@ -159,10 +159,28 @@ img{display:block;max-width:100%}
 
 .section-head{
   display:flex;
-  align-items:flex-end;
+  align-items:flex-start;
   justify-content:space-between;
   gap:20px;
   margin-bottom:24px;
+}
+
+.title-block{
+  display:grid;
+  gap:10px;
+}
+
+.reading-title{
+  display:grid;
+  gap:6px;
+}
+
+.author-name{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--muted);
 }
 
 .kicker{
@@ -288,6 +306,15 @@ img{display:block;max-width:100%}
   margin:24px 0 24px;
 }
 
+.gallery figure{
+  margin:0;
+}
+
+.gallery a{
+  display:block;
+  text-decoration:none;
+}
+
 .gallery img{
   width:100%;
   height:100%;
@@ -297,13 +324,16 @@ img{display:block;max-width:100%}
   background:var(--bg2);
 }
 
-.gallery img:first-child{
+.gallery figure:first-child{
   grid-column:1 / -1;
+}
+
+.gallery figure:first-child img{
   min-height:420px;
 }
 
 .caption{
-  margin-top:8px;
+  margin-top:6px;
   color:var(--muted);
   font-size:11px;
   line-height:1.7;
@@ -602,9 +632,12 @@ footer{
 
   <section id="mattern" class="section mattern">
     <div class="section-head">
-      <div>
+      <div class="title-block">
         <div class="kicker">Reading 01</div>
-        <h2 class="section-title">Shannon Mattern<br>Maintenance and Care</h2>
+        <div class="reading-title">
+          <h2 class="section-title">Maintenance and Care</h2>
+          <div class="author-name">Shannon Mattern</div>
+        </div>
       </div>
       <p class="section-sub">Mattern은 도시를 유지시키는 것은 혁신의 반짝임이 아니라, 고치고 닦고 메우고 연결하는 반복적 노동이라고 말합니다.</p>
     </div>
@@ -621,11 +654,25 @@ footer{
         <p class="lede">이 글은 “세계가 어떻게 무너지고 있는가”보다 “세계가 어떻게 다시 조립되는가”를 보라고 요구합니다. 도시를 읽을 때도 마찬가지입니다. 우리가 보는 표면 뒤에는 언제나 누군가의 수리, 청소, 관리, 보수의 노동이 있습니다.</p>
 
         <div class="gallery">
-          <img src="./assets/walking-ethnography/mattern_spiderweb.jpg" alt="Mended spiderweb">
-          <img src="./assets/walking-ethnography/mattern_bridge_painters.jpg" alt="Bridge painters">
-          <img src="./assets/walking-ethnography/mattern_kader_attia.jpg" alt="Kader Attia repair artwork">
+          <figure>
+            <a href="./assets/walking-ethnography/mattern_spiderweb.jpg" target="_blank" rel="noreferrer">
+              <img src="./assets/walking-ethnography/mattern_spiderweb.jpg" alt="Mended spiderweb">
+            </a>
+            <figcaption class="caption">Nina Katchadourian, <em>Mended Spiderweb</em>.</figcaption>
+          </figure>
+          <figure>
+            <a href="./assets/walking-ethnography/mattern_bridge_painters.jpg" target="_blank" rel="noreferrer">
+              <img src="./assets/walking-ethnography/mattern_bridge_painters.jpg" alt="Bridge painters">
+            </a>
+            <figcaption class="caption">Brooklyn Bridge painters, New York City.</figcaption>
+          </figure>
+          <figure>
+            <a href="./assets/walking-ethnography/mattern_kader_attia.jpg" target="_blank" rel="noreferrer">
+              <img src="./assets/walking-ethnography/mattern_kader_attia.jpg" alt="Kader Attia repair artwork">
+            </a>
+            <figcaption class="caption">Kader Attia, <em>Traditional Repair, Immaterial Injury</em>.</figcaption>
+          </figure>
         </div>
-        <div class="caption">기사와 제공 PDF에서 정리한 이미지. Nina Katchadourian의 <em>Mended Spiderweb</em>, Brooklyn Bridge painters, Kader Attia의 <em>Traditional Repair, Immaterial Injury</em>.</div>
 
         <div class="excerpt">
           <div class="excerpt-label">발췌 번역</div>
@@ -657,9 +704,12 @@ footer{
 
   <section id="milligan" class="section milligan">
     <div class="section-head">
-      <div>
+      <div class="title-block">
         <div class="kicker">Reading 02</div>
-        <h2 class="section-title">Brett Milligan<br>Accelerated and Decelerated Landscapes</h2>
+        <div class="reading-title">
+          <h2 class="section-title">Accelerated and Decelerated Landscapes</h2>
+          <div class="author-name">Brett Milligan</div>
+        </div>
       </div>
       <p class="section-sub">Milligan은 풍경과 인프라가 단순한 배경이 아니라, 자연과 인간의 시간을 빠르게 하거나 늦추는 장치라고 설명합니다.</p>
     </div>
@@ -676,11 +726,25 @@ footer{
         <p class="lede">이 글에서 중요한 질문은 “이 장소는 무엇을 빠르게 만들고, 무엇을 느리게 만드는가?”입니다. 길, 제방, 수로, 산책로, 재개발 구역은 모두 시간을 조직하는 장치로 읽힐 수 있습니다.</p>
 
         <div class="gallery">
-          <img src="./assets/walking-ethnography/milligan_alameda_intro.jpg" alt="Alameda Creek flood control channel">
-          <img src="./assets/walking-ethnography/milligan_alameda_channel.jpg" alt="Alameda Creek configured channel">
-          <img src="./assets/walking-ethnography/milligan_alameda_bay.jpg" alt="Old quarry pits alongside Alameda Creek">
+          <figure>
+            <a href="./assets/walking-ethnography/milligan_alameda_intro.jpg" target="_blank" rel="noreferrer">
+              <img src="./assets/walking-ethnography/milligan_alameda_intro.jpg" alt="Alameda Creek flood control channel">
+            </a>
+            <figcaption class="caption">Alameda Creek Flood Control Channel, aerial view.</figcaption>
+          </figure>
+          <figure>
+            <a href="./assets/walking-ethnography/milligan_alameda_channel.jpg" target="_blank" rel="noreferrer">
+              <img src="./assets/walking-ethnography/milligan_alameda_channel.jpg" alt="Alameda Creek configured channel">
+            </a>
+            <figcaption class="caption">Configured channel with sediment bench formation.</figcaption>
+          </figure>
+          <figure>
+            <a href="./assets/walking-ethnography/milligan_alameda_bay.jpg" target="_blank" rel="noreferrer">
+              <img src="./assets/walking-ethnography/milligan_alameda_bay.jpg" alt="Old quarry pits alongside Alameda Creek">
+            </a>
+            <figcaption class="caption">Alameda Creek approaching San Francisco Bay.</figcaption>
+          </figure>
         </div>
-        <div class="caption">기사와 제공 PDF에서 정리한 이미지. Alameda Creek channel과 주변 변형 지형 사례.</div>
 
         <div class="excerpt">
           <div class="excerpt-label">발췌 번역</div>
@@ -712,9 +776,12 @@ footer{
 
   <section id="folarin" class="section folarin">
     <div class="section-head">
-      <div>
+      <div class="title-block">
         <div class="kicker">Reading 03</div>
-        <h2 class="section-title">Tope Folarin<br>The City Was All I Had</h2>
+        <div class="reading-title">
+          <h2 class="section-title">The City Was All I Had</h2>
+          <div class="author-name">Tope Folarin</div>
+        </div>
       </div>
       <p class="section-sub">Folarin은 도시를 객관적 배경이 아니라, 한 사람이 욕망과 불안, 문화적 어색함, 가능성을 겪는 감각의 장면으로 씁니다.</p>
     </div>
@@ -731,11 +798,25 @@ footer{
         <p class="lede">이 글은 도시를 바라보는 시선을 바꿔 줍니다. 도시의 건물이나 제도만이 아니라, 그 도시가 한 사람에게 어떤 리듬과 감정을 만들어내는지까지 읽어야 한다는 점을 보여줍니다.</p>
 
         <div class="gallery">
-          <img src="./assets/walking-ethnography/folarin_founders_library.jpg" alt="Founders Library Howard University">
-          <img src="./assets/walking-ethnography/folarin_florida_georgia.jpg" alt="Florida and Georgia Avenues intersection">
-          <img src="./assets/walking-ethnography/folarin_smithsonian_castle.jpg" alt="Smithsonian Castle">
+          <figure>
+            <a href="./assets/walking-ethnography/folarin_founders_library.jpg" target="_blank" rel="noreferrer">
+              <img src="./assets/walking-ethnography/folarin_founders_library.jpg" alt="Founders Library Howard University">
+            </a>
+            <figcaption class="caption">Founders Library, Howard University.</figcaption>
+          </figure>
+          <figure>
+            <a href="./assets/walking-ethnography/folarin_florida_georgia.jpg" target="_blank" rel="noreferrer">
+              <img src="./assets/walking-ethnography/folarin_florida_georgia.jpg" alt="Florida and Georgia Avenues intersection">
+            </a>
+            <figcaption class="caption">Intersection of Florida and Georgia Avenues, Washington, D.C.</figcaption>
+          </figure>
+          <figure>
+            <a href="./assets/walking-ethnography/folarin_smithsonian_castle.jpg" target="_blank" rel="noreferrer">
+              <img src="./assets/walking-ethnography/folarin_smithsonian_castle.jpg" alt="Smithsonian Castle">
+            </a>
+            <figcaption class="caption">Smithsonian Castle, Washington, D.C.</figcaption>
+          </figure>
         </div>
-        <div class="caption">기사와 제공 PDF에서 정리한 이미지. Founders Library, Florida and Georgia Avenues, Smithsonian Castle.</div>
 
         <div class="excerpt">
           <div class="excerpt-label">발췌 번역</div>
