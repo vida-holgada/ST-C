@@ -3,19 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST&amp;C 자료 허브</title>
+<title>ST&amp;C 수업자료</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
 :root{
-  --bg:#f5f7fb;
+  --bg:#f7f7f7;
   --paper:#ffffff;
-  --ink:#171b24;
-  --muted:#5f6777;
-  --line:#d9e0ec;
-  --navy:#13205f;
+  --ink:#111111;
+  --muted:#666666;
+  --line:#d8d8d8;
+  --navy:#17225f;
   --link:#174ea6;
-  --highlight:#fff25c;
 }
 
 *,
@@ -34,273 +33,195 @@ a{color:var(--link);text-decoration:none}
 a:hover{text-decoration:underline}
 
 .wrap{
-  max-width:1240px;
+  max-width:1200px;
   margin:0 auto;
-  padding:32px 20px 56px;
+  padding:28px 16px 48px;
 }
 
 h1{
-  margin:0 0 8px;
-  font-size:34px;
-  line-height:1.15;
+  margin:0 0 6px;
+  font-size:32px;
 }
 
 .sub{
-  margin:0 0 24px;
+  margin:0 0 22px;
   color:var(--muted);
   font-size:15px;
 }
 
-.section{
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+
+.card{
   background:var(--paper);
   border:1px solid var(--line);
-  margin-bottom:18px;
+  padding:16px;
 }
 
-.section-head{
-  padding:16px 18px;
-  border-bottom:1px solid var(--line);
-  background:#f9fbff;
-}
-
-.section-head h2{
-  margin:0;
-  font-size:20px;
-}
-
-.section-body{
-  padding:18px;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:15px;
-}
-
-th{
-  background:var(--navy);
-  color:#fff;
-  text-align:left;
-  padding:12px 14px;
-  font-size:15px;
+.week{
+  margin:0 0 6px;
+  font-size:18px;
   font-weight:700;
 }
 
-td{
-  padding:14px;
-  border-bottom:1px solid var(--line);
-  vertical-align:top;
-}
-
-tr:last-child td{border-bottom:none}
-
-.week{
-  width:180px;
-  white-space:nowrap;
-  font-weight:500;
-}
-
 .topic{
-  width:380px;
+  margin:0 0 12px;
+  font-size:15px;
 }
 
 .links{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px 12px;
-}
-
-.links a{
-  display:inline-block;
-}
-
-.muted{
-  color:var(--muted);
-}
-
-.note{
-  background:#f8fbff;
-  border:1px solid var(--line);
-  padding:12px 14px;
-  margin-top:14px;
+  display:grid;
+  gap:6px;
   font-size:14px;
+}
+
+.empty{
   color:var(--muted);
+  font-size:14px;
 }
 
-.hl{
-  background:var(--highlight);
-  padding:0 4px;
+.section{
+  margin-top:24px;
 }
 
-.simple-list{
-  margin:0;
-  padding-left:18px;
+.section h2{
+  margin:0 0 12px;
+  font-size:20px;
 }
 
-.simple-list li{
-  margin:8px 0;
+.list{
+  background:var(--paper);
+  border:1px solid var(--line);
+  padding:14px 16px;
 }
+
+.list-row{
+  padding:8px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.list-row:last-child{border-bottom:none}
 
 @media (max-width:900px){
-  .wrap{padding-left:12px;padding-right:12px}
-  table,thead,tbody,tr,th,td{display:block}
-  thead{display:none}
-  tr{border-bottom:1px solid var(--line)}
-  td{
-    border-bottom:none;
-    padding:8px 12px;
-  }
-  td::before{
-    display:block;
-    font-size:12px;
-    color:var(--muted);
-    margin-bottom:2px;
-  }
-  td.week::before{content:"주차"}
-  td.topic::before{content:"내용"}
-  td.materials::before{content:"참고 자료"}
+  .grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Science, Technology and Civilization</h1>
-  <p class="sub">주차별 참고 자료, 과제, 시험 링크 모음</p>
+  <h1>ST&amp;C 수업자료</h1>
+  <p class="sub">주차별 자료 링크</p>
 
-  <section class="section">
-    <div class="section-head">
-      <h2>주차별 참고 자료</h2>
-    </div>
-    <div class="section-body">
-      <table>
-        <thead>
-          <tr>
-            <th>주차</th>
-            <th>내용</th>
-            <th>참고 자료</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="week">1주차 (3/9)</td>
-            <td class="topic">OT</td>
-            <td class="materials muted">-</td>
-          </tr>
-          <tr>
-            <td class="week">2주차 (3/16)</td>
-            <td class="topic">고대와 중세의 과학기술</td>
-            <td class="materials muted">-</td>
-          </tr>
-          <tr>
-            <td class="week">3주차 (3/23)</td>
-            <td class="topic">글로벌 과학 혁명 (1)</td>
-            <td class="materials">
-              <div class="links">
-                <a href="./W03_Astronomy.html">천문학 체계 비교</a>
-                <a href="./W03_theory_choice.html">이론 선택 기준</a>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td class="week">4주차 (3/30)</td>
-            <td class="topic">글로벌 과학 혁명 (2)</td>
-            <td class="materials muted">-</td>
-          </tr>
-          <tr>
-            <td class="week">5주차 (4/6)</td>
-            <td class="topic">아이작 뉴턴, 과학</td>
-            <td class="materials">
-              <div class="links">
-                <a href="./W05_index.html">Week 5 전체 보기</a>
-                <a href="./tonkin_tides.html">통킹만의 수수께끼</a>
-                <a href="./tides_comparison.html">조석 이론 비교</a>
-                <a href="./newton_network.html">뉴턴의 정보 제국</a>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td class="week">6주차 (4/13)</td>
-            <td class="topic">18세기의 과학기술: 자연사&amp;계몽주의</td>
-            <td class="materials muted">-</td>
-          </tr>
-          <tr>
-            <td class="week">7주차 (4/20)</td>
-            <td class="topic">산업혁명의 전개와 영향</td>
-            <td class="materials muted">-</td>
-          </tr>
-          <tr>
-            <td class="week">8주차 (4/27)</td>
-            <td class="topic">중간 과제 기간 <span class="hl">(제출: 5/10일)</span></td>
-            <td class="materials">
-              <div class="links">
-                <a href="./W08_walking_ethnography_assignment.html">중간 과제 안내</a>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td class="week">9주차 (5/4)</td>
-            <td class="topic">국가통치술, 다윈의 진화론</td>
-            <td class="materials muted">-</td>
-          </tr>
-          <tr>
-            <td class="week">10주차 (5/11)</td>
-            <td class="topic">우생학과 제2차 산업혁명</td>
-            <td class="materials muted">-</td>
-          </tr>
-          <tr>
-            <td class="week">11주차 (5/18)</td>
-            <td class="topic">전쟁과 과학기술</td>
-            <td class="materials muted">-</td>
-          </tr>
-          <tr>
-            <td class="week">12주차 (5/25)</td>
-            <td class="topic">녹화 강의 / 분자생물학의 역사</td>
-            <td class="materials muted">-</td>
-          </tr>
-          <tr>
-            <td class="week">13주차 (6/1)</td>
-            <td class="topic">컴퓨터와 데이터의 역사</td>
-            <td class="materials muted">-</td>
-          </tr>
-          <tr>
-            <td class="week">14주차 (6/8)</td>
-            <td class="topic">과학기술과 인류세</td>
-            <td class="materials muted">-</td>
-          </tr>
-          <tr>
-            <td class="week">15주차 (6/15)</td>
-            <td class="topic">기말고사</td>
-            <td class="materials muted">아래 시험 항목 참고</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <section class="grid">
+    <article class="card">
+      <h2 class="week">W01 (3/9)</h2>
+      <p class="topic">OT</p>
+      <div class="empty">자료 없음</div>
+    </article>
+
+    <article class="card">
+      <h2 class="week">W02 (3/16)</h2>
+      <p class="topic">고대와 중세의 과학기술</p>
+      <div class="empty">자료 없음</div>
+    </article>
+
+    <article class="card">
+      <h2 class="week">W03 (3/23)</h2>
+      <p class="topic">글로벌 과학 혁명 (1)</p>
+      <div class="links">
+        <a href="./W03_Astronomy.html">천문학 체계 비교</a>
+        <a href="./W03_theory_choice.html">이론 선택 기준</a>
+      </div>
+    </article>
+
+    <article class="card">
+      <h2 class="week">W04 (3/30)</h2>
+      <p class="topic">글로벌 과학 혁명 (2)</p>
+      <div class="empty">자료 없음</div>
+    </article>
+
+    <article class="card">
+      <h2 class="week">W05 (4/6)</h2>
+      <p class="topic">아이작 뉴턴, 과학</p>
+      <div class="links">
+        <a href="./W05_index.html">Week 5 모음</a>
+        <a href="./tonkin_tides.html">통킹만의 수수께끼</a>
+        <a href="./tides_comparison.html">조석 이론 비교</a>
+        <a href="./newton_network.html">뉴턴의 정보 제국</a>
+      </div>
+    </article>
+
+    <article class="card">
+      <h2 class="week">W06 (4/13)</h2>
+      <p class="topic">18세기의 과학기술: 자연사&amp;계몽주의</p>
+      <div class="empty">자료 없음</div>
+    </article>
+
+    <article class="card">
+      <h2 class="week">W07 (4/20)</h2>
+      <p class="topic">산업혁명의 전개와 영향</p>
+      <div class="empty">자료 없음</div>
+    </article>
+
+    <article class="card">
+      <h2 class="week">W08 (4/27)</h2>
+      <p class="topic">중간 과제 기간</p>
+      <div class="links">
+        <a href="./W08_walking_ethnography_assignment.html">Walking Ethnography 과제</a>
+      </div>
+    </article>
+
+    <article class="card">
+      <h2 class="week">W09 (5/4)</h2>
+      <p class="topic">국가통치술, 다윈의 진화론</p>
+      <div class="empty">자료 없음</div>
+    </article>
+
+    <article class="card">
+      <h2 class="week">W10 (5/11)</h2>
+      <p class="topic">우생학과 제2차 산업혁명</p>
+      <div class="empty">자료 없음</div>
+    </article>
+
+    <article class="card">
+      <h2 class="week">W11 (5/18)</h2>
+      <p class="topic">전쟁과 과학기술</p>
+      <div class="empty">자료 없음</div>
+    </article>
+
+    <article class="card">
+      <h2 class="week">W12 (5/25)</h2>
+      <p class="topic">녹화 강의 / 분자생물학의 역사</p>
+      <div class="empty">자료 없음</div>
+    </article>
+
+    <article class="card">
+      <h2 class="week">W13 (6/1)</h2>
+      <p class="topic">컴퓨터와 데이터의 역사</p>
+      <div class="empty">자료 없음</div>
+    </article>
+
+    <article class="card">
+      <h2 class="week">W14 (6/8)</h2>
+      <p class="topic">과학기술과 인류세</p>
+      <div class="empty">자료 없음</div>
+    </article>
+
+    <article class="card">
+      <h2 class="week">W15 (6/15)</h2>
+      <p class="topic">기말고사</p>
+      <div class="empty">시험</div>
+    </article>
   </section>
 
   <section class="section">
-    <div class="section-head">
-      <h2>과제 / 시험</h2>
-    </div>
-    <div class="section-body">
-      <ul class="simple-list">
-        <li><a href="./W08_walking_ethnography_assignment.html">W08 중간 과제 안내</a></li>
-        <li>W15 기말고사</li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-head">
-      <h2>기타 참고 자료</h2>
-    </div>
-    <div class="section-body">
-      <ul class="simple-list">
-        <li><a href="./W03_suppersymmetry.html">초대칭과 이론 선택 — wrap-up용</a></li>
-        <li><a href="./supersymmetry_explainer.html">Supersymmetry Explainer</a></li>
-        <li><a href="./W03_supersymmetry_Explainer_2.html">Supersymmetry Explainer 2</a></li>
-      </ul>
-      <div class="note">필요한 주차의 자료만 눌러 들어가면 됩니다. 메인 페이지는 링크 입구 역할만 하도록 최소한으로 정리했습니다.</div>
+    <h2>과제 / 시험</h2>
+    <div class="list">
+      <div class="list-row"><a href="./W08_walking_ethnography_assignment.html">W08 중간 과제: Walking Ethnography</a></div>
+      <div class="list-row">W15 기말고사</div>
     </div>
   </section>
 </div>
