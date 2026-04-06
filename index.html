@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST&amp;C Course Hub | Science, Technology and Civilization</title>
+<title>ST&amp;C 수업 자료 | Science, Technology and Civilization</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap');
 
@@ -412,6 +412,24 @@ body::before{
   color:var(--muted);
 }
 
+.step-no{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:28px;
+  height:28px;
+  border-radius:999px;
+  background:rgba(29,27,24,.08);
+  color:var(--ink);
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.muted-card{
+  background:rgba(255,250,244,.62);
+}
+
 .repo-map{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -473,13 +491,13 @@ body::before{
     <div class="topbar-inner">
       <div class="brand">
         <span class="brand-mark">ST&amp;C</span>
-        <span class="brand-title">Science, Technology and Civilization · Course Hub</span>
+        <span class="brand-title">Science, Technology and Civilization · 수업 자료</span>
       </div>
       <div class="top-links">
-        <a class="nav-btn" href="#featured">Featured</a>
-        <a class="nav-btn" href="#week3">Week 3</a>
-        <a class="nav-btn" href="#week5">Week 5</a>
-        <a class="nav-btn" href="#supplement">Supplement</a>
+        <a class="nav-btn" href="#start">시작하기</a>
+        <a class="nav-btn" href="#week5">이번 주</a>
+        <a class="nav-btn" href="#assignment">과제</a>
+        <a class="nav-btn" href="#archive">이전 자료</a>
       </div>
     </div>
   </div>
@@ -488,26 +506,26 @@ body::before{
     <div class="hero-panel">
       <div class="hero-grid">
         <div>
-          <div class="eyebrow">Course Materials Hub</div>
-          <h1>ST&amp;C Teaching Materials</h1>
-          <p>이 레포 안의 HTML 자료들을 주차별·주제별로 다시 묶은 전체 허브입니다. 이제 `index.html`은 강의 전체 자료 입구가 되고, 기존 주차용 인덱스는 별도 `Week 5 Hub`로 분리해 연결했습니다.</p>
+          <div class="eyebrow">Student Guide</div>
+          <h1>ST&amp;C 수업 자료</h1>
+          <p>이 페이지는 학생들이 수업 자료를 쉽게 찾아가도록 만든 첫 화면입니다. 아래 순서대로 보면 이번 주 자료를 놓치지 않고 따라갈 수 있습니다.</p>
           <div class="hero-meta">
-            <span class="meta-chip">Week 3 Theory Cluster</span>
-            <span class="meta-chip">Week 5 Newton &amp; Tides</span>
-            <span class="meta-chip">Walking Ethnography Assignment</span>
+            <span class="meta-chip">1. 이번 주 전체 보기</span>
+            <span class="meta-chip">2. 개별 자료 읽기</span>
+            <span class="meta-chip">3. 과제 확인하기</span>
           </div>
         </div>
 
         <div class="hero-side">
           <div class="side-card">
-            <div class="side-card-label">Main Use</div>
-            <strong>강의 준비용 입구</strong>
-            <p>주제별 카드와 주차별 묶음을 통해 어떤 자료를 언제 열면 좋은지 바로 판단할 수 있게 구성했습니다.</p>
+            <div class="side-card-label">Start Here</div>
+            <strong>가장 먼저 눌러야 할 곳</strong>
+            <p><a class="link-btn" href="./W05_index.html">이번 주 전체 보기</a></p>
           </div>
           <div class="side-card">
-            <div class="side-card-label">Structure</div>
-            <strong>허브와 개별 자료를 분리</strong>
-            <p>전체 허브, Week 5 허브, 개별 모듈, 과제 페이지, 실험용 파일을 서로 연결해 레포 내부 흐름을 정리했습니다.</p>
+            <div class="side-card-label">Assignment</div>
+            <strong>제출 과제 바로가기</strong>
+            <p><a class="link-btn" href="./W05_walking_ethnography_assignment.html">Walking Ethnography 과제</a></p>
           </div>
         </div>
       </div>
@@ -515,27 +533,27 @@ body::before{
   </header>
 
   <main class="main">
-    <section class="intro-grid">
+    <section id="start" class="intro-grid">
       <div class="paper-card">
-        <div class="section-kicker">Repository Framing</div>
-        <h2>One repo, multiple teaching paths</h2>
-        <p>이 저장소는 단일 주차 자료 모음이 아니라, ST&amp;C 수업에서 반복해서 재사용할 수 있는 인터랙티브 설명 자료와 과제 안내 페이지들의 아카이브로 볼 수 있습니다. 따라서 학생에게 바로 보여줄 자료와, 수업 중 선택적으로 여는 보조 자료를 구분해서 배치했습니다.</p>
+        <div class="section-kicker">How To Use</div>
+        <h2>어떻게 보면 되나요?</h2>
+        <p>처음 들어온 학생은 먼저 <strong>이번 주 전체 보기</strong>를 눌러 전체 흐름을 확인한 뒤, 필요하면 개별 자료를 열면 됩니다. 과제만 다시 확인해야 할 때는 아래 과제 카드로 바로 가면 됩니다.</p>
       </div>
 
       <div class="paper-card">
-        <div class="section-kicker">Quick Start</div>
+        <div class="section-kicker">Recommended Order</div>
         <div class="summary-list">
           <div class="summary-item">
-            <strong>수업 전체 입구</strong>
-            <span>지금 보고 있는 `index.html`에서 주차별 자료와 개별 페이지를 모두 탐색할 수 있습니다.</span>
+            <strong>1. 이번 주 전체 보기</strong>
+            <span>이번 수업의 전체 순서와 핵심 질문을 한 번에 확인합니다.</span>
           </div>
           <div class="summary-item">
-            <strong>Week 5 묶음 보기</strong>
-            <span>`W05_index.html`은 기존 Week 5 통합 허브를 그대로 보존한 별도 페이지입니다.</span>
+            <strong>2. 개별 자료 읽기</strong>
+            <span>통킹만, 조석 이론, 뉴턴 네트워크 자료를 필요에 따라 각각 열어봅니다.</span>
           </div>
           <div class="summary-item">
-            <strong>과제 안내 바로 열기</strong>
-            <span>`W05_walking_ethnography_assignment.html`은 이미지가 직접 임베드된 단일 파일입니다.</span>
+            <strong>3. 과제 확인하기</strong>
+            <span>Walking Ethnography 과제와 Extra Credit 계획서 기준을 확인합니다.</span>
           </div>
         </div>
       </div>
@@ -543,36 +561,21 @@ body::before{
 
     <section id="featured" class="section">
       <div class="section-head">
-        <h2>Featured Hubs</h2>
-        <p>수업 운영에서 가장 자주 열 가능성이 높은 진입점들을 먼저 모았습니다.</p>
+        <h2>바로가기</h2>
+        <p>아래 세 개만 알면 수업 자료를 찾는 데 거의 충분합니다.</p>
       </div>
       <div class="grid cols-3">
         <article class="file-card">
+          <div class="step-no">1</div>
           <div class="file-meta">
-            <span class="tag assign">Main Hub</span>
-            <span class="pill">Course-wide</span>
+            <span class="tag week5">This Week</span>
+            <span class="pill">가장 먼저</span>
           </div>
-          <h3>Course Materials Hub</h3>
-          <p>전체 ST&amp;C 자료를 주차와 역할에 따라 다시 묶은 기본 시작점입니다.</p>
+          <h3>이번 주 전체 보기</h3>
+          <p>이번 주 수업을 어떤 순서로 보면 되는지 한 화면에서 보여주는 페이지입니다. 가장 먼저 여는 것을 권장합니다.</p>
           <ol class="prompt-list">
-            <li>어떤 자료가 어느 주차·주제에 속하는지 한눈에 파악</li>
-            <li>허브, 개별 페이지, 과제 페이지를 분리해서 접근</li>
-          </ol>
-          <div class="file-actions">
-            <a class="link-btn" href="./index.html">현재 페이지</a>
-          </div>
-        </article>
-
-        <article class="file-card">
-          <div class="file-meta">
-            <span class="tag week5">Week 5</span>
-            <span class="pill">Preserved hub</span>
-          </div>
-          <h3>Week 5 Hub</h3>
-          <p>기존 `index.html`에 있던 Week 5 통합 동선을 별도 파일로 분리한 허브입니다.</p>
-          <ol class="prompt-list">
-            <li>Tonkin → Tides → Network → Assignment 흐름 유지</li>
-            <li>주차 한정 페이지로 바로 공유하기 좋음</li>
+            <li>이번 주 핵심 흐름 한눈에 보기</li>
+            <li>개별 자료로 이어지는 기본 입구</li>
           </ol>
           <div class="file-actions">
             <a class="link-btn" href="./W05_index.html">열기</a>
@@ -580,15 +583,33 @@ body::before{
         </article>
 
         <article class="file-card">
+          <div class="step-no">2</div>
+          <div class="file-meta">
+            <span class="tag week5">Readings</span>
+            <span class="pill">개별 자료</span>
+          </div>
+          <h3>이번 주 개별 자료</h3>
+          <p>통킹만, 조석 이론 비교, 뉴턴의 정보 제국 자료를 각각 직접 열어볼 수 있습니다.</p>
+          <ol class="prompt-list">
+            <li>필요한 자료만 바로 다시 보기</li>
+            <li>발표·복습용 개별 링크</li>
+          </ol>
+          <div class="file-actions">
+            <a class="link-btn" href="#week5">내려가기</a>
+          </div>
+        </article>
+
+        <article id="assignment" class="file-card">
+          <div class="step-no">3</div>
           <div class="file-meta">
             <span class="tag assign">Assignment</span>
-            <span class="pill">Standalone HTML</span>
+            <span class="pill">제출 필수</span>
           </div>
           <h3>Walking Ethnography</h3>
-          <p>도시 산책 민속지 과제 안내 페이지입니다. 세 논문 예시와 Extra Credit 계획서 기준까지 포함합니다.</p>
+          <p>도시 산책 민속지 과제 안내 페이지입니다. 제출 형식, 예시, Extra Credit 계획서 기준을 모두 확인할 수 있습니다.</p>
           <ol class="prompt-list">
-            <li>이미지 3장이 HTML에 직접 임베드된 단일 파일</li>
-            <li>학생 공지용 링크로 바로 사용 가능</li>
+            <li>사진 포함 에세이 제출 기준 확인</li>
+            <li>추가 점수 계획서 규칙 확인</li>
           </ol>
           <div class="file-actions">
             <a class="link-btn" href="./W05_walking_ethnography_assignment.html">열기</a>
@@ -599,11 +620,11 @@ body::before{
 
     <section id="week3" class="section">
       <div class="section-head">
-        <h2>Week 3 Theory Cluster</h2>
-        <p>이론 선택, 천문학적 체계, 초대칭 논쟁을 묶어 사고의 기준과 과학적 설득력을 비교하는 자료들입니다.</p>
+        <h2>이전 자료: Week 3</h2>
+        <p>이론 선택, 천문학 체계, 초대칭 논쟁을 다시 보고 싶은 학생들을 위한 자료입니다.</p>
       </div>
       <div class="grid cols-2">
-        <article class="file-card">
+        <article class="file-card muted-card">
           <div class="file-meta">
             <span class="tag week3">Week 3</span>
             <span class="pill">Interactive</span>
@@ -615,7 +636,7 @@ body::before{
           </div>
         </article>
 
-        <article class="file-card">
+        <article class="file-card muted-card">
           <div class="file-meta">
             <span class="tag week3">Week 3</span>
             <span class="pill">Visual essay</span>
@@ -627,7 +648,7 @@ body::before{
           </div>
         </article>
 
-        <article class="file-card">
+        <article class="file-card muted-card">
           <div class="file-meta">
             <span class="tag week3">Week 3</span>
             <span class="pill">Wrap-up</span>
@@ -639,7 +660,7 @@ body::before{
           </div>
         </article>
 
-        <article class="file-card">
+        <article class="file-card muted-card">
           <div class="file-meta">
             <span class="tag week3">Week 3</span>
             <span class="pill">Explainer</span>
@@ -655,14 +676,15 @@ body::before{
 
     <section id="week5" class="section">
       <div class="section-head">
-        <h2>Week 5 Newton, Tides, Empire</h2>
-        <p>뉴턴의 지식 생산, 조석 이론의 수정, 통킹만의 지역 사례를 연결해 과학 이론과 관측 네트워크를 함께 읽는 묶음입니다.</p>
+        <h2>이번 주 자료: Week 5</h2>
+        <p>아래 순서대로 보면 이번 주 수업 흐름을 자연스럽게 따라갈 수 있습니다.</p>
       </div>
       <div class="grid cols-2">
         <article class="file-card">
+          <div class="step-no">1</div>
           <div class="file-meta">
             <span class="tag week5">Week 5</span>
-            <span class="pill">Sequence opener</span>
+            <span class="pill">먼저 보기</span>
           </div>
           <h3>통킹만의 수수께끼</h3>
           <p>`tonkin_tides.html`은 지역적 조석 사례를 통해 실제 자연현상이 얼마나 복합적인지 보여주는 시작점입니다.</p>
@@ -672,9 +694,10 @@ body::before{
         </article>
 
         <article class="file-card">
+          <div class="step-no">2</div>
           <div class="file-meta">
             <span class="tag week5">Week 5</span>
-            <span class="pill">Comparison</span>
+            <span class="pill">비교 읽기</span>
           </div>
           <h3>조석 이론 비교</h3>
           <p>`tides_comparison.html`은 뉴턴의 설명과 현대적 설명을 나란히 두고, 왜 이론 수정이 필요했는지 비교하게 만듭니다.</p>
@@ -684,9 +707,10 @@ body::before{
         </article>
 
         <article class="file-card">
+          <div class="step-no">3</div>
           <div class="file-meta">
             <span class="tag week5">Week 5</span>
-            <span class="pill">Network lens</span>
+            <span class="pill">확장 읽기</span>
           </div>
           <h3>뉴턴의 정보 제국</h3>
           <p>`newton_network.html`은 프린키피아의 지식이 관측자, 중개자, 제국적 정보망 속에서 형성됐다는 점을 보여주는 자료입니다.</p>
@@ -696,9 +720,10 @@ body::before{
         </article>
 
         <article class="file-card">
+          <div class="step-no">4</div>
           <div class="file-meta">
             <span class="tag assign">Week 5 Assignment</span>
-            <span class="pill">Field writing</span>
+            <span class="pill">제출 확인</span>
           </div>
           <h3>Walking Ethnography</h3>
           <p>`W05_walking_ethnography_assignment.html`은 현장 관찰 과제 안내 페이지로, 세 논문 예시와 추가 점수 계획서 규칙까지 포함합니다.</p>
@@ -709,31 +734,31 @@ body::before{
       </div>
     </section>
 
-    <section id="supplement" class="section">
+    <section id="archive" class="section">
       <div class="section-head">
-        <h2>Supplement &amp; Experimental</h2>
-        <p>보조 설명용 파일과 구현 실험용 파일도 허브에서 바로 접근할 수 있게 남겨두었습니다.</p>
+        <h2>보조 자료</h2>
+        <p>필수 순서 바깥에 있는 보조 설명 자료입니다. 필요할 때만 열어보면 됩니다.</p>
       </div>
       <div class="grid cols-2">
-        <article class="file-card">
+        <article class="file-card muted-card">
           <div class="file-meta">
-            <span class="tag exp">Experimental</span>
-            <span class="pill">React/Babel wrapper</span>
+            <span class="tag exp">Supplement</span>
+            <span class="pill">대체 버전</span>
           </div>
-          <h3>Explainer 2 Wrapper</h3>
-          <p>`W03_supersymmetry_Explainer_2.html`은 별도 JS 파일을 불러오는 래퍼 페이지입니다. 실험 중인 대체 버전으로 보관하기 좋습니다.</p>
+          <h3>초대칭 설명 자료 2</h3>
+          <p>`W03_supersymmetry_Explainer_2.html`은 별도 JS 파일을 불러오는 대체 설명 페이지입니다.</p>
           <div class="file-actions">
             <a class="link-btn" href="./W03_supersymmetry_Explainer_2.html">열기</a>
           </div>
         </article>
 
-        <article class="file-card">
+        <article class="file-card muted-card">
           <div class="file-meta">
-            <span class="tag exp">Dependency</span>
-            <span class="pill">JavaScript source</span>
+            <span class="tag exp">Supplement</span>
+            <span class="pill">스크립트 연결</span>
           </div>
-          <h3>Explainer 2 Script</h3>
-          <p>`supersymmetry_explainer_2.js`는 위 대체 초대칭 설명 페이지가 의존하는 스크립트 파일입니다. 직접 열리는 페이지는 아니지만 레포 구조상 연결 관계를 남겨두었습니다.</p>
+          <h3>보조 스크립트 연결 페이지</h3>
+          <p>초대칭 설명 자료 2와 연결된 스크립트가 필요한 경우 위 페이지로 들어가면 됩니다.</p>
           <div class="file-actions">
             <a class="link-btn" href="./W03_supersymmetry_Explainer_2.html">관련 페이지 열기</a>
           </div>
@@ -741,26 +766,8 @@ body::before{
       </div>
 
       <div class="paper-card foot">
-        <div class="section-kicker">Repo Snapshot</div>
-        <div class="repo-map">
-          <div class="map-box">
-            <div class="n">11</div>
-            <div class="l">HTML entry pages</div>
-          </div>
-          <div class="map-box">
-            <div class="n">2</div>
-            <div class="l">Week-level hubs</div>
-          </div>
-          <div class="map-box">
-            <div class="n">1</div>
-            <div class="l">Standalone assignment</div>
-          </div>
-          <div class="map-box">
-            <div class="n">1</div>
-            <div class="l">JS dependency file</div>
-          </div>
-        </div>
-        <p>이제 GitHub Pages에서 루트 `index.html`은 전체 강의 자료 허브로 보이고, `W05_index.html`은 별도의 주차 허브 역할을 하게 됩니다.</p>
+        <div class="section-kicker">Tip</div>
+        <p>학생 기준으로는 <strong>이번 주 전체 보기 → 개별 자료 → 과제</strong> 순서만 기억하면 충분합니다. 이전 자료와 보조 자료는 복습이 필요할 때만 열면 됩니다.</p>
       </div>
     </section>
   </main>
