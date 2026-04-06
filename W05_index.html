@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ST&amp;C Week 5 Hub | Science, Technology and Civilization</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap');
+
+:root {
+  --paper: #f5efe4;
+  --paper-2: #ece0ca;
+  --ink: #1d1b18;
+  --muted: #665e56;
+  --line: rgba(29, 27, 24, 0.14);
+  --panel: rgba(255, 250, 244, 0.78);
+  --hero: linear-gradient(140deg, #1f2b2a 0%, #23383b 26%, #6e4a2c 72%, #d8b46b 100%);
+  --bronze: #8d5e36;
+  --teal: #1d5d64;
+  --wine: #6e2e2a;
+  --gold: #b28b45;
+  --shadow: 0 24px 60px rgba(38, 24, 12, 0.16);
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(178, 139, 69, 0.16), transparent 30%),
+    linear-gradient(180deg, #f7f0e5 0%, #efe5d3 100%);
+  color: var(--ink);
+  font-family: 'Source Sans 3', sans-serif;
+  line-height: 1.6;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.18;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cg fill='none' stroke='%239c7c45' stroke-opacity='0.17'%3E%3Cpath d='M0 90h180'/%3E%3Cpath d='M90 0v180'/%3E%3Cpath d='M0 0l180 180'/%3E%3Cpath d='M180 0L0 180'/%3E%3C/g%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(14px);
+  background: rgba(247, 240, 229, 0.82);
+  border-bottom: 1px solid rgba(29, 27, 24, 0.08);
+}
+
+.topbar-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 12px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.brand-mark {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bronze);
+  font-weight: 700;
+}
+
+.brand-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.top-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.nav-btn,
+.link-btn {
+  appearance: none;
+  border: 1px solid rgba(29, 27, 24, 0.12);
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 9px 14px;
+  font: inherit;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.nav-btn:hover,
+.nav-btn.active,
+.link-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(29, 27, 24, 0.28);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.hero {
+  max-width: 1180px;
+  margin: 26px auto 0;
+  padding: 0 22px;
+}
+
+.hero-panel {
+  background: var(--hero);
+  color: #f8f1e5;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+.hero-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(110deg, rgba(255,255,255,0.1) 0%, transparent 30%),
+    radial-gradient(circle at 80% 20%, rgba(255, 228, 181, 0.22), transparent 25%);
+  pointer-events: none;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+  gap: 28px;
+  padding: 42px;
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(248, 241, 229, 0.72);
+  margin-bottom: 16px;
+}
+
+.hero h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(42px, 7vw, 72px);
+  line-height: 0.95;
+  margin: 0 0 16px;
+  font-weight: 600;
+}
+
+.hero p {
+  max-width: 720px;
+  margin: 0;
+  font-size: 18px;
+  color: rgba(248, 241, 229, 0.86);
+}
+
+.hero-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.meta-chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 13px;
+}
+
+.hero-side {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+.side-card {
+  background: rgba(18, 15, 12, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 18px 18px 16px;
+}
+
+.side-card-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: rgba(255, 241, 225, 0.72);
+  margin-bottom: 8px;
+}
+
+.side-card strong {
+  display: block;
+  font-size: 19px;
+  margin-bottom: 8px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+}
+
+.side-card p {
+  font-size: 14px;
+  color: rgba(255, 241, 225, 0.82);
+}
+
+.main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 34px 22px 72px;
+}
+
+.intro-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.paper-card {
+  background: var(--panel);
+  border: 1px solid rgba(29, 27, 24, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(45, 27, 8, 0.08);
+  padding: 24px;
+}
+
+.section-kicker {
+  color: var(--bronze);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.paper-card h2 {
+  margin: 0 0 14px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 40px;
+  line-height: 0.95;
+  font-weight: 600;
+}
+
+.paper-card p {
+  margin: 0;
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.summary-list {
+  display: grid;
+  gap: 12px;
+}
+
+.summary-item {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.summary-item:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.summary-item strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 15px;
+}
+
+.summary-item span {
+  display: block;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.path-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.path-card {
+  background: rgba(255, 251, 245, 0.88);
+  border: 1px solid rgba(29, 27, 24, 0.1);
+  border-radius: 30px;
+  padding: 26px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.path-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.path-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+
+.path-tag::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.tag-network { color: var(--bronze); }
+.tag-tides { color: var(--teal); }
+.tag-tonkin { color: var(--wine); }
+.tag-assignment { color: var(--gold); }
+
+.path-card h3 {
+  margin: 0 0 12px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(30px, 4vw, 42px);
+  line-height: 0.95;
+  font-weight: 600;
+}
+
+.path-card p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.prompt-list {
+  margin: 0 0 20px;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.prompt-list li + li {
+  margin-top: 8px;
+}
+
+.path-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.foot {
+  margin-top: 28px;
+  padding: 22px 24px 0;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+@media (max-width: 920px) {
+  .hero-grid,
+  .intro-grid,
+  .path-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar-inner,
+  .hero,
+  .main {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .hero-grid {
+    padding: 28px 22px;
+  }
+
+  .hero h1 {
+    line-height: 1;
+  }
+
+  .paper-card,
+  .path-card {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-mark">ST&amp;C</span>
+        <span class="brand-title">Science, Technology and Civilization · Week 5 Hub</span>
+      </div>
+      <div class="top-links">
+        <a class="nav-btn" href="./index.html">Hub</a>
+        <a class="nav-btn" href="./tonkin_tides.html">1. Tonkin</a>
+        <a class="nav-btn" href="./tides_comparison.html">2. Tides</a>
+        <a class="nav-btn" href="./newton_network.html">3. Network</a>
+        <a class="nav-btn" href="./W05_walking_ethnography_assignment.html">4. Assignment</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="hero-panel">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">Week 5 Learning Hub</div>
+          <h1>ST&amp;C Week 5</h1>
+          <p>이번 주에는 뉴턴의 과학이 어떻게 제국적 정보망 속에서 만들어졌는지, 조석 이론이 어디서 수정되어야 했는지, 그리고 통킹만 사례가 왜 자연현상의 복잡성을 보여주는지를 함께 살펴봅니다.</p>
+          <div class="hero-meta">
+            <span class="meta-chip">Interactive Lesson</span>
+            <span class="meta-chip">Newton, Tides, Empire</span>
+            <span class="meta-chip">Science Technology and Civilization</span>
+          </div>
+        </div>
+
+        <div class="hero-side">
+          <div class="side-card">
+            <div class="side-card-label">Theme</div>
+            <strong>데이터는 중립적이지 않았다</strong>
+            <p>관측은 사람과 제국의 네트워크에 묶여 있었고, 이론은 그 네트워크를 통해 선택되고 정당화되었습니다.</p>
+          </div>
+          <div class="side-card">
+            <div class="side-card-label">Focus</div>
+            <strong>세 가지 질문으로 읽기</strong>
+            <p>누가 데이터를 만들었는가, 어떤 이론이 수정되었는가, 실제 자연현상은 왜 더 복잡한가를 순서대로 따라가며 보세요.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="intro-grid">
+      <div class="paper-card">
+        <div class="section-kicker">Classroom Framing</div>
+        <h2>One week, three lenses</h2>
+        <p>세 시각화는 각각 다른 주제를 다루지만, 함께 보면 과학지식이 관측 네트워크, 이론적 수정, 지역적 사례 분석을 통해 형성된다는 점이 더 선명해집니다. 학생들은 각 모듈을 비교하면서 과학이 단순한 발견이 아니라 선택과 해석의 과정이기도 하다는 점을 읽어낼 수 있습니다.</p>
+      </div>
+
+      <div class="paper-card">
+        <div class="section-kicker">Reading Order</div>
+        <div class="summary-list">
+          <div class="summary-item">
+            <strong>1. Tonkin Tides</strong>
+            <span>통킹만의 복잡한 조석을 통해 지역적 사례가 자연현상을 얼마나 복합적으로 만드는지 먼저 살펴봅니다.</span>
+          </div>
+          <div class="summary-item">
+            <strong>2. Tides Comparison</strong>
+            <span>그다음 뉴턴의 조석 설명과 현대적 설명을 비교하며 이론 수정의 필요성을 확인합니다.</span>
+          </div>
+          <div class="summary-item">
+            <strong>3. Newton Network</strong>
+            <span>마지막으로 이런 지식이 어떤 관측 네트워크와 신뢰 체계 속에서 만들어졌는지 확장해서 봅니다.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="path-grid">
+      <article class="path-card">
+        <div class="path-meta">
+          <span class="path-tag tag-tonkin">Module 1</span>
+          <span class="path-tag tag-tonkin">Wave Interference</span>
+        </div>
+        <h3>The Tonkin Gulf Puzzle</h3>
+        <p>통킹만 사례를 통해 실제 자연현상이 단일한 법칙 하나로는 설명되지 않으며, 지역적 조건과 파동 간섭이 중요하다는 점을 보여줍니다.</p>
+        <ol class="prompt-list">
+          <li>왜 같은 조석 현상도 지역에 따라 전혀 다르게 나타나는가?</li>
+          <li>이 사례는 보편 이론과 지역 사례의 관계를 어떻게 다시 보게 하는가?</li>
+        </ol>
+        <div class="path-actions">
+          <a class="link-btn" href="./tonkin_tides.html">들어가기</a>
+        </div>
+      </article>
+
+      <article class="path-card">
+        <div class="path-meta">
+          <span class="path-tag tag-tides">Module 2</span>
+          <span class="path-tag tag-tides">Theory vs Reality</span>
+        </div>
+        <h3>Tidal Theory Comparison</h3>
+        <p>뉴턴의 조석 설명과 더 정확한 현대적 설명을 나란히 보면서, 왜 기존 이론이 수정되어야 했는지 비교할 수 있습니다.</p>
+        <ol class="prompt-list">
+          <li>뉴턴의 설명은 어느 점에서 설득력 있었고, 어느 점에서 부족했는가?</li>
+          <li>힘의 방향을 어떻게 이해하느냐가 조석 해석을 어떻게 바꾸는가?</li>
+        </ol>
+        <div class="path-actions">
+          <a class="link-btn" href="./tides_comparison.html">들어가기</a>
+        </div>
+      </article>
+
+      <article class="path-card">
+        <div class="path-meta">
+          <span class="path-tag tag-network">Module 3</span>
+          <span class="path-tag tag-network">Information Empire</span>
+        </div>
+        <h3>Newton's Information Empire</h3>
+        <p>프린키피아의 지식이 개인의 천재성만이 아니라 관측자, 중개자, 식민지 공간의 네트워크 속에서 어떻게 만들어졌는지 보여줍니다.</p>
+        <ol class="prompt-list">
+          <li>누가 데이터를 보냈고, 누가 그 데이터를 믿을 만하다고 판단했는가?</li>
+          <li>뉴턴은 왜 어떤 관측은 채택하고 어떤 관측은 배제했는가?</li>
+        </ol>
+        <div class="path-actions">
+          <a class="link-btn" href="./newton_network.html">들어가기</a>
+        </div>
+      </article>
+
+      <article class="path-card">
+        <div class="path-meta">
+          <span class="path-tag tag-assignment">Module 4</span>
+          <span class="path-tag tag-assignment">Field Assignment</span>
+        </div>
+        <h3>Walking Ethnography</h3>
+        <p>도시를 물질성, 유지보수, 시간의 층위, 개인적 감각으로 읽는 현장 과제 안내입니다. 세 논문 예시와 Extra Credit 계획서 기준까지 한 번에 볼 수 있습니다.</p>
+        <ol class="prompt-list">
+          <li>학생들은 도시의 어떤 흔적을 찍고 어떻게 해석해야 하는가?</li>
+          <li>계획서 200-300단어와 참고문헌 3개 기준은 어떻게 안내할 것인가?</li>
+        </ol>
+        <div class="path-actions">
+          <a class="link-btn" href="./W05_walking_ethnography_assignment.html">들어가기</a>
+        </div>
+      </article>
+    </section>
+
+    <section class="paper-card foot">
+      <div class="section-kicker">Teaching Prompt</div>
+      <p>학생들과 볼 때는 각 모듈에서 어떤 데이터가 신뢰받았는지, 어떤 설명이 현실과 어긋났는지, 그리고 지역 사례가 전체 이론을 어떻게 흔드는지를 비교해 보게 하면 좋습니다.</p>
+    </section>
+  </main>
+</div>
+</body>
+</html>
