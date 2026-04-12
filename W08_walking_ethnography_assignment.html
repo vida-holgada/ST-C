@@ -313,6 +313,7 @@ img{display:block;max-width:100%}
 .gallery a{
   display:block;
   text-decoration:none;
+  cursor:zoom-in;
 }
 
 .gallery img{
@@ -345,6 +346,11 @@ img{display:block;max-width:100%}
   color:var(--muted);
   font-size:11px;
   line-height:1.7;
+}
+
+.excerpt figure a{
+  display:block;
+  cursor:zoom-in;
 }
 
 .source-actions{
@@ -475,6 +481,58 @@ img{display:block;max-width:100%}
   gap:18px;
 }
 
+.book-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+
+.book-card{
+  display:grid;
+  grid-template-columns:132px minmax(0,1fr);
+  gap:18px;
+  align-items:start;
+  background:var(--paper);
+  border:1px solid var(--rule);
+  padding:18px;
+}
+
+.book-cover{
+  display:block;
+  text-decoration:none;
+  cursor:zoom-in;
+}
+
+.book-cover img{
+  width:100%;
+  border:1px solid var(--rule);
+  background:var(--bg2);
+}
+
+.book-meta{
+  display:grid;
+  gap:8px;
+}
+
+.book-meta h3{
+  font-size:19px;
+  line-height:1.25;
+}
+
+.book-author{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+.book-meta p{
+  color:var(--text);
+  font-size:14px;
+  line-height:1.76;
+}
+
 .panel{
   background:var(--paper);
   border:1px solid var(--rule);
@@ -559,15 +617,85 @@ footer{
   flex-wrap:wrap;
 }
 
+.lightbox{
+  position:fixed;
+  inset:0;
+  z-index:120;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:28px;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .18s ease, visibility .18s ease;
+}
+
+.lightbox.open{
+  opacity:1;
+  visibility:visible;
+}
+
+.lightbox-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(17,13,10,.82);
+}
+
+.lightbox-inner{
+  position:relative;
+  z-index:1;
+  max-width:min(1200px,92vw);
+  max-height:88vh;
+  display:grid;
+  gap:10px;
+  justify-items:center;
+}
+
+.lightbox img{
+  max-width:min(1200px,92vw);
+  max-height:78vh;
+  width:auto;
+  height:auto;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 24px 72px rgba(0,0,0,.34);
+  background:#fff;
+}
+
+.lightbox-caption{
+  max-width:min(980px,86vw);
+  color:rgba(247,241,231,.82);
+  font-size:13px;
+  line-height:1.7;
+  text-align:center;
+}
+
+.lightbox-close{
+  position:absolute;
+  top:18px;
+  right:18px;
+  z-index:2;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(17,13,10,.72);
+  color:#fff;
+  padding:8px 12px;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+
 @media (max-width:980px){
   .cover{padding:72px 24px 46px}
   .cover-grid,
   .quick-grid,
   .reading,
-  .assign-grid{grid-template-columns:1fr}
+  .assign-grid,
+  .book-grid{grid-template-columns:1fr}
   .reading-main{border-right:none;border-bottom:1px solid var(--rule)}
   .gallery{grid-template-columns:1fr}
   .section,footer{padding-left:24px;padding-right:24px}
+  .book-card{grid-template-columns:110px minmax(0,1fr)}
 }
 </style>
 </head>
@@ -603,6 +731,7 @@ footer{
   <a href="#milligan">Milligan</a>
   <a href="#folarin">Folarin</a>
   <a href="#writing-rules">작성 원칙</a>
+  <a href="#references">참고 문헌</a>
   <a href="#submit">제출 안내</a>
 </nav>
 
@@ -624,12 +753,12 @@ footer{
       <article class="quick-card">
         <div class="n">02</div>
         <h3>무엇을 쓰나</h3>
-        <p>장소 묘사만 하지 말고, 그 장면이 기술·유지보수·시간·권력·감각과 어떻게 연결되는지 써야 합니다.</p>
+        <p>장소 묘사만 하지 말고, 그 장면이 과학기술의 심층, 곧 유지보수·시간·권력·감각의 층위와 어떻게 연결되는지 써야 합니다.</p>
       </article>
       <article class="quick-card">
         <div class="n">03</div>
         <h3>어떤 톤인가</h3>
-        <p>이론을 길게 요약하기보다, 읽은 개념을 현장에 적용해 자기 관찰을 해석하는 쪽이 더 중요합니다.</p>
+        <p>수업에서 다룬 과학기술의 역사적·사회적 측면을 떠올리며, 관찰한 장면이 무엇을 드러내는지 해석하는 쪽이 더 중요합니다.</p>
       </article>
       <article class="quick-card">
         <div class="n">04</div>
@@ -963,6 +1092,90 @@ footer{
     </div>
   </section>
 
+  <section id="references" class="section">
+    <div class="section-head">
+      <div>
+        <div class="kicker">Suggested Reading</div>
+        <h2 class="section-title">참고 문헌 추천</h2>
+      </div>
+      <p class="section-sub">아래 책들은 과제를 쓸 때 장소를 단순히 묘사하는 데서 멈추지 않고, 과학기술의 역사적·사회적 층위와 연결해 읽는 데 도움을 줍니다.</p>
+    </div>
+
+    <div class="book-grid">
+      <article class="book-card">
+        <a class="book-cover" href="./assets/w08-books/machine_criticism_essays.jpg" data-caption="기계비평들 표지">
+          <img src="./assets/w08-books/machine_criticism_essays.jpg" alt="기계비평들 표지">
+        </a>
+        <div class="book-meta">
+          <h3>기계비평들</h3>
+          <div class="book-author">전치형 외</div>
+          <p>고장, 통신장애, 사회위기 같은 장면을 통해 기술을 둘러싼 일상적 권력과 인프라의 취약성을 읽는 데 유용합니다.</p>
+          <a class="source-link" href="https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=183865420" target="_blank" rel="noreferrer">도서 링크</a>
+        </div>
+      </article>
+
+      <article class="book-card">
+        <a class="book-cover" href="./assets/w08-books/machine_criticism.jpg" data-caption="기계비평 표지">
+          <img src="./assets/w08-books/machine_criticism.jpg" alt="기계비평 표지">
+        </a>
+        <div class="book-meta">
+          <h3>기계비평</h3>
+          <div class="book-author">이영준</div>
+          <p>열차, 선박, 항공기 같은 기계를 매개로 속도, 이동, 근대적 감각이 어떻게 구성되는지 읽어볼 수 있는 책입니다.</p>
+          <a class="source-link" href="https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=857960" target="_blank" rel="noreferrer">도서 링크</a>
+        </div>
+      </article>
+
+      <article class="book-card">
+        <a class="book-cover" href="./assets/w08-books/ethics_of_invention.jpg" data-caption="테크놀로지의 정치 표지">
+          <img src="./assets/w08-books/ethics_of_invention.jpg" alt="테크놀로지의 정치 표지">
+        </a>
+        <div class="book-meta">
+          <h3>테크놀로지의 정치</h3>
+          <div class="book-author">실라 재서노프</div>
+          <p>과학기술이 사회 바깥의 중립적 도구가 아니라, 제도와 윤리, 시민성, 정책과 얽혀 있다는 점을 짚어 줍니다.</p>
+          <a class="source-link" href="https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=286124367" target="_blank" rel="noreferrer">도서 링크</a>
+        </div>
+      </article>
+
+      <article class="book-card">
+        <a class="book-cover" href="./assets/w08-books/breathing_community.jpg" data-caption="호흡공동체 표지">
+          <img src="./assets/w08-books/breathing_community.jpg" alt="호흡공동체 표지">
+        </a>
+        <div class="book-meta">
+          <h3>호흡공동체</h3>
+          <div class="book-author">천희정 · 김성은 · 김희원 · 공미정</div>
+          <p>미세먼지, 감염병, 폭염처럼 몸으로 먼저 느끼는 환경 문제를 과학과 정치의 문제로 연결해 생각하게 해 줍니다.</p>
+          <a class="source-link" href="https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=274331596" target="_blank" rel="noreferrer">도서 링크</a>
+        </div>
+      </article>
+
+      <article class="book-card">
+        <a class="book-cover" href="./assets/w08-books/sustaining_force.jpg" data-caption="지탱하는 힘 표지">
+          <img src="./assets/w08-books/sustaining_force.jpg" alt="지탱하는 힘 표지">
+        </a>
+        <div class="book-meta">
+          <h3>지탱하는 힘</h3>
+          <div class="book-author">리 빈셀 · 앤드루 L. 러셀</div>
+          <p>혁신보다 유지보수의 가치를 전면에 놓고, 세상을 실제로 버티게 하는 사람들과 노동을 보게 하는 책입니다.</p>
+          <a class="source-link" href="https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=388584271" target="_blank" rel="noreferrer">도서 링크</a>
+        </div>
+      </article>
+
+      <article class="book-card">
+        <a class="book-cover" href="./assets/w08-books/what_is_media_archaeology.jpg" data-caption="미디어고고학이란 무엇인가? 표지">
+          <img src="./assets/w08-books/what_is_media_archaeology.jpg" alt="미디어고고학이란 무엇인가 표지">
+        </a>
+        <div class="book-meta">
+          <h3>미디어고고학이란 무엇인가?</h3>
+          <div class="book-author">유시 파리카</div>
+          <p>낡은 장치, 잔해, 비가시적 매체 환경을 따라가며 지금의 기술이 어떤 역사적 층위를 갖는지 읽는 데 도움이 됩니다.</p>
+          <a class="source-link" href="https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=388496560" target="_blank" rel="noreferrer">도서 링크</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
   <section id="submit" class="section">
     <div class="section-head">
       <div>
@@ -1029,7 +1242,7 @@ footer{
         <tr>
           <td>C</td>
           <td>24</td>
-          <td>사진과 글은 연결되지만, 이론적 해석보다 감상문이나 산책기 비중이 높다.</td>
+          <td>사진과 글은 연결되지만, 역사적/사회적 해석보다 감상문이나 산책기 비중이 높다.</td>
         </tr>
         <tr>
           <td>D</td>
@@ -1050,6 +1263,62 @@ footer{
   <span>W08 Walking Ethnography · ST&amp;C</span>
   <span>세 글을 읽고, 도시를 걷고, 자기 관찰로 쓰기</span>
 </footer>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <div class="lightbox-backdrop"></div>
+  <button class="lightbox-close" type="button" aria-label="이미지 닫기">close</button>
+  <div class="lightbox-inner">
+    <img id="lightbox-image" alt="">
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+  </div>
+</div>
+
+<script>
+const lightbox = document.getElementById('lightbox');
+const lightboxImage = document.getElementById('lightbox-image');
+const lightboxCaption = document.getElementById('lightbox-caption');
+const closeLightboxButton = lightbox.querySelector('.lightbox-close');
+const backdrop = lightbox.querySelector('.lightbox-backdrop');
+
+function openLightbox(src, alt, caption) {
+  lightboxImage.src = src;
+  lightboxImage.alt = alt || '';
+  lightboxCaption.textContent = caption || '';
+  lightbox.classList.add('open');
+  lightbox.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('open');
+  lightbox.setAttribute('aria-hidden', 'true');
+  lightboxImage.src = '';
+  lightboxCaption.textContent = '';
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('a[href$=".jpg"], a[href$=".jpeg"], a[href$=".png"], a[href$=".webp"]').forEach((link) => {
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    const figure = link.closest('figure');
+    const captionNode = figure ? figure.querySelector('.caption') : null;
+    const card = link.closest('.book-card');
+    const titleNode = card ? card.querySelector('h3') : null;
+    const caption = link.dataset.caption || (captionNode ? captionNode.textContent.trim() : '') || (titleNode ? titleNode.textContent.trim() : '');
+    const img = link.querySelector('img');
+    openLightbox(link.getAttribute('href'), img ? img.getAttribute('alt') : '', caption);
+  });
+});
+
+closeLightboxButton.addEventListener('click', closeLightbox);
+backdrop.addEventListener('click', closeLightbox);
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && lightbox.classList.contains('open')) {
+    closeLightbox();
+  }
+});
+</script>
 
 </body>
 </html>
