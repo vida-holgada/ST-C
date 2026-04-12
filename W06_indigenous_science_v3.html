@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>원주민 과학 — 작동하는 방법론을 직접 보세요</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06060c;
+  --card: #0c0c16;
+  --inca: #d4a04a;
+  --inca-dim: rgba(212,160,74,0.15);
+  --poly: #2a9d8f;
+  --poly-dim: rgba(42,157,143,0.12);
+  --chuk: #6c8ebf;
+  --chuk-dim: rgba(108,142,191,0.12);
+  --tupaia: #c4956a;
+  --tupaia-dim: rgba(196,149,106,0.12);
+  --txt: #e2ded6;
+  --txt2: #8a8580;
+  --txt3: #4a4540;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--txt);font-family:'Noto Sans KR',sans-serif;font-weight:300;overflow-x:hidden;}
+.nav{position:sticky;top:0;z-index:100;display:flex;gap:2px;padding:10px 12px;background:rgba(6,6,12,0.94);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.04);flex-wrap:wrap;}
+.nav button{flex:1;padding:10px 6px;border:none;background:transparent;color:var(--txt2);font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:400;cursor:pointer;border-radius:8px;transition:all 0.3s;min-width:0;}
+.nav button.on{font-weight:500;}
+.nav button[data-s="0"].on{background:var(--inca-dim);color:var(--inca);}
+.nav button[data-s="1"].on{background:var(--poly-dim);color:var(--poly);}
+.nav button[data-s="2"].on{background:var(--tupaia-dim);color:var(--tupaia);}
+.nav button[data-s="3"].on{background:var(--chuk-dim);color:var(--chuk);}
+.panel{display:none;min-height:calc(100vh - 60px);}
+.panel.on{display:block;}
+.wrap{max-width:860px;margin:0 auto;padding:2rem 1.5rem;}
+h2{font-family:'Noto Serif KR',serif;font-weight:700;font-size:clamp(1.3rem,3.5vw,1.9rem);margin-bottom:0.4rem;}
+.sub{color:var(--txt2);font-size:0.88rem;margin-bottom:2rem;line-height:1.7;}
+.explain{background:var(--card);border-radius:12px;padding:1.5rem;margin:1.5rem 0;border:1px solid rgba(255,255,255,0.04);}
+.explain h3{font-weight:500;font-size:1rem;margin-bottom:0.5rem;}
+.explain p{font-size:0.86rem;color:var(--txt2);line-height:1.8;}
+.explain strong{color:var(--txt);font-weight:500;}
+.canvas-wrap{position:relative;width:100%;border-radius:16px;overflow:hidden;margin:1.5rem auto;background:#08080f;border:1px solid rgba(255,255,255,0.04);max-width:900px;}
+canvas{display:block;width:100%;height:auto;cursor:pointer;}
+.controls{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.02);border-radius:0 0 16px 16px;flex-wrap:wrap;}
+.controls label{font-size:11px;color:var(--txt2);white-space:nowrap;}
+.controls input[type=range]{flex:1;min-width:80px;}
+.controls .val{font-size:12px;font-weight:500;min-width:50px;text-align:right;}
+.controls button{padding:5px 14px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--txt);font-family:'Noto Sans KR',sans-serif;font-size:11px;border-radius:6px;cursor:pointer;transition:background 0.2s;white-space:nowrap;}
+.controls button:hover{background:rgba(255,255,255,0.06);}
+.controls button.active{background:rgba(255,255,255,0.1);}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:rgba(255,255,255,0.04);border-radius:12px;overflow:hidden;margin:1.5rem 0;}
+.summary-cell{background:var(--card);padding:1.2rem 1.4rem;}
+.summary-cell .sc-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--txt3);margin-bottom:6px;}
+.summary-cell .sc-title{font-weight:500;font-size:0.95rem;margin-bottom:4px;}
+.summary-cell p{font-size:0.82rem;color:var(--txt2);line-height:1.7;}
+.steps{display:flex;flex-direction:column;gap:1px;background:rgba(255,255,255,0.04);border-radius:12px;overflow:hidden;margin:1.5rem 0;}
+.step{display:grid;grid-template-columns:48px 1fr;background:var(--card);transition:background 0.3s;}
+.step:hover{background:rgba(255,255,255,0.03);}
+.step-num{display:flex;align-items:center;justify-content:center;font-family:'Noto Serif KR',serif;font-weight:700;font-size:1.1rem;opacity:0.3;}
+.step-content{padding:1rem 1.2rem;}
+.step-content h4{font-weight:500;font-size:0.9rem;margin-bottom:3px;}
+.step-content p{font-size:0.82rem;color:var(--txt2);line-height:1.7;}
+.instruction{text-align:center;padding:10px;font-size:12px;color:var(--txt3);background:rgba(255,255,255,0.01);border-radius:8px;margin:0.5rem 0;}
+@media(max-width:600px){
+  .nav button{font-size:10px;padding:8px 4px;}
+  .wrap{padding:1.5rem 1rem;}
+  .summary-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <button data-s="0" class="on" onclick="showPanel(0)">01 잉카 세케</button>
+  <button data-s="1" onclick="showPanel(1)">02 별길 항해</button>
+  <button data-s="2" onclick="showPanel(2)">03 투파이아 지도</button>
+  <button data-s="3" onclick="showPanel(3)">04 축치 북극</button>
+</nav>
+
+<!-- ============ PANEL 0: INCA ============ -->
+<div class="panel on" id="p0">
+  <div class="wrap">
+    <h2 style="color:var(--inca);">세케 체계: 태양이 선을 따라 움직인다</h2>
+    <p class="sub">슬라이더로 날짜를 바꾸면 태양이 수평선 위에서 어떤 세케 선과 정렬되는지 볼 수 있습니다. 동지(6월 21일)에 정렬이 딱 맞습니다.</p>
+  </div>
+  <div class="canvas-wrap">
+    <canvas id="c-inca" width="900" height="580"></canvas>
+    <div class="controls">
+      <label>날짜</label>
+      <input type="range" id="inca-day" min="0" max="364" value="172" style="accent-color:var(--inca);" oninput="incaDraw()">
+      <div class="val" id="inca-date" style="color:var(--inca);">6월 21일</div>
+      <button onclick="animateInca()" id="inca-play">▶ 1년 재생</button>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="explain">
+      <h3 style="color:var(--inca);">방법론 요약</h3>
+      <p><strong>41개의 세케 선</strong>이 쿠스코의 태양 신전에서 방사됩니다. 각 선 위에 <strong>328개의 성소(와카)</strong>가 배치되어 각각 달력의 하루를 나타냅니다. 동지에 태양이 특정 석조 기둥 뒤에서 떠오르면서 '인티 라이미(태양 축제)'가 시작됩니다. 라 콩다민이 1735년에 기준선을 팔 때, 원주민들은 이 수천 년 된 전통에 따라 완벽한 직선을 만들었습니다.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PANEL 1: STAR PATH ============ -->
+<div class="panel" id="p1">
+  <div class="wrap">
+    <h2 style="color:var(--poly);">별길 항해: 카누가 별을 따라간다</h2>
+    <p class="sub">"항해 시작"을 누르면 카누가 수평선의 별을 하나씩 따라가며 항해합니다. 섬에 가까워지면 파도 굴절이 나타납니다.</p>
+  </div>
+  <div class="canvas-wrap">
+    <canvas id="c-poly" width="900" height="550"></canvas>
+    <div class="controls">
+      <button onclick="startPolyVoyage()" id="poly-play" style="border-color:var(--poly);">▶ 항해 시작</button>
+      <button onclick="resetPoly()" style="border-color:var(--poly);">↺ 처음으로</button>
+      <div class="val" id="poly-status" style="color:var(--poly);">타히티에서 대기 중</div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="explain">
+      <h3 style="color:var(--poly);">방법론 요약</h3>
+      <p>나침반도, 지도도, 육분의도 없이 <strong>별길(아베이아)</strong>을 암기하여 항해합니다. 수평선 근처 별을 순서대로 따라가고, 별이 너무 높이 뜨면 다음 별로 전환합니다. 낮에는 정오의 돛대 그림자로 방향을 잡고, <strong>파도의 굴절 패턴</strong>을 읽어 보이지 않는 섬의 방향을 감지합니다.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PANEL 2: TUPAIA MAP ============ -->
+<div class="panel" id="p2">
+  <div class="wrap">
+    <h2 style="color:var(--tupaia);">투파이아 지도: 정오를 중심으로 한 항해 컴퓨터</h2>
+    <p class="sub">섬을 클릭하면 투파이아 지도의 작동 원리를 볼 수 있습니다 — 출발 섬에서 에아바테아(정오)까지 선을 긋고, 목적지까지 또 다른 선을 그으면 항해 방위가 나옵니다.</p>
+  </div>
+  <div class="canvas-wrap">
+    <canvas id="c-tupaia" width="900" height="700"></canvas>
+    <div class="controls">
+      <label>출발:</label>
+      <div class="val" id="tp-from" style="color:var(--tupaia);">—</div>
+      <label style="margin-left:8px;">도착:</label>
+      <div class="val" id="tp-to" style="color:var(--poly);">—</div>
+      <label style="margin-left:8px;">방위:</label>
+      <div class="val" id="tp-bearing" style="color:#ffc850;">—</div>
+      <button onclick="resetTupaia()" style="border-color:var(--tupaia);">↺ 초기화</button>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="instruction">☝ 첫 번째 클릭 = 출발 섬 &nbsp;|&nbsp; 두 번째 클릭 = 목적지 &nbsp;|&nbsp; 선 두 개의 각도 = 항해 방위</div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num" style="color:var(--tupaia);">1</div>
+        <div class="step-content">
+          <h4>현재 위치(출발 섬)를 찾는다</h4>
+          <p>지도에서 자신이 있는 섬을 확인합니다.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="color:var(--tupaia);">2</div>
+        <div class="step-content">
+          <h4>에아바테아(정오)까지 직선을 긋는다</h4>
+          <p>지도 중앙의 '에아바테아'는 정오를 의미합니다. 출발 섬에서 이 중심점까지 직선을 그립니다. 이것이 <strong>정오 기준선</strong>입니다.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="color:var(--tupaia);">3</div>
+        <div class="step-content">
+          <h4>목적지까지 두 번째 직선을 긋는다</h4>
+          <p>같은 출발점에서 목적지 섬까지 직선을 그립니다.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="color:var(--tupaia);">4</div>
+        <div class="step-content">
+          <h4>두 선의 각도 = 항해 방위</h4>
+          <p>정오에 돛대 그림자가 가리키는 방향이 "정오 기준선"입니다. 이 그림자로부터 계산된 각도만큼 틀면 목적지를 향하게 됩니다. <strong>바람과 해류 보정이 이미 포함</strong>되어 있습니다 — 섬 간 거리가 마일이 아니라 항해 시간을 나타내기 때문입니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="explain">
+      <h3 style="color:var(--tupaia);">왜 거리가 '정확하지 않은' 것처럼 보이는가?</h3>
+      <p>유럽 역사가들은 처음에 이 지도의 섬 간 거리가 실제와 다르다며 실망했습니다. 하지만 이것은 <strong>의도된 설계</strong>입니다. 투파이아는 절대 거리가 아니라 <strong>항해 시간</strong>을 표현한 것입니다. 바람과 해류 때문에 같은 두 섬 사이라도 가는 방향에 따라 걸리는 시간이 다릅니다. 비행기의 왕복 시간이 다른 것과 같은 원리입니다.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PANEL 3: CHUKCHI ============ -->
+<div class="panel" id="p3">
+  <div class="wrap">
+    <h2 style="color:var(--chuk);">북극의 태양: 계절에 따라 방향이 뒤집힌다</h2>
+    <p class="sub">슬라이더로 월을 바꾸면 태양의 일출·일몰 방향이 극적으로 변합니다. "눈보라 모드"로 사스트루기 체험도 가능합니다.</p>
+  </div>
+  <div class="canvas-wrap">
+    <canvas id="c-chuk" width="900" height="560"></canvas>
+    <div class="controls">
+      <label>월</label>
+      <input type="range" id="chuk-month" min="0" max="11" value="2" step="1" style="accent-color:var(--chuk);" oninput="chukDraw()">
+      <div class="val" id="chuk-monthname" style="color:var(--chuk);">3월</div>
+      <button onclick="animateChuk()" id="chuk-play">▶ 1년 재생</button>
+      <button onclick="toggleBlizzard()" id="bliz-btn">❄ 눈보라</button>
+    </div>
+  </div>
+  <div class="wrap">
+    <!-- CHUKCHI SEA NAVIGATION SUMMARY -->
+    <div class="explain">
+      <h3 style="color:var(--chuk);">축치족의 해상 위치 파악법 — 요약</h3>
+      <p>축치족은 베링 해협 일대의 혹독한 바다에서 <strong>세 가지 상호 보완적 체계</strong>를 활용하여 위치를 파악했습니다:</p>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-cell">
+        <div class="sc-label" style="color:var(--chuk);">체계 1</div>
+        <div class="sc-title">별자리 → 계절 파악</div>
+        <p>독수리자리(페기틀린)가 새벽에 보이면 겨울, 오리온이 남쪽으로 이동하면 봄이 옵니다. <strong>정확한 계절을 아는 것이 모든 항해의 전제 조건</strong>입니다 — 계절을 모르면 태양 방향을 오판합니다.</p>
+      </div>
+      <div class="summary-cell">
+        <div class="sc-label" style="color:var(--chuk);">체계 2</div>
+        <div class="sc-title">태양 위치 보정</div>
+        <p>북극에서는 5월에 태양이 <strong>북쪽</strong>에서 뜨고 남쪽으로 집니다. 유럽인은 이를 몰라 방향을 반대로 잡았지만, 축치족은 계절에 따른 태양 경로를 완전히 이해하고 있었습니다.</p>
+      </div>
+      <div class="summary-cell">
+        <div class="sc-label" style="color:var(--chuk);">체계 3</div>
+        <div class="sc-title">해류·유빙·해조류 읽기</div>
+        <p>폴리네시아인처럼 <strong>해류의 방향과 세기</strong>를 읽고, 해조류의 흐름과 <strong>유빙의 이동 패턴</strong>을 관찰하여 근처 육지의 방향과 거리를 감지했습니다.</p>
+      </div>
+      <div class="summary-cell">
+        <div class="sc-label" style="color:var(--chuk);">체계 4</div>
+        <div class="sc-title">사스트루기 (눈 능선)</div>
+        <p>눈보라로 시야가 0일 때의 최후 수단입니다. 바람 침식으로 형성된 눈 능선은 항상 <strong>남북 방향</strong>으로 정렬됩니다. 발바닥으로 이 능선을 느껴 방향을 판별합니다.</p>
+      </div>
+    </div>
+
+    <div class="explain">
+      <h3 style="color:var(--chuk);">다우르킨: 쿡보다 13년 앞선 지도</h3>
+      <p>축치 원주민 출신 <strong>니콜라이 다우르킨</strong>은 어린 시절 러시아 탐험가에게 포획되어 이르쿠츠크 항해학교에서 교육받았습니다. 그는 축치 전통 지식과 러시아 항해 과학을 결합하여 <strong>1765년</strong> 베링 해협 지도를 완성했습니다 — 쿡 선장이 알래스카에 도착하기 <strong>13년 전</strong>입니다. 1790년에는 <em>러시아의 영광호</em>에 탑승하여 영국인 선장 빌링스, 러시아인 측량사 사리체프와 함께 3년간 50장 이상의 지도를 제작했습니다.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ SHARED ============
+const dpr = Math.min(window.devicePixelRatio||1, 2);
+function hi(c,w,h){c.width=w*dpr;c.height=h*dpr;c.style.width=w+'px';c.style.height=h+'px';const x=c.getContext('2d');x.scale(dpr,dpr);return x;}
+function showPanel(i){
+  document.querySelectorAll('.panel').forEach((p,idx)=>p.classList.toggle('on',idx===i));
+  document.querySelectorAll('.nav button').forEach((b,idx)=>b.classList.toggle('on',idx===i));
+  if(i===0)incaDraw();if(i===1)polyDraw();if(i===2)tupaiaRedraw();if(i===3)chukDraw();
+}
+const months=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+function dayToDate(d){const ms=[31,28,31,30,31,30,31,31,30,31,30,31];let dd=d,m=0;while(dd>=ms[m]){dd-=ms[m];m++;}return`${m+1}월 ${dd+1}일`;}
+
+// ============ INCA ============
+const cInca=document.getElementById('c-inca');
+const ctxI=hi(cInca,900,580);
+const CX=450,CY=510;
+const NUM_CEQUES=41;
+const cequeAngles=[];
+for(let i=0;i<NUM_CEQUES;i++)cequeAngles.push(-Math.PI+(Math.PI*i/(NUM_CEQUES-1)));
+const huacas=cequeAngles.map(a=>{const n=2+Math.floor(Math.random()*4);const pts=[];for(let j=0;j<n;j++)pts.push(80+(j+1)*(360/(n+1))+(Math.random()-0.5)*30);return pts;});
+let incaAnim=null;
+
+function incaDraw(){
+  const day=+document.getElementById('inca-day').value;
+  document.getElementById('inca-date').textContent=dayToDate(day);
+  const ctx=ctxI;ctx.clearRect(0,0,900,580);
+  const skyG=ctx.createLinearGradient(0,0,0,380);skyG.addColorStop(0,'#0a0a18');skyG.addColorStop(1,'#1a1520');
+  ctx.fillStyle=skyG;ctx.fillRect(0,0,900,380);
+  const gndG=ctx.createLinearGradient(0,370,0,580);gndG.addColorStop(0,'#1a1818');gndG.addColorStop(1,'#0e0e10');
+  ctx.fillStyle=gndG;ctx.fillRect(0,370,900,210);
+  ctx.strokeStyle='rgba(212,160,74,0.1)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,380);ctx.lineTo(900,380);ctx.stroke();
+  ctx.fillStyle='#12101a';ctx.beginPath();ctx.moveTo(0,380);
+  ctx.lineTo(80,340);ctx.lineTo(150,360);ctx.lineTo(250,305);ctx.lineTo(350,350);ctx.lineTo(420,285);ctx.lineTo(480,335);ctx.lineTo(550,295);ctx.lineTo(650,345);ctx.lineTo(750,275);ctx.lineTo(830,340);ctx.lineTo(900,315);ctx.lineTo(900,380);ctx.fill();
+  const decl=23.44*Math.sin((2*Math.PI/365)*(day-80));
+  const lat=-13.5;
+  const cosHA=-Math.tan(lat*Math.PI/180)*Math.tan(decl*Math.PI/180);
+  const clamp=Math.max(-1,Math.min(1,cosHA));
+  const ha=Math.acos(clamp);
+  const sinAz=Math.sin(ha)*Math.cos(decl*Math.PI/180)/Math.cos(lat*Math.PI/180);
+  const azOff=Math.asin(Math.max(-1,Math.min(1,sinAz)));
+  const sunAngle=-Math.PI/2+azOff*0.8;
+  const sunX=CX+Math.cos(sunAngle)*370;
+  const sunY=CY+Math.sin(sunAngle)*370;
+  const sg=ctx.createRadialGradient(sunX,sunY,5,sunX,sunY,120);
+  sg.addColorStop(0,'rgba(255,200,80,0.4)');sg.addColorStop(0.3,'rgba(255,160,50,0.15)');sg.addColorStop(1,'rgba(255,100,30,0)');
+  ctx.fillStyle=sg;ctx.fillRect(0,0,900,580);
+  ctx.beginPath();ctx.arc(sunX,sunY,16,0,Math.PI*2);ctx.fillStyle='#ffc850';ctx.shadowColor='#ffa030';ctx.shadowBlur=40;ctx.fill();ctx.shadowBlur=0;
+  for(let i=0;i<NUM_CEQUES;i++){
+    const a=cequeAngles[i];const ex=CX+Math.cos(a)*480;const ey=CY+Math.sin(a)*480;
+    const diff=Math.abs(a-sunAngle);const aligned=diff<0.06;
+    ctx.beginPath();ctx.moveTo(CX,CY);ctx.lineTo(ex,ey);
+    if(aligned){ctx.strokeStyle='rgba(255,200,80,0.8)';ctx.lineWidth=2.5;ctx.shadowColor='#ffc850';ctx.shadowBlur=15;}
+    else{ctx.strokeStyle='rgba(212,160,74,0.08)';ctx.lineWidth=0.5;}
+    ctx.stroke();ctx.shadowBlur=0;
+    huacas[i].forEach(r=>{const hx=CX+Math.cos(a)*r;const hy=CY+Math.sin(a)*r;ctx.beginPath();ctx.arc(hx,hy,aligned?4:2.5,0,Math.PI*2);ctx.fillStyle=aligned?'rgba(255,200,80,0.9)':'rgba(212,160,74,0.25)';ctx.fill();});
+  }
+  ctx.beginPath();ctx.arc(CX,CY,13,0,Math.PI*2);ctx.fillStyle='#d4a04a';ctx.shadowColor='#d4a04a';ctx.shadowBlur=20;ctx.fill();ctx.shadowBlur=0;
+  ctx.beginPath();ctx.arc(CX,CY,7,0,Math.PI*2);ctx.fillStyle='#ffd870';ctx.fill();
+  ctx.font='500 12px "Noto Sans KR"';ctx.fillStyle='#d4a04a';ctx.textAlign='center';ctx.fillText('태양의 신전',CX,CY+30);
+  ctx.font='300 10px "Noto Sans KR"';ctx.fillStyle='#8a8580';ctx.textAlign='left';ctx.fillText('← 일몰',80,395);ctx.textAlign='right';ctx.fillText('일출 →',820,395);
+  if(day>=168&&day<=176){ctx.font='700 14px "Noto Serif KR"';ctx.fillStyle='#ffc850';ctx.textAlign='center';ctx.fillText('☀ 동지 정렬! — 인티 라이미',450,28);}
+}
+function animateInca(){
+  const sl=document.getElementById('inca-day'),btn=document.getElementById('inca-play');
+  if(incaAnim){cancelAnimationFrame(incaAnim);incaAnim=null;btn.textContent='▶ 1년 재생';return;}
+  btn.textContent='⏸ 정지';let d=0;
+  function st(){sl.value=d;incaDraw();d=(d+2)%365;incaAnim=requestAnimationFrame(st);}st();
+}
+
+// ============ POLYNESIA STAR PATH ============
+const cPoly=document.getElementById('c-poly');
+const ctxP=hi(cPoly,900,550);
+const stars=[{x:130,y:130,name:'시리우스'},{x:300,y:108,name:'카노푸스'},{x:480,y:100,name:'아케르나르'},{x:660,y:112,name:'포말하우트'},{x:810,y:128,name:'안타레스'}];
+const islandsP=[{x:100,y:380,name:'타히티',r:20},{x:820,y:350,name:'라이아테아',r:16}];
+const bgStars=[];for(let i=0;i<120;i++)bgStars.push({x:Math.random()*900,y:Math.random()*180,r:Math.random()*1.5+0.3,a:Math.random()*0.6+0.1});
+const swells=[];for(let i=0;i<7;i++)swells.push(260+i*32);
+let polyProgress=0,polyAnimating=false,currentStarIdx=0;
+
+function canoePos(t){const sx=120,sy=375,ex=800,ey=345,cx1=300,cy1=310,cx2=600,cy2=295;const u=1-t;return{x:u*u*u*sx+3*u*u*t*cx1+3*u*t*t*cx2+t*t*t*ex,y:u*u*u*sy+3*u*u*t*cy1+3*u*t*t*cy2+t*t*t*ey};}
+
+function polyDraw(){
+  const ctx=ctxP;ctx.clearRect(0,0,900,550);
+  const time=Date.now()*0.001;
+  ctx.fillStyle='#050510';ctx.fillRect(0,0,900,200);
+  const og=ctx.createLinearGradient(0,180,0,550);og.addColorStop(0,'#060e1a');og.addColorStop(1,'#040810');ctx.fillStyle=og;ctx.fillRect(0,180,900,370);
+  ctx.strokeStyle='rgba(42,157,143,0.12)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,185);ctx.lineTo(900,185);ctx.stroke();
+  bgStars.forEach(s=>{const tw=0.5+0.5*Math.sin(time*2+s.x);ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(226,222,214,${s.a*tw})`;ctx.fill();});
+  currentStarIdx=Math.min(Math.floor(polyProgress*stars.length),stars.length-1);
+  stars.forEach((s,i)=>{
+    const act=i===currentStarIdx&&polyProgress<1,past=i<currentStarIdx;
+    ctx.beginPath();ctx.arc(s.x,s.y,act?5:3,0,Math.PI*2);ctx.fillStyle=act?'#2a9d8f':past?'rgba(42,157,143,0.3)':'rgba(42,157,143,0.5)';
+    if(act){ctx.shadowColor='#2a9d8f';ctx.shadowBlur=20;}ctx.fill();ctx.shadowBlur=0;
+    if(act){const pr=12+8*Math.sin(time*3);ctx.beginPath();ctx.arc(s.x,s.y,pr,0,Math.PI*2);ctx.strokeStyle=`rgba(42,157,143,${0.15*(1-(pr-12)/8)})`;ctx.lineWidth=1;ctx.stroke();}
+    ctx.font='400 10px "Noto Sans KR"';ctx.fillStyle=act?'#2a9d8f':'rgba(42,157,143,0.4)';ctx.textAlign='center';ctx.fillText(s.name,s.x,s.y-12);
+    if(act){ctx.font='500 10px "Noto Sans KR"';ctx.fillStyle='#2a9d8f';ctx.fillText('▼ 이 별을 향해',s.x,s.y+24);}
+  });
+  ctx.beginPath();ctx.moveTo(stars[0].x,stars[0].y);stars.slice(1).forEach(s=>ctx.lineTo(s.x,s.y));ctx.strokeStyle='rgba(42,157,143,0.15)';ctx.lineWidth=1;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);
+  swells.forEach((y,i)=>{const off=time*20+i*40;ctx.beginPath();for(let x=0;x<900;x+=5){const sy2=y+Math.sin((x+off)*0.015)*4+Math.sin((x+off*0.7)*0.025)*2;x===0?ctx.moveTo(x,sy2):ctx.lineTo(x,sy2);}ctx.strokeStyle=`rgba(42,157,143,${0.06+0.02*Math.sin(time+i)})`;ctx.lineWidth=0.8;ctx.stroke();});
+  if(polyProgress>0.6){const da=Math.min(1,(polyProgress-0.6)/0.3)*0.2;for(let r=30;r<80;r+=12){ctx.beginPath();ctx.arc(islandsP[1].x,islandsP[1].y,r,0,Math.PI*2);ctx.strokeStyle=`rgba(42,157,143,${da*(1-r/80)})`;ctx.lineWidth=0.5;ctx.stroke();}
+  if(polyProgress>0.7){ctx.font='400 10px "Noto Sans KR"';ctx.fillStyle=`rgba(42,157,143,${Math.min(1,(polyProgress-0.7)/0.15)*0.8})`;ctx.textAlign='center';ctx.fillText('↑ 파도 굴절 — 섬이 가깝다!',islandsP[1].x,islandsP[1].y+50);}}
+  islandsP.forEach(isl=>{ctx.beginPath();ctx.ellipse(isl.x,isl.y,isl.r,isl.r*0.4,0,0,Math.PI*2);ctx.fillStyle='#0e1a18';ctx.strokeStyle='rgba(42,157,143,0.4)';ctx.lineWidth=1;ctx.fill();ctx.stroke();ctx.font='500 11px "Noto Sans KR"';ctx.fillStyle='#e2ded6';ctx.textAlign='center';ctx.fillText(isl.name,isl.x,isl.y+isl.r*0.4+18);});
+  const pos=canoePos(polyProgress);
+  if(polyProgress>0&&polyProgress<1){const as=stars[currentStarIdx];ctx.beginPath();ctx.moveTo(pos.x,pos.y-10);ctx.lineTo(as.x,as.y);ctx.strokeStyle='rgba(42,157,143,0.2)';ctx.lineWidth=0.8;ctx.setLineDash([3,5]);ctx.stroke();ctx.setLineDash([]);}
+  ctx.save();ctx.translate(pos.x,pos.y+Math.sin(time*2)*2);
+  ctx.beginPath();ctx.moveTo(-14,0);ctx.quadraticCurveTo(0,-7,14,0);ctx.quadraticCurveTo(0,3,-14,0);ctx.fillStyle='#1a2a24';ctx.strokeStyle='#2a9d8f';ctx.lineWidth=1.5;ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,-7);ctx.lineTo(0,-26);ctx.strokeStyle='#2a9d8f';ctx.lineWidth=1;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,-24);ctx.lineTo(8,-16);ctx.lineTo(0,-9);ctx.fillStyle='rgba(42,157,143,0.3)';ctx.fill();ctx.restore();
+  if(polyProgress>0.02){ctx.beginPath();for(let t=0;t<polyProgress;t+=0.005){const p=canoePos(t);t===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);}ctx.strokeStyle='rgba(42,157,143,0.1)';ctx.lineWidth=1;ctx.stroke();}
+  const stEl=document.getElementById('poly-status');
+  if(polyProgress<=0)stEl.textContent='타히티에서 대기 중';else if(polyProgress>=1)stEl.textContent='라이아테아 도착!';else stEl.textContent=`항해 중... ${stars[currentStarIdx].name}`;
+}
+function startPolyVoyage(){
+  if(polyAnimating){polyAnimating=false;document.getElementById('poly-play').textContent='▶ 항해 시작';return;}
+  document.getElementById('poly-play').textContent='⏸ 정지';polyAnimating=true;
+  function st(){polyProgress+=0.002;if(polyProgress>=1){polyProgress=1;polyAnimating=false;document.getElementById('poly-play').textContent='▶ 항해 시작';}polyDraw();if(polyAnimating)requestAnimationFrame(st);}st();
+}
+function resetPoly(){polyAnimating=false;polyProgress=0;document.getElementById('poly-play').textContent='▶ 항해 시작';polyDraw();}
+
+// ============ TUPAIA MAP INTERACTIVE ============
+const cTupaia=document.getElementById('c-tupaia');
+const ctxT=hi(cTupaia,900,700);
+
+// Islands based on actual Tupaia chart (approximate positions)
+const tIslands=[
+  {x:420,y:395,name:'우리에테아\n(Ulietea)',r:12,main:true}, // center near eavatea
+  {x:490,y:430,name:'오타히티\n(Otaheite/타히티)',r:14},
+  {x:355,y:340,name:'볼라볼라\n(Bola-bola)',r:8},
+  {x:400,y:340,name:'오투피\n(Otupi)',r:6},
+  {x:430,y:340,name:'마우루아\n(Maurua)',r:7},
+  {x:540,y:310,name:'오아나\n(Oanna)',r:6},
+  {x:580,y:350,name:'우라\n(Oura)',r:5},
+  {x:630,y:340,name:'테오호우\n(Teohow)',r:5},
+  {x:500,y:300,name:'마이타이\n(Maitaah)',r:7},
+  {x:310,y:250,name:'오웨하\n(Oweha)',r:6},
+  {x:195,y:250,name:'투파이\n(Toutepa)',r:7},
+  {x:110,y:190,name:'오아후루\n(Oahaurou)',r:10},
+  {x:730,y:290,name:'오리로아\n(Oryroa)',r:5},
+  {x:770,y:190,name:'테부이\n(Tebooi)',r:6},
+  {x:530,y:450,name:'오헤이네\n(Huaheine)',r:8},
+  {x:630,y:430,name:'와호우\n(Whaow)',r:5},
+  {x:550,y:510,name:'오헤테로아\n(Oheteroa)',r:6},
+  {x:650,y:530,name:'토메토아라로\n(Tometoarero)',r:5},
+  {x:210,y:450,name:'테투파투파\n(Tetupa)',r:6},
+  {x:390,y:500,name:'오푸레오\n(Opooreo)',r:5},
+  {x:480,y:560,name:'마누아\n(Mannua)',r:6},
+  {x:820,y:580,name:'오우레포에\n(Ourepoe)',r:6},
+  {x:170,y:350,name:'오리바비에\n(Orivavie)',r:6},
+  {x:260,y:370,name:'오로투마\n(Orotuma)',r:8},
+];
+
+const NOON_X=420, NOON_Y=385; // eavatea center
+let tpFrom=null, tpTo=null, tpHover=-1;
+
+cTupaia.addEventListener('mousemove',e=>{
+  const rect=cTupaia.getBoundingClientRect();
+  const sx=900/rect.width;
+  const mx=(e.clientX-rect.left)*sx;
+  const my=(e.clientY-rect.top)*(700/rect.height);
+  let found=-1;
+  tIslands.forEach((isl,i)=>{
+    const d=Math.hypot(mx-isl.x,my-isl.y);
+    if(d<isl.r+12)found=i;
+  });
+  if(found!==tpHover){tpHover=found;cTupaia.style.cursor=found>=0?'pointer':'default';tupaiaRedraw();}
+});
+
+cTupaia.addEventListener('click',e=>{
+  if(tpHover<0)return;
+  if(tpFrom===null){tpFrom=tpHover;tpTo=null;}
+  else if(tpTo===null&&tpHover!==tpFrom){tpTo=tpHover;}
+  else{tpFrom=tpHover;tpTo=null;}
+  tupaiaRedraw();
+});
+
+function resetTupaia(){tpFrom=null;tpTo=null;tupaiaRedraw();}
+
+function tupaiaRedraw(){
+  const ctx=ctxT;ctx.clearRect(0,0,900,700);
+  
+  // Parchment background
+  const bg=ctx.createLinearGradient(0,0,900,700);
+  bg.addColorStop(0,'#0e0d0a');bg.addColorStop(0.5,'#12110d');bg.addColorStop(1,'#0e0d0a');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,900,700);
+  
+  // Border
+  ctx.strokeStyle='rgba(196,149,106,0.15)';ctx.lineWidth=1;
+  ctx.strokeRect(30,30,840,640);
+  ctx.strokeRect(36,36,828,628);
+  
+  // Grid lines (like original chart)
+  ctx.strokeStyle='rgba(196,149,106,0.06)';ctx.lineWidth=0.5;
+  ctx.beginPath();ctx.moveTo(NOON_X,36);ctx.lineTo(NOON_X,664);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(36,NOON_Y);ctx.lineTo(864,NOON_Y);ctx.stroke();
+  
+  // Eavatea label
+  ctx.font='italic 500 14px "Noto Serif KR"';
+  ctx.fillStyle='rgba(196,149,106,0.6)';ctx.textAlign='center';
+  ctx.fillText('에아바테아 (Eavatea)',NOON_X,NOON_Y-8);
+  ctx.font='300 11px "Noto Sans KR"';
+  ctx.fillStyle='rgba(196,149,106,0.35)';
+  ctx.fillText('정 오',NOON_X,NOON_Y+8);
+  
+  // Direction labels (Tahitian)
+  ctx.font='300 11px "Noto Sans KR"';ctx.fillStyle='rgba(196,149,106,0.3)';
+  ctx.textAlign='center';
+  ctx.fillText('Opatoorow (N · 북풍)',450,52);
+  ctx.fillText('Opatoa (S · 남풍)',450,658);
+  ctx.textAlign='left';ctx.fillText('Teratti\nToohera (W · 일몰)',42,390);
+  ctx.textAlign='right';ctx.fillText('Tatabieta\nOhetootera (E · 일출)',858,390);
+  
+  // Cross marker at noon
+  ctx.beginPath();ctx.moveTo(NOON_X-6,NOON_Y);ctx.lineTo(NOON_X+6,NOON_Y);ctx.moveTo(NOON_X,NOON_Y-6);ctx.lineTo(NOON_X,NOON_Y+6);
+  ctx.strokeStyle='rgba(196,149,106,0.3)';ctx.lineWidth=1;ctx.stroke();
+  
+  // Draw bearing lines if selections made
+  if(tpFrom!==null){
+    const from=tIslands[tpFrom];
+    // Line from selected to eavatea (noon line)
+    ctx.beginPath();ctx.moveTo(from.x,from.y);ctx.lineTo(NOON_X,NOON_Y);
+    ctx.strokeStyle='rgba(255,200,80,0.6)';ctx.lineWidth=1.5;ctx.setLineDash([6,3]);ctx.stroke();ctx.setLineDash([]);
+    // Label
+    ctx.font='500 10px "Noto Sans KR"';ctx.fillStyle='#ffc850';ctx.textAlign='center';
+    const mx1=(from.x+NOON_X)/2,my1=(from.y+NOON_Y)/2;
+    ctx.fillText('정오 기준선',mx1+15,my1-8);
+    
+    if(tpTo!==null){
+      const to=tIslands[tpTo];
+      // Line from selected to destination
+      ctx.beginPath();ctx.moveTo(from.x,from.y);ctx.lineTo(to.x,to.y);
+      ctx.strokeStyle='rgba(42,157,143,0.7)';ctx.lineWidth=1.5;ctx.setLineDash([6,3]);ctx.stroke();ctx.setLineDash([]);
+      // Label
+      const mx2=(from.x+to.x)/2,my2=(from.y+to.y)/2;
+      ctx.font='500 10px "Noto Sans KR"';ctx.fillStyle='#2a9d8f';
+      ctx.fillText('목적지 방향',mx2+15,my2-8);
+      
+      // Angle arc
+      const a1=Math.atan2(NOON_Y-from.y,NOON_X-from.x);
+      const a2=Math.atan2(to.y-from.y,to.x-from.x);
+      ctx.beginPath();ctx.arc(from.x,from.y,35,Math.min(a1,a2),Math.max(a1,a2));
+      ctx.strokeStyle='rgba(255,100,50,0.6)';ctx.lineWidth=2;ctx.setLineDash([]);ctx.stroke();
+      
+      // Angle value
+      let angleDeg=Math.abs(a2-a1)*180/Math.PI;
+      if(angleDeg>180)angleDeg=360-angleDeg;
+      angleDeg=Math.round(angleDeg);
+      const aMid=(a1+a2)/2;
+      const labelR=50;
+      ctx.font='700 13px "Noto Serif KR"';ctx.fillStyle='#ff6432';
+      ctx.fillText(`${angleDeg}°`,from.x+Math.cos(aMid)*labelR,from.y+Math.sin(aMid)*labelR);
+      
+      // Update UI
+      document.getElementById('tp-bearing').textContent=`${angleDeg}°`;
+      document.getElementById('tp-to').textContent=to.name.split('\n')[0];
+    } else {
+      document.getElementById('tp-bearing').textContent='—';
+      document.getElementById('tp-to').textContent='(섬을 클릭)';
+    }
+    document.getElementById('tp-from').textContent=from.name.split('\n')[0];
+  } else {
+    document.getElementById('tp-from').textContent='(섬을 클릭)';
+    document.getElementById('tp-to').textContent='—';
+    document.getElementById('tp-bearing').textContent='—';
+  }
+  
+  // Draw islands
+  tIslands.forEach((isl,i)=>{
+    const isFrom=i===tpFrom, isTo=i===tpTo, isHov=i===tpHover;
+    
+    // Island shape (irregular blob)
+    ctx.save();ctx.translate(isl.x,isl.y);
+    ctx.beginPath();
+    const pts=7;
+    for(let p=0;p<=pts;p++){
+      const ang=(p/pts)*Math.PI*2;
+      const rr=isl.r*(0.7+0.3*Math.sin(ang*3+i*2));
+      const px=Math.cos(ang)*rr;
+      const py=Math.sin(ang)*rr*0.6;
+      p===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+    }
+    ctx.closePath();
+    
+    if(isFrom){
+      ctx.fillStyle='rgba(255,200,80,0.2)';ctx.strokeStyle='#ffc850';ctx.lineWidth=1.5;
+    }else if(isTo){
+      ctx.fillStyle='rgba(42,157,143,0.2)';ctx.strokeStyle='#2a9d8f';ctx.lineWidth=1.5;
+    }else if(isHov){
+      ctx.fillStyle='rgba(196,149,106,0.15)';ctx.strokeStyle='rgba(196,149,106,0.5)';ctx.lineWidth=1;
+    }else{
+      ctx.fillStyle='rgba(196,149,106,0.06)';ctx.strokeStyle='rgba(196,149,106,0.2)';ctx.lineWidth=0.5;
+    }
+    ctx.fill();ctx.stroke();ctx.restore();
+    
+    // Name
+    const lines=isl.name.split('\n');
+    ctx.textAlign='center';
+    ctx.font=(isFrom||isTo)?'500 10px "Noto Sans KR"':'300 9px "Noto Sans KR"';
+    ctx.fillStyle=(isFrom)?'#ffc850':(isTo)?'#2a9d8f':(isHov)?'#e2ded6':'rgba(196,149,106,0.5)';
+    lines.forEach((l,li)=>ctx.fillText(l,isl.x,isl.y+isl.r*0.6+12+li*12));
+  });
+  
+  // Instruction overlay if nothing selected
+  if(tpFrom===null){
+    ctx.font='400 13px "Noto Sans KR"';ctx.fillStyle='rgba(196,149,106,0.4)';ctx.textAlign='center';
+    ctx.fillText('섬을 클릭하여 출발지를 선택하세요',450,680);
+  }else if(tpTo===null){
+    ctx.font='400 13px "Noto Sans KR"';ctx.fillStyle='rgba(42,157,143,0.5)';ctx.textAlign='center';
+    ctx.fillText('목적지 섬을 클릭하세요',450,680);
+  }else{
+    ctx.font='400 12px "Noto Sans KR"';ctx.fillStyle='rgba(255,100,50,0.6)';ctx.textAlign='center';
+    ctx.fillText('정오에 돛대 그림자(정오 기준선)로부터 이 각도만큼 틀면 목적지를 향합니다',450,680);
+  }
+}
+
+// ============ CHUKCHI ============
+const cChuk=document.getElementById('c-chuk');
+const ctxC=hi(cChuk,900,560);
+let blizzardMode=false,chukAnimId=null;
+const snowP=[];for(let i=0;i<300;i++)snowP.push({x:Math.random()*900,y:Math.random()*560,s:Math.random()*3+1,v:Math.random()*2+1});
+const sastrugi=[];for(let i=0;i<30;i++)sastrugi.push({x:30+i*30,amp:3+Math.random()*4,ph:Math.random()*Math.PI*2});
+
+function chukDraw(){
+  const month=+document.getElementById('chuk-month').value;
+  document.getElementById('chuk-monthname').textContent=months[month];
+  const ctx=ctxC;ctx.clearRect(0,0,900,560);
+  const dayLen=month>=4&&month<=7?0.8:month>=10||month<=1?0.1:0.4;
+  const sr=Math.floor(10+dayLen*20),sg2=Math.floor(10+dayLen*15),sb=Math.floor(20+dayLen*30);
+  const skyGr=ctx.createLinearGradient(0,0,0,320);skyGr.addColorStop(0,`rgb(${sr},${sg2},${sb})`);skyGr.addColorStop(1,`rgb(${sr+5},${sg2+5},${sb+10})`);
+  ctx.fillStyle=skyGr;ctx.fillRect(0,0,900,320);
+  const snGr=ctx.createLinearGradient(0,310,0,560);snGr.addColorStop(0,`rgb(${40+Math.floor(dayLen*30)},${42+Math.floor(dayLen*30)},${50+Math.floor(dayLen*30)})`);snGr.addColorStop(1,`rgb(${20+Math.floor(dayLen*15)},${22+Math.floor(dayLen*15)},${28+Math.floor(dayLen*15)})`);
+  ctx.fillStyle=snGr;ctx.fillRect(0,310,900,250);
+  ctx.strokeStyle='rgba(108,142,191,0.15)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,320);ctx.lineTo(900,320);ctx.stroke();
+  
+  const cpX=450,cpY=255,cpR=120;
+  ctx.beginPath();ctx.arc(cpX,cpY,cpR,0,Math.PI*2);ctx.strokeStyle='rgba(108,142,191,0.15)';ctx.lineWidth=0.5;ctx.stroke();
+  ctx.font='500 11px "Noto Sans KR"';ctx.textAlign='center';ctx.fillStyle='rgba(108,142,191,0.5)';
+  ctx.fillText('북(N)',cpX,cpY-cpR-8);ctx.fillText('남(S)',cpX,cpY+cpR+16);ctx.fillText('동(E)',cpX+cpR+20,cpY+4);ctx.fillText('서(W)',cpX-cpR-20,cpY+4);
+  
+  for(let a=0;a<Math.PI*2;a+=Math.PI/12){ctx.beginPath();ctx.moveTo(cpX+Math.cos(a)*(cpR-4),cpY+Math.sin(a)*(cpR-4));ctx.lineTo(cpX+Math.cos(a)*cpR,cpY+Math.sin(a)*cpR);ctx.strokeStyle='rgba(108,142,191,0.1)';ctx.lineWidth=0.5;ctx.stroke();}
+  
+  const yearFrac=[0,1/12,2/12,3/12,4/12,5/12,6/12,7/12,8/12,9/12,10/12,11/12][month];
+  const decl=23.44*Math.sin(2*Math.PI*(yearFrac-0.22));
+  const lat=67;
+  const cosHASR=-Math.tan(lat*Math.PI/180)*Math.tan(decl*Math.PI/180);
+  const midSun=cosHASR<-1,polNight=cosHASR>1;
+  
+  if(!polNight&&!midSun){
+    const HA=Math.acos(Math.max(-1,Math.min(1,cosHASR)));
+    const sinAzSR=Math.sin(HA)*Math.cos(decl*Math.PI/180)/Math.cos(lat*Math.PI/180);
+    const azSR=Math.asin(Math.max(-1,Math.min(1,sinAzSR)));
+    const srAng=-azSR,ssAng=Math.PI+azSR;
+    const srX2=cpX+Math.cos(srAng)*(cpR-18),srY2=cpY+Math.sin(srAng)*(cpR-18);
+    const ssX2=cpX+Math.cos(ssAng)*(cpR-18),ssY2=cpY+Math.sin(ssAng)*(cpR-18);
+    ctx.beginPath();ctx.moveTo(srX2,srY2);
+    const amx=cpX+Math.cos(-Math.PI/2)*(cpR*0.5),amy=cpY+Math.sin(-Math.PI/2)*(cpR*0.5);
+    ctx.quadraticCurveTo(amx,amy,ssX2,ssY2);ctx.strokeStyle='rgba(255,180,60,0.5)';ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+    const isExt=Math.abs(decl)>15;
+    ctx.beginPath();ctx.arc(srX2,srY2,12,0,Math.PI*2);ctx.fillStyle=isExt?'rgba(232,93,58,0.8)':'rgba(255,200,80,0.7)';ctx.shadowColor=isExt?'#e85d3a':'#ffa030';ctx.shadowBlur=20;ctx.fill();ctx.shadowBlur=0;
+    ctx.beginPath();ctx.arc(ssX2,ssY2,9,0,Math.PI*2);ctx.fillStyle=isExt?'rgba(232,93,58,0.4)':'rgba(255,200,80,0.3)';ctx.fill();
+    ctx.font=isExt?'700 11px "Noto Sans KR"':'400 10px "Noto Sans KR"';ctx.fillStyle=isExt?'#e85d3a':'#ffb840';ctx.textAlign='center';
+    ctx.fillText('일출',srX2,srY2-18);ctx.fillText('일몰',ssX2,ssY2-16);
+    if(month===4||month===5){ctx.font='700 14px "Noto Serif KR"';ctx.fillStyle='#e85d3a';ctx.fillText('⚠ 태양이 북쪽에서 뜹니다!',450,35);ctx.font='300 11px "Noto Sans KR"';ctx.fillStyle='#8a8580';ctx.fillText('계절을 모르면 방향 완전히 반대로 오인',450,55);}
+  }else if(midSun){ctx.beginPath();ctx.arc(cpX,cpY,cpR-18,0,Math.PI*2);ctx.strokeStyle='rgba(255,200,80,0.4)';ctx.lineWidth=3;ctx.stroke();ctx.font='700 14px "Noto Serif KR"';ctx.fillStyle='#ffc850';ctx.textAlign='center';ctx.fillText('☀ 백야 — 태양이 지지 않습니다',450,35);}
+  else{ctx.font='700 14px "Noto Serif KR"';ctx.fillStyle='#6c8ebf';ctx.textAlign='center';ctx.fillText('극야 — 태양이 뜨지 않습니다',450,35);ctx.font='300 11px "Noto Sans KR"';ctx.fillStyle='#8a8580';ctx.fillText('별자리만으로 방향을 찾아야 합니다',450,55);}
+  
+  sastrugi.forEach(s=>{ctx.beginPath();for(let y=330;y<560;y+=3){const x=s.x+Math.sin((y+s.ph)*0.08)*s.amp;y===330?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.strokeStyle=blizzardMode?'rgba(108,142,191,0.35)':'rgba(108,142,191,0.08)';ctx.lineWidth=blizzardMode?1.5:0.5;ctx.stroke();});
+  ctx.font='500 10px "Noto Sans KR"';ctx.fillStyle=blizzardMode?'rgba(108,142,191,0.8)':'rgba(108,142,191,0.3)';ctx.textAlign='center';ctx.fillText('N ↕ S',860,450);ctx.font='300 9px "Noto Sans KR"';ctx.fillText('사스트루기',860,464);
+  
+  if(blizzardMode){
+    ctx.fillStyle='rgba(200,205,215,0.15)';ctx.fillRect(0,0,900,560);
+    const t=Date.now()*0.001;
+    snowP.forEach(p=>{p.x+=p.v*2;p.y+=p.v;if(p.x>920)p.x=-20;if(p.y>580)p.y=-20;ctx.beginPath();ctx.arc(p.x,p.y,p.s,0,Math.PI*2);ctx.fillStyle=`rgba(200,210,220,${0.2+Math.sin(t+p.x)*0.1})`;ctx.fill();});
+    ctx.font='700 14px "Noto Serif KR"';ctx.fillStyle='#6c8ebf';ctx.textAlign='center';ctx.fillText('❄ 시야 제로 — 발밑의 사스트루기만이 나침반',450,520);
+    ctx.font='300 11px "Noto Sans KR"';ctx.fillStyle='#8a8580';ctx.fillText('능선은 항상 남↔북으로 정렬',450,540);
+    requestAnimationFrame(chukDraw);
+  }
+}
+function animateChuk(){
+  const sl=document.getElementById('chuk-month'),btn=document.getElementById('chuk-play');
+  if(chukAnimId){clearInterval(chukAnimId);chukAnimId=null;btn.textContent='▶ 1년 재생';return;}
+  btn.textContent='⏸ 정지';let m=0;
+  chukAnimId=setInterval(()=>{sl.value=m;chukDraw();m++;if(m>11){clearInterval(chukAnimId);chukAnimId=null;btn.textContent='▶ 1년 재생';}},800);
+}
+function toggleBlizzard(){blizzardMode=!blizzardMode;document.getElementById('bliz-btn').classList.toggle('active',blizzardMode);document.getElementById('bliz-btn').textContent=blizzardMode?'❄ 끄기':'❄ 눈보라';chukDraw();}
+
+// INIT
+incaDraw();
+setTimeout(()=>polyDraw(),100);
+setTimeout(()=>tupaiaRedraw(),200);
+let polyIdleAnim;function polyIdle(){if(!polyAnimating)polyDraw();polyIdleAnim=requestAnimationFrame(polyIdle);}polyIdle();
+</script>
+</body>
+</html>
