@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>제국의 정원: 18세기 식물학 지식의 세계적 순환</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --parchment: #F5F0E8;
+  --parchment-dark: #E8E0D0;
+  --ink: #2C2416;
+  --ink-light: #6B5D4F;
+  --ink-faint: #A89880;
+  --teal: #1D7A63;
+  --amber: #B8860B;
+  --purple: #6B4C9A;
+  --coral: #C05030;
+  --blue: #2E6B8A;
+  --rose: #9B3A5A;
+  --burgundy: #7A2E3B;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--parchment);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+body::before {
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(139,119,101,.012) 2px,rgba(139,119,101,.012) 4px);
+}
+
+/* Header */
+.header { text-align:center; padding:40px 24px 24px; }
+.header::after { content:''; display:block; width:100px; height:1px; background:var(--ink-faint); margin:20px auto 0; }
+.header h1 { font-family:'Noto Serif KR',serif; font-size:clamp(22px,4vw,38px); font-weight:700; letter-spacing:.04em; }
+.header .sub-en { font-family:'Cormorant Garamond',serif; font-size:clamp(13px,1.8vw,18px); font-style:italic; color:var(--ink-light); letter-spacing:.06em; margin-top:4px; }
+.header .sub-kr { font-size:clamp(11px,1.4vw,14px); font-weight:300; color:var(--ink-faint); margin-top:4px; }
+
+/* Controls */
+.controls { max-width:1200px; margin:0 auto 12px; padding:0 20px; display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
+.ctrl-group { display:flex; flex-wrap:wrap; gap:5px; align-items:center; }
+.ctrl-group::before { content:attr(data-label); font-size:10px; font-weight:500; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.1em; margin-right:4px; }
+.btn {
+  font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:400;
+  padding:4px 11px; border:1px solid var(--ink-faint); border-radius:18px;
+  background:transparent; color:var(--ink-light); cursor:pointer; transition:all .2s; white-space:nowrap;
+}
+.btn:hover { border-color:var(--ink-light); color:var(--ink); }
+.btn.on { background:var(--ink); color:var(--parchment); border-color:var(--ink); }
+
+/* Map */
+.map-wrap { max-width:1200px; margin:0 auto; padding:0 12px; position:relative; }
+#map { width:100%; display:block; }
+.land { fill:#E2DDD4; stroke:#C4BBA8; stroke-width:.25; }
+.graticule { fill:none; stroke:var(--ink-faint); stroke-width:.12; stroke-opacity:.25; }
+
+/* Routes */
+.route { fill:none; stroke-linecap:round; stroke-linejoin:round; transition:opacity .4s; }
+.route.dim { opacity:.06 !important; }
+@keyframes dash { to { stroke-dashoffset:-20; } }
+
+/* Locations */
+.loc { cursor:pointer; }
+.loc circle.dot { transition:r .15s; }
+.loc:hover circle.dot { r:6; }
+.hub-aura { fill:none; stroke-width:1; opacity:.2; }
+
+/* Tooltip */
+.tt {
+  position:absolute; pointer-events:none; opacity:0; transition:opacity .2s; z-index:100;
+  max-width:300px; background:var(--parchment); border:1px solid var(--ink-faint);
+  border-radius:6px; padding:12px 14px;
+  box-shadow:0 4px 16px rgba(44,36,22,.12);
+}
+.tt.show { opacity:1; }
+.tt h4 { font-family:'Noto Serif KR',serif; font-size:13px; font-weight:600; margin-bottom:2px; }
+.tt .ts { font-size:10px; color:var(--ink-faint); font-style:italic; margin-bottom:6px; }
+.tt p { font-size:11px; line-height:1.55; color:var(--ink-light); }
+.tag { display:inline-block; font-size:9px; padding:2px 7px; border-radius:9px; margin:2px 2px 0 0; font-weight:500; color:#fff; }
+
+/* Panel */
+.overlay { position:fixed; inset:0; background:rgba(44,36,22,.3); z-index:199; opacity:0; pointer-events:none; transition:opacity .3s; }
+.overlay.show { opacity:1; pointer-events:auto; }
+.panel {
+  position:fixed; top:0; right:-420px; width:400px; max-width:92vw; height:100vh;
+  background:var(--parchment); border-left:1px solid var(--ink-faint);
+  box-shadow:-6px 0 24px rgba(44,36,22,.08); z-index:200;
+  transition:right .4s cubic-bezier(.25,.1,.25,1); overflow-y:auto; padding:28px 24px;
+}
+.panel.open { right:0; }
+.panel .x { position:absolute; top:12px; right:14px; background:none; border:none; font-size:22px; color:var(--ink-faint); cursor:pointer; }
+.panel h3 { font-family:'Noto Serif KR',serif; font-size:18px; font-weight:700; margin-bottom:4px; }
+.panel .psub { font-size:12px; color:var(--ink-faint); font-style:italic; margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid rgba(139,119,101,.2); }
+.panel .pbody { font-size:13px; line-height:1.8; color:var(--ink-light); }
+.panel .pbody strong { color:var(--ink); font-weight:500; }
+.panel .psec { margin-top:14px; padding-top:14px; border-top:1px solid rgba(139,119,101,.12); }
+.panel .psec h4 { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-faint); margin-bottom:6px; }
+
+/* Legend */
+.legend { max-width:1200px; margin:16px auto 0; padding:12px 20px; display:flex; flex-wrap:wrap; gap:14px; justify-content:center; border-top:1px solid rgba(139,119,101,.2); }
+.legend-i { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--ink-light); }
+.leg-line { width:20px; height:2px; border-radius:1px; }
+.leg-dot { width:7px; height:7px; border-radius:50%; border:1.5px solid #fff; box-shadow:0 0 0 .5px rgba(0,0,0,.15); }
+
+/* Section */
+.sec-title { max-width:1200px; margin:28px auto 10px; padding:0 20px; font-family:'Noto Serif KR',serif; font-size:16px; font-weight:600; }
+.sec-desc { max-width:1200px; margin:0 auto 14px; padding:0 20px; font-size:12px; color:var(--ink-light); line-height:1.6; }
+
+/* Cards */
+.cards { max-width:1200px; margin:0 auto; padding:0 20px 40px; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; }
+.card {
+  background:#fff; border:1px solid rgba(139,119,101,.18); border-radius:7px; padding:16px 18px;
+  cursor:pointer; transition:all .2s;
+}
+.card:hover { border-color:var(--blue); box-shadow:0 2px 10px rgba(46,107,138,.1); transform:translateY(-1px); }
+.card .yr { font-family:'Cormorant Garamond',serif; font-size:12px; font-weight:600; margin-bottom:3px; }
+.card h4 { font-family:'Noto Serif KR',serif; font-size:13px; font-weight:600; margin-bottom:5px; }
+.card p { font-size:11px; line-height:1.55; color:var(--ink-light); }
+
+/* Commodity detail cards */
+.commodity-cards { max-width:1200px; margin:0 auto; padding:0 20px 20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; }
+.c-card {
+  background:#fff; border-left:3px solid var(--ink-faint); border-radius:0 7px 7px 0; padding:14px 16px;
+  border-top:1px solid rgba(139,119,101,.1); border-right:1px solid rgba(139,119,101,.1); border-bottom:1px solid rgba(139,119,101,.1);
+}
+.c-card h4 { font-size:13px; font-weight:600; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+.c-card h4 .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.c-card p { font-size:11px; line-height:1.6; color:var(--ink-light); }
+
+@media(max-width:768px) {
+  .controls { gap:4px; }
+  .btn { font-size:10px; padding:3px 8px; }
+  .panel { width:100%; max-width:100vw; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>제국의 정원</h1>
+  <div class="sub-en">The Circulation of Botanical Knowledge &amp; Imperial Gardens, 1700–1840</div>
+  <div class="sub-kr">큐 가든 · 자르댕 뒤 루아 · 마드리드 왕립 식물원 — 식물 제국주의의 세계적 네트워크</div>
+</header>
+
+<div class="controls">
+  <div class="ctrl-group" data-label="작물">
+    <button class="btn on" data-c="all" onclick="setC('all')">전체</button>
+    <button class="btn" data-c="tea" onclick="setC('tea')">차 茶</button>
+    <button class="btn" data-c="cotton" onclick="setC('cotton')">면화</button>
+    <button class="btn" data-c="rubber" onclick="setC('rubber')">고무</button>
+    <button class="btn" data-c="cinchona" onclick="setC('cinchona')">키니네</button>
+    <button class="btn" data-c="sugar" onclick="setC('sugar')">사탕수수</button>
+    <button class="btn" data-c="opium" onclick="setC('opium')">아편</button>
+    <button class="btn" data-c="breadfruit" onclick="setC('breadfruit')">빵나무</button>
+    <button class="btn" data-c="spice" onclick="setC('spice')">향신료</button>
+  </div>
+  <div class="ctrl-group" data-label="네트워크">
+    <button class="btn" data-n="british" onclick="setN('british')">영국 (큐)</button>
+    <button class="btn" data-n="french" onclick="setN('french')">프랑스 (자르댕)</button>
+    <button class="btn" data-n="spanish" onclick="setN('spanish')">스페인 (마드리드)</button>
+    <button class="btn" data-n="dutch" onclick="setN('dutch')">네덜란드 (VOC)</button>
+  </div>
+  <div class="ctrl-group" data-label="탐험">
+    <button class="btn" data-e="cook1" onclick="togE('cook1')">쿡 1차</button>
+    <button class="btn" data-e="bounty" onclick="togE('bounty')">바운티호</button>
+    <button class="btn" data-e="spain_peru" onclick="togE('spain_peru')">스페인 페루 탐사</button>
+    <button class="btn" data-e="spain_ng" onclick="togE('spain_ng')">스페인 누에바그라나다</button>
+    <button class="btn" data-e="poivre" onclick="togE('poivre')">피에르 푸아브르</button>
+    <button class="btn" data-e="hooker" onclick="togE('hooker')">후커 히말라야</button>
+  </div>
+</div>
+
+<div class="map-wrap">
+  <svg id="map" viewBox="0 0 960 520"></svg>
+  <div class="tt" id="tt"></div>
+</div>
+
+<div class="legend">
+  <div class="legend-i"><div class="leg-line" style="background:#8B7355"></div>차</div>
+  <div class="legend-i"><div class="leg-line" style="background:#888"></div>면화</div>
+  <div class="legend-i"><div class="leg-line" style="background:#5A7A4A"></div>고무</div>
+  <div class="legend-i"><div class="leg-line" style="background:#C05030"></div>키니네</div>
+  <div class="legend-i"><div class="leg-line" style="background:#DAA520"></div>사탕수수</div>
+  <div class="legend-i"><div class="leg-line" style="background:#8B4513"></div>아편</div>
+  <div class="legend-i"><div class="leg-line" style="background:#6B8E23"></div>빵나무</div>
+  <div class="legend-i"><div class="leg-line" style="background:#D2691E"></div>향신료</div>
+  <div class="legend-i"><div class="leg-dot" style="background:var(--teal)"></div>영국 네트워크</div>
+  <div class="legend-i"><div class="leg-dot" style="background:var(--blue)"></div>프랑스 네트워크</div>
+  <div class="legend-i"><div class="leg-dot" style="background:var(--burgundy)"></div>스페인 네트워크</div>
+  <div class="legend-i"><div class="leg-dot" style="background:var(--amber)"></div>네덜란드/무역 거점</div>
+</div>
+
+<h3 class="sec-title">주요 작물의 세계적 순환</h3>
+<p class="sec-desc">각 작물 버튼을 눌러 해당 작물이 어떻게 대륙 간에 이동했는지 추적하세요.</p>
+<div class="commodity-cards" id="commodity-section">
+  <div class="c-card" style="border-left-color:#8B7355">
+    <h4><span class="dot" style="background:#8B7355"></span>차 (Camellia sinensis)</h4>
+    <p>원산지 중국 윈난성. 17세기부터 유럽 수요 폭증. 영국은 중국 독점을 깨기 위해 자딘 매디슨 네트워크를 통해 중국인 차 기술자를 인도 아삼으로 데려감(1834-39). 큐 가든은 차 품종 연구와 실론·인도 이식을 지원. 아편-차-은의 삼각무역이 아편전쟁(1839)으로 귀결.</p>
+  </div>
+  <div class="c-card" style="border-left-color:#888">
+    <h4><span class="dot" style="background:#888"></span>면화 (Gossypium)</h4>
+    <p>인도, 이집트, 미국 남부가 3대 산지. 영국 산업혁명(1760년대~)이 원료 수요를 폭증시킴. 큐는 이집트 장섬유 면화와 인도 면화의 품종 비교 연구를 수행. 면화 플랜테이션은 대서양 노예무역과 불가분의 관계.</p>
+  </div>
+  <div class="c-card" style="border-left-color:#5A7A4A">
+    <h4><span class="dot" style="background:#5A7A4A"></span>고무 (Hevea brasiliensis)</h4>
+    <p>원산지 아마존 열대우림. 1876년 헨리 위컴이 브라질에서 7만 개의 고무 종자를 큐 가든으로 밀반출("합법적 해적행위"). 큐에서 발아시킨 묘목을 실론, 말레이시아로 이식 → 아시아 고무 플랜테이션 산업 탄생. 브라질 고무 독점 붕괴.</p>
+  </div>
+  <div class="c-card" style="border-left-color:#C05030">
+    <h4><span class="dot" style="background:#C05030"></span>키니네 / 신코나 (Cinchona)</h4>
+    <p>원산지 안데스 산맥(페루, 콜롬비아). 말라리아 치료의 유일한 약재("예수회 껍질"). 스페인 루이스-파본 탐사대(1777-88)가 7종의 신코나를 분류. 영국은 19세기 중반 큐를 통해 인도·실론으로 이식 시도. 네덜란드는 자바에서 재배 성공하여 세계 키니네 시장 장악.</p>
+  </div>
+  <div class="c-card" style="border-left-color:#DAA520">
+    <h4><span class="dot" style="background:#DAA520"></span>사탕수수 (Saccharum officinarum)</h4>
+    <p>카리브해 플랜테이션의 핵심. 모리셔스(프랑스→영국)도 주요 설탕 생산지. 설탕 산업은 대서양 노예무역의 최대 동력. 프랑스는 생도맹그(아이티), 과들루프, 마르티니크에서 대규모 사탕수수 재배.</p>
+  </div>
+  <div class="c-card" style="border-left-color:#8B4513">
+    <h4><span class="dot" style="background:#8B4513"></span>아편 (Papaver somniferum)</h4>
+    <p>인도 벵골에서 재배된 아편을 자딘 매디슨 등이 중국 광저우로 밀수. 중국의 은(銀) 유출과 아편 중독 심화 → 임칙서의 아편 소각 → 제1차 아편전쟁(1839-42). 남경조약으로 홍콩 할양, 5개 항구 개방.</p>
+  </div>
+  <div class="c-card" style="border-left-color:#6B8E23">
+    <h4><span class="dot" style="background:#6B8E23"></span>빵나무 (Artocarpus altilis)</h4>
+    <p>원산지 타히티. 뱅크스가 카리브해 노예 식량으로 이식 기획 → 바운티호 항해(1787, 반란으로 실패) → 프로비던스호(1791-93, 성공). 큐 원예사 2명이 동행. 식물 이식 프로젝트의 가장 유명한 사례.</p>
+  </div>
+  <div class="c-card" style="border-left-color:#D2691E">
+    <h4><span class="dot" style="background:#D2691E"></span>향신료 (정향·육두구·후추·시나몬)</h4>
+    <p>말루쿠 제도(인도네시아)가 원산지. 네덜란드 VOC가 향신료 무역 독점. 프랑스의 피에르 푸아브르가 1770년 모리셔스에서 정향·육두구의 불법 재배에 성공하여 네덜란드 독점 타파. 시나몬은 실론이 원산지.</p>
+  </div>
+</div>
+
+<h3 class="sec-title">주요 자연사 탐험과 식물 수집 원정</h3>
+<p class="sec-desc">탐험 버튼을 눌러 항로를 지도에 표시하세요. 카드를 클릭하면 상세 정보를 볼 수 있습니다.</p>
+<div class="cards">
+  <div class="card" onclick="showExp('cook1')">
+    <div class="yr" style="color:var(--teal)">1768–1771 · 영국</div>
+    <h4>쿡 선장 1차 항해 (HMS 엔데버호)</h4>
+    <p>조지프 뱅크스 동행. 타히티, 뉴질랜드, 호주 탐사. 유럽에 알려지지 않은 1,000종 이상의 식물 수집. 근대 식물학의 전환점.</p>
+  </div>
+  <div class="card" onclick="showExp('bounty')">
+    <div class="yr" style="color:var(--teal)">1787–1789 · 영국</div>
+    <h4>HMS 바운티호 — 빵나무 이식</h4>
+    <p>뱅크스 기획. 타히티 → 카리브해 빵나무 이식 시도. 유명한 반란으로 실패. 1793년 프로비던스호로 재시도 성공.</p>
+  </div>
+  <div class="card" onclick="showExp('spain_peru')">
+    <div class="yr" style="color:var(--burgundy)">1777–1788 · 스페인</div>
+    <h4>페루·칠레 왕립 식물 탐사</h4>
+    <p>루이스·파본 탐사대. 카를로스 3세 후원. 10년간 페루·칠레 탐사, 150개 신속(新屬)과 500종 발견. 키니네 연구의 결정적 성과.</p>
+  </div>
+  <div class="card" onclick="showExp('spain_ng')">
+    <div class="yr" style="color:var(--burgundy)">1783–1816 · 스페인</div>
+    <h4>누에바그라나다 왕립 식물 탐사</h4>
+    <p>호세 셀레스티노 무티스 주도. 현재의 콜롬비아, 에콰도르 탐사. 5,000점 이상의 정밀한 식물 세밀화 제작. 24,000점의 건조 표본 수집.</p>
+  </div>
+  <div class="card" onclick="showExp('poivre')">
+    <div class="yr" style="color:var(--blue)">1768–1772 · 프랑스</div>
+    <h4>피에르 푸아브르의 향신료 작전</h4>
+    <p>모리셔스 총독 푸아브르가 네덜란드 독점을 깨기 위해 몰루카 제도에서 정향·육두구 묘목을 비밀리에 반출, 모리셔스에서 재배 성공.</p>
+  </div>
+  <div class="card" onclick="showExp('hooker')">
+    <div class="yr" style="color:var(--teal)">1847–1849 · 영국</div>
+    <h4>조지프 후커 히말라야 탐사</h4>
+    <p>시킴과 네팔에서 700종 수집. 25종의 새로운 진달래(Rhododendron) 발견. 영국에 진달래 열풍을 일으킴.</p>
+  </div>
+</div>
+
+<div class="overlay" id="ov" onclick="closeP()"></div>
+<div class="panel" id="pnl">
+  <button class="x" onclick="closeP()">&times;</button>
+  <h3 id="pt"></h3>
+  <div class="psub" id="ps"></div>
+  <div class="pbody" id="pb"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+// ── Colors ──
+const CC = {tea:'#8B7355',cotton:'#888',rubber:'#5A7A4A',cinchona:'#C05030',sugar:'#DAA520',opium:'#8B4513',breadfruit:'#6B8E23',spice:'#D2691E'};
+const NC = {british:'#1D7A63',french:'#2E6B8A',spanish:'#7A2E3B',dutch:'#B8860B'};
+
+// ── Locations ── (with label offsets to prevent overlap)
+const locs = [
+  // British network
+  {id:'kew',name:'큐 가든',en:'Kew Gardens, London',lat:51.47,lon:-0.29,type:'hub',net:'british',color:'#1D7A63',
+   lx:-8,ly:-14,anchor:'middle',
+   desc:'1759년 설립. 조지프 뱅크스(1773-1819 관리) 아래 세계 최고의 식물원으로 성장. 전 세계 식물 표본의 수집·분류·연구·식민지 배포를 담당하는 글로벌 "분류소". 1793년부터 체계적인 식물 교환 기록부를 작성하며 42개국 이상의 식물원, 수집가, 식민지와 표본을 교류.',
+   comms:['tea','cotton','rubber','cinchona','sugar','breadfruit','spice']},
+  {id:'cape',name:'케이프타운',en:'Cape of Good Hope',lat:-33.93,lon:18.42,type:'node',net:'british',color:'#1D7A63',
+   lx:12,ly:4,anchor:'start',
+   desc:'프랜시스 매슨이 1772년 큐 최초의 공식 식물 수집가로 파견. 히스, 프로테아, 극락조화(Strelitzia) 등 400종 수집. 유럽-아시아 항로의 핵심 보급·수집 기착지.',
+   comms:[]},
+  {id:'calcutta',name:'캘커타',en:'Calcutta',lat:22.57,lon:88.36,type:'trade',net:'british',color:'#B8860B',
+   lx:12,ly:-6,anchor:'start',
+   desc:'동인도회사 인도 본부. 1787년 캘커타 식물원은 큐와 긴밀히 교류하며 차·고무·키니네 실험 재배 수행. 아편 수출의 중심항.',
+   comms:['tea','opium','cotton','cinchona']},
+  {id:'ceylon',name:'실론',en:'Ceylon (Sri Lanka)',lat:7.87,lon:80.77,type:'node',net:'british',color:'#1D7A63',
+   lx:12,ly:4,anchor:'start',
+   desc:'페라데니야 식물원(1821). 시나몬 원산지. 큐에서 보낸 차·고무 묘목으로 대규모 플랜테이션 발전. 키니네 재배 실험도 수행.',
+   comms:['tea','rubber','spice','cinchona']},
+  {id:'assam',name:'아삼',en:'Assam, India',lat:26.14,lon:91.74,type:'node',net:'british',color:'#1D7A63',
+   lx:12,ly:0,anchor:'start',
+   desc:'1823년 야생 차나무 발견. 자딘 매디슨 네트워크로 중국 차 기술자 유입(1834-39). 중국 독점 차 생산의 분산화를 이끈 결정적 장소.',
+   comms:['tea']},
+  {id:'jamaica',name:'자메이카',en:'Jamaica',lat:18.11,lon:-77.30,type:'node',net:'british',color:'#1D7A63',
+   lx:0,ly:-10,anchor:'middle',
+   desc:'카리브해 최대 사탕수수 플랜테이션. 바운티호 빵나무 이식 목적지. 바스 식물원(1774)이 큐와 연계 활동.',
+   comms:['sugar','breadfruit']},
+  {id:'botanybay',name:'호주',en:'Botany Bay, Australia',lat:-34.00,lon:151.23,type:'node',net:'british',color:'#1D7A63',
+   lx:0,ly:14,anchor:'middle',
+   desc:'뱅크스가 1770년 명명. 유칼립투스, 아카시아, 뱅크시아 등 1,000종 이상의 미지 식물 수집. 뱅크스가 영국 식민지로 추천한 곳.',
+   comms:[]},
+  {id:'tahiti',name:'타히티',en:'Tahiti',lat:-17.68,lon:-149.41,type:'node',net:'british',color:'#1D7A63',
+   lx:0,ly:12,anchor:'middle',
+   desc:'쿡 1차 항해(1769)의 주요 목적지. 빵나무 원산지. 바운티호의 출발점.',
+   comms:['breadfruit']},
+  {id:'nz',name:'뉴질랜드',en:'New Zealand',lat:-41.29,lon:174.78,type:'node',net:'british',color:'#1D7A63',
+   lx:12,ly:0,anchor:'start',
+   desc:'쿡과 뱅크스 1769-70 탐사. 은고사리 등 독특한 식물상을 유럽에 최초 소개.',
+   comms:[]},
+  {id:'sikkim',name:'시킴',en:'Sikkim, Himalayas',lat:27.33,lon:88.61,type:'node',net:'british',color:'#1D7A63',
+   lx:12,ly:10,anchor:'start',
+   desc:'후커(1847-49) 700종 수집, 25종 진달래 발견. 시킴 당국에 체포되는 사건 발생.',
+   comms:[]},
+  {id:'namerica',name:'북미',en:'North America',lat:38.90,lon:-77.04,type:'node',net:'british',color:'#1D7A63',
+   lx:-12,ly:0,anchor:'end',
+   desc:'매슨이 1797년부터 북미와 캐나다에서 수집. 면화 플랜테이션의 중심지(찰스턴 등).',
+   comms:['cotton']},
+
+  // Jardine Matheson / Canton trade
+  {id:'canton',name:'광저우',en:'Canton (Guangzhou)',lat:23.13,lon:113.26,type:'hub',net:'british',color:'#B8860B',
+   lx:12,ly:-4,anchor:'start',
+   desc:'18세기 중국 대외무역의 유일한 창구(광저우 시스템). 차·비단·도자기 수출, 아편 수입의 삼각무역 핵심. 자딘 매디슨(1832) 본부. 서양인은 13개 공행 구역에만 거주 허용.',
+   comms:['tea','opium','spice']},
+  {id:'macao',name:'마카오',en:'Macao',lat:22.20,lon:113.54,type:'trade',net:'british',color:'#B8860B',
+   lx:14,ly:8,anchor:'start',
+   desc:'포르투갈 교역지. 캔턴 무역 비시즌에 서양 상인 거주지. 아편 밀수 중계지.',
+   comms:['tea','opium']},
+  {id:'malacca',name:'말라카',en:'Malacca & Penang',lat:2.19,lon:102.25,type:'trade',net:'british',color:'#B8860B',
+   lx:12,ly:8,anchor:'start',
+   desc:'향신료 무역 중심지. 큐에서 이식된 고무나무가 말레이시아에서 세계 최대 플랜테이션으로 발전.',
+   comms:['rubber','spice']},
+
+  // French network
+  {id:'paris',name:'자르댕 뒤 루아',en:'Jardin du Roi, Paris',lat:48.84,lon:2.35,type:'hub',net:'french',color:'#2E6B8A',
+   lx:14,ly:0,anchor:'start',
+   desc:'1626년 설립. 뷔퐁(1739-88 관리) 아래 유럽 최대 자연사 연구 중심지로 성장. 앙드레 투앵이 전 세계 식물원과의 교환 네트워크를 관리. 프랑스 혁명 후 자연사박물관(Muséum)으로 재편. 모리셔스, 카옌(기아나), 레위니옹, 생도맹그 등 식민지 정원과 긴밀히 연결.',
+   comms:['sugar','spice','cinchona']},
+  {id:'mauritius',name:'모리셔스',en:'Pamplemousses, Mauritius',lat:-20.35,lon:57.55,type:'node',net:'french',color:'#2E6B8A',
+   lx:12,ly:-6,anchor:'start',
+   desc:'1735년 라부르도네 총독이 조성, 1768년 피에르 푸아브르가 식물원으로 발전. 파리 자르댕 뒤 루아의 "열대 실험 기지". 남반구 최초의 식물원. 푸아브르가 네덜란드 독점을 깨기 위해 정향·육두구를 이곳에서 재배 성공. 사탕수수 품종 실험도 수행.',
+   comms:['sugar','spice']},
+  {id:'reunion',name:'레위니옹',en:'Île de la Réunion',lat:-21.12,lon:55.53,type:'node',net:'french',color:'#2E6B8A',
+   lx:-12,ly:6,anchor:'end',
+   desc:'자르댕 뒤 루아(현 Jardin de l\'État, 생드니). 피에르 푸아브르가 향신료와 열대 식물을 도입. 7,000여 식물이 1825년 식민지 농업 개선을 위해 주민에게 배포.',
+   comms:['spice','sugar']},
+  {id:'cayenne',name:'카옌',en:'Cayenne, French Guiana',lat:4.94,lon:-52.33,type:'node',net:'french',color:'#2E6B8A',
+   lx:0,ly:-10,anchor:'middle',
+   desc:'프랑스령 기아나의 식물원. 자르댕 뒤 루아의 아메리카 식민지 네트워크 거점. 열대 작물(커피, 설탕, 향신료) 순화 실험.',
+   comms:['sugar','spice']},
+  {id:'haiti',name:'생도맹그',en:'Saint-Domingue (Haiti)',lat:18.97,lon:-72.29,type:'node',net:'french',color:'#2E6B8A',
+   lx:0,ly:12,anchor:'middle',
+   desc:'18세기 세계 최대 설탕·커피 생산지. 프랑스 식민지 경제의 핵심. 1791년 아이티 혁명으로 식민 농업 체제 붕괴.',
+   comms:['sugar']},
+
+  // Spanish network
+  {id:'madrid',name:'마드리드 식물원',en:'Real Jardín Botánico, Madrid',lat:40.41,lon:-3.69,type:'hub',net:'spanish',color:'#7A2E3B',
+   lx:-12,ly:6,anchor:'end',
+   desc:'1755년 설립. 카를로스 3세의 후원 아래 3대 왕립 식물 탐사(페루, 누에바그라나다, 누에바에스파냐)를 조직. 고메스 오르테가가 식물원장으로 린네식 분류 체계를 도입. 아메리카에서 수집된 24,000점 이상의 건조 표본과 5,000점의 식물 세밀화를 소장.',
+   comms:['cinchona','spice']},
+  {id:'peru',name:'페루/리마',en:'Lima, Peru',lat:-12.05,lon:-77.04,type:'node',net:'spanish',color:'#7A2E3B',
+   lx:-12,ly:0,anchor:'end',
+   desc:'루이스-파본 탐사대(1777-88)의 본부. 키니네(신코나) 7종 분류. 150개 신속, 500종 발견. 표본은 마드리드 왕립 식물원으로 이송. 귀환 시 53상자가 포르투갈 해안에서 난파로 유실.',
+   comms:['cinchona']},
+  {id:'bogota',name:'보고타',en:'Bogotá, Nueva Granada',lat:4.71,lon:-74.07,type:'node',net:'spanish',color:'#7A2E3B',
+   lx:-12,ly:-6,anchor:'end',
+   desc:'무티스의 누에바그라나다 탐사(1783-1816) 본부. 콜롬비아·에콰도르 탐사. 5,000점의 정밀 세밀화와 24,000점의 건조 표본 제작. 무티스는 린네에게 신코나 표본을 보내며 교류.',
+   comms:['cinchona']},
+  {id:'mexico',name:'멕시코시티',en:'Mexico City, New Spain',lat:19.43,lon:-99.13,type:'node',net:'spanish',color:'#7A2E3B',
+   lx:-12,ly:8,anchor:'end',
+   desc:'세세-모시뇨 탐사대(1787-1803)의 본부. 56헥타르 규모의 부왕령 식물원 설립 계획. 바닐라, 카카오 등 경제 식물 연구. 나폴레옹 침공과 독립전쟁으로 출판 지연.',
+   comms:['spice']},
+
+  // Dutch network
+  {id:'leiden',name:'레이던 식물원',en:'Hortus Botanicus, Leiden',lat:52.15,lon:4.48,type:'hub',net:'dutch',color:'#B8860B',
+   lx:14,ly:-6,anchor:'start',
+   desc:'1590년 설립. 유럽 최초의 학술 식물원. VOC를 통해 아시아 식물 대량 수집. 린네의 스승 부르하베가 원장 역임. 동남아 향신료 표본의 유럽 도착지.',
+   comms:['spice','tea']},
+  {id:'batavia',name:'바타비아',en:'Batavia (Jakarta)',lat:-6.21,lon:106.85,type:'trade',net:'dutch',color:'#B8860B',
+   lx:0,ly:12,anchor:'middle',
+   desc:'VOC 아시아 본부. 향신료(정향, 육두구, 후추) 무역 중심. 레이던과 연계하여 동남아 식물 표본을 유럽으로. 보이텐조르흐 식물원(1817) 설립 이후 네덜란드 열대 식물학의 중심.',
+   comms:['spice','rubber']},
+  {id:'moluccas',name:'몰루카 제도',en:'Moluccas (Spice Islands)',lat:-2.0,lon:128.0,type:'node',net:'dutch',color:'#B8860B',
+   lx:12,ly:-6,anchor:'start',
+   desc:'정향·육두구의 원산지. VOC가 17-18세기 향신료 무역 독점. 푸아브르가 이곳에서 비밀리에 묘목 반출 시도.',
+   comms:['spice']},
+
+  // Swedish
+  {id:'uppsala',name:'웁살라',en:'Uppsala, Sweden',lat:59.86,lon:17.63,type:'garden',net:'dutch',color:'#6B4C9A',
+   lx:14,ly:0,anchor:'start',
+   desc:'칼 린네(1707-78)가 근대 식물 분류 체계(이명법)를 확립. 린네의 제자 투른베르크(일본·남아프리카), 솔란더(뱅크스 동행) 등이 세계 각지에서 수집한 표본으로 식물학 지식 표준화에 기여.',
+   comms:[]},
+
+  // Extra trade points
+  {id:'rio',name:'브라질',en:'Rio de Janeiro',lat:-22.91,lon:-43.17,type:'node',net:'british',color:'#1D7A63',
+   lx:-12,ly:4,anchor:'end',
+   desc:'고무나무(Hevea brasiliensis)의 원산지 아마존 관문. 1876년 헨리 위컴의 고무 종자 밀반출 경유지. 쿡 항해에서 뱅크스가 열대 식물 수집.',
+   comms:['rubber','sugar']},
+  {id:'egypt',name:'이집트',en:'Egypt',lat:30.04,lon:31.24,type:'trade',net:'british',color:'#B8860B',
+   lx:12,ly:-6,anchor:'start',
+   desc:'장섬유 면화(이집트 면화)의 주요 산지. 18세기 후반 영국 산업혁명으로 면화 수요 폭증. 나폴레옹의 이집트 원정(1798)에 154명의 학자 동행.',
+   comms:['cotton']},
+];
+
+// ── Commodity Routes ──
+const routes = [
+  // Tea
+  {c:'tea',from:'canton',to:'kew',w:3,net:'british'},
+  {c:'tea',from:'canton',to:'calcutta',w:1.5,net:'british'},
+  {c:'tea',from:'calcutta',to:'assam',w:2,net:'british'},
+  {c:'tea',from:'assam',to:'kew',w:1.5,net:'british'},
+  {c:'tea',from:'ceylon',to:'kew',w:2,net:'british'},
+  {c:'tea',from:'canton',to:'macao',w:1,net:'british'},
+  // Cotton
+  {c:'cotton',from:'egypt',to:'kew',w:2,net:'british'},
+  {c:'cotton',from:'namerica',to:'kew',w:2.5,net:'british'},
+  {c:'cotton',from:'calcutta',to:'kew',w:2,net:'british'},
+  // Rubber
+  {c:'rubber',from:'rio',to:'kew',w:2.5,net:'british'},
+  {c:'rubber',from:'kew',to:'ceylon',w:2,net:'british'},
+  {c:'rubber',from:'kew',to:'malacca',w:2,net:'british'},
+  // Cinchona
+  {c:'cinchona',from:'peru',to:'madrid',w:2.5,net:'spanish'},
+  {c:'cinchona',from:'bogota',to:'madrid',w:2,net:'spanish'},
+  {c:'cinchona',from:'kew',to:'calcutta',w:2,net:'british'},
+  {c:'cinchona',from:'kew',to:'ceylon',w:1.5,net:'british'},
+  // Sugar
+  {c:'sugar',from:'jamaica',to:'kew',w:2.5,net:'british'},
+  {c:'sugar',from:'haiti',to:'paris',w:2.5,net:'french'},
+  {c:'sugar',from:'mauritius',to:'paris',w:1.5,net:'french'},
+  {c:'sugar',from:'rio',to:'kew',w:1.5,net:'british'},
+  // Opium
+  {c:'opium',from:'calcutta',to:'canton',w:3,net:'british'},
+  {c:'opium',from:'calcutta',to:'macao',w:2,net:'british'},
+  // Breadfruit
+  {c:'breadfruit',from:'tahiti',to:'jamaica',w:2,net:'british'},
+  // Spice
+  {c:'spice',from:'moluccas',to:'batavia',w:2.5,net:'dutch'},
+  {c:'spice',from:'batavia',to:'leiden',w:2.5,net:'dutch'},
+  {c:'spice',from:'moluccas',to:'mauritius',w:2,net:'french'},
+  {c:'spice',from:'ceylon',to:'kew',w:1.5,net:'british'},
+  {c:'spice',from:'mauritius',to:'paris',w:1.5,net:'french'},
+  // Garden exchanges
+  {c:'all',from:'kew',to:'paris',w:1,net:'garden',color:'#6B4C9A'},
+  {c:'all',from:'kew',to:'leiden',w:1,net:'garden',color:'#6B4C9A'},
+  {c:'all',from:'leiden',to:'uppsala',w:1,net:'garden',color:'#6B4C9A'},
+  {c:'all',from:'kew',to:'madrid',w:1,net:'garden',color:'#6B4C9A'},
+  {c:'all',from:'paris',to:'mauritius',w:1.2,net:'french',color:'#2E6B8A'},
+  {c:'all',from:'paris',to:'cayenne',w:1,net:'french',color:'#2E6B8A'},
+  {c:'all',from:'paris',to:'haiti',w:1,net:'french',color:'#2E6B8A'},
+  {c:'all',from:'paris',to:'reunion',w:1,net:'french',color:'#2E6B8A'},
+  {c:'all',from:'madrid',to:'peru',w:1.2,net:'spanish',color:'#7A2E3B'},
+  {c:'all',from:'madrid',to:'bogota',w:1,net:'spanish',color:'#7A2E3B'},
+  {c:'all',from:'madrid',to:'mexico',w:1,net:'spanish',color:'#7A2E3B'},
+  {c:'all',from:'leiden',to:'batavia',w:1.2,net:'dutch',color:'#B8860B'},
+];
+
+// ── Expeditions ──
+const exps = {
+  cook1:{title:'쿡 선장 1차 항해 (HMS 엔데버호)',sub:'1768–1771 · 조지프 뱅크스 동행',color:'#1D7A63',
+    body:`<p>1768년 8월 플리머스 출발. 공식 목적은 타히티에서 금성 태양면 통과 관측이었으나, 봉인 명령에 남태평양 영토 탐사가 포함.</p>
+    <div class="psec"><h4>식물학적 성과</h4><p>뱅크스와 솔란더가 <strong>1,000종 이상의 미지 식물</strong>을 수집. 아카시아, 유칼립투스, 뱅크시아 등이 유럽에 최초 소개. 뱅크스는 귀환 후 국민 영웅이 되어 큐 가든 관리자로 임명.</p></div>
+    <div class="psec"><h4>항로</h4><p>플리머스 → 마데이라 → 리우 → 혼곶 → 타히티 → 뉴질랜드 → 호주(보태니 베이) → 바타비아 → 케이프 → 플리머스</p></div>`,
+    pts:[[-4.14,50.37],[-17,32.75],[-43.17,-22.91],[-67.62,-55.98],[-149.41,-17.68],[174.78,-41.29],[151.23,-34.00],[106.85,-6.21],[18.42,-33.93],[-4.14,50.37]]},
+  bounty:{title:'HMS 바운티호 — 빵나무 이식',sub:'1787–1789 · 뱅크스 기획, 블라이 선장',color:'#C05030',
+    body:`<p>뱅크스가 기획한 빵나무(Artocarpus altilis) 이식 프로젝트. 카리브해 노예 식량 공급 목적.</p>
+    <div class="psec"><h4>반란</h4><p>1789년 4월, 플레처 크리스천의 반란으로 빵나무 묘목 1,000여 그루가 바다에 투기. 큐 원예사 넬슨은 블라이와 함께 소형 보트로 탈출.</p></div>
+    <div class="psec"><h4>재시도</h4><p>1791년 프로비던스호로 재시도, 1793년 성공적으로 빵나무를 세인트빈센트와 자메이카에 이식.</p></div>`,
+    pts:[[-1.09,50.80],[18.42,-33.93],[-149.41,-17.68],[-174,-21.2],[-77.30,18.11]]},
+  spain_peru:{title:'페루·칠레 왕립 식물 탐사',sub:'1777–1788 · 루이스 & 파본, 카를로스 3세 후원',color:'#7A2E3B',
+    body:`<p>스페인 계몽주의 식물학의 대표적 성과. 카디스에서 출항, 1778년 리마 도착.</p>
+    <div class="psec"><h4>키니네(신코나) 연구</h4><p>루이스는 페루에서 <strong>7종의 신코나</strong>를 분류하고 《키놀로기아(Quinología)》를 출판(1792). 이탈리아어, 독일어, 영어로 번역되며 유럽 의학계에 큰 영향.</p></div>
+    <div class="psec"><h4>수집 성과</h4><p><strong>150개 신속, 500종의 신종</strong> 발견. 불행히도 53상자 분량의 표본(800점 삽화, 건조 식물, 수지, 광물)이 포르투갈 해안 난파로 유실.</p></div>
+    <div class="psec"><h4>유산</h4><p>마드리드 왕립 식물원에 10,000점 이상의 판화와 2,254점의 식물 세밀화 보존. 나폴레옹 침공으로 출판 지연.</p></div>`,
+    pts:[[-6.29,36.53],[-77.04,-12.05],[-70.67,-33.45],[-77.04,-12.05],[-6.29,36.53]]},
+  spain_ng:{title:'누에바그라나다 왕립 식물 탐사',sub:'1783–1816 · 호세 셀레스티노 무티스 주도',color:'#7A2E3B',
+    body:`<p>스페인 식민지 식물학에서 가장 방대한 프로젝트. 무티스가 1763년부터 두 차례 탐사를 제안했으나 거절당하고, 1783년 카를로스 3세의 승인을 받음.</p>
+    <div class="psec"><h4>예술적 성과</h4><p>콜롬비아 현지 화가들이 제작한 <strong>5,000점 이상의 정밀 템페라 세밀화</strong>는 유럽의 다른 탐사대 삽화와 비교할 수 없는 예술적 수준. 크리올(Creole) 정체성과 지역 자부심이 반영.</p></div>
+    <div class="psec"><h4>무티스와 린네</h4><p>무티스는 린네에게 신코나 표본을 보내며 교류. "누에바그라나다의 신탁"이라 불림. 24,000점 건조 표본, 5,000점 세밀화 제작.</p></div>
+    <div class="psec"><h4>독립운동과의 연결</h4><p>탐사대의 크리올 참가자들이 이후 콜롬비아 독립운동의 지도자가 됨. 식물학이 제국의 도구에서 민족 자부심의 원천으로 전환된 사례.</p></div>`,
+    pts:[[-6.29,36.53],[-74.07,4.71],[-78.47,-1.83],[-74.07,4.71],[-6.29,36.53]]},
+  poivre:{title:'피에르 푸아브르의 향신료 작전',sub:'1768–1772 · 모리셔스 총독',color:'#2E6B8A',
+    body:`<p>프랑스의 피에르 푸아브르(Pierre Poivre)가 네덜란드 VOC의 향신료 독점을 깨기 위해 수행한 대담한 생물 해적행위(biopiracy).</p>
+    <div class="psec"><h4>비밀 임무</h4><p>푸아브르는 모리셔스(일드프랑스) 총독으로 부임한 뒤, 네덜란드가 철저히 통제하는 <strong>몰루카 제도에서 정향·육두구 묘목을 비밀리에 반출</strong>. 여러 차례 시도 끝에 성공.</p></div>
+    <div class="psec"><h4>팜플무스 식물원</h4><p>1770년 모리셔스 팜플무스에 식물원을 조성하여 반출한 향신료를 재배. 이 식물원은 파리 자르댕 뒤 루아의 <strong>"열대 실험 기지"</strong>로 기능하며 남반구 최초의 식물원이 됨.</p></div>
+    <div class="psec"><h4>역사적 의의</h4><p>푸아브르의 성공으로 향신료가 더 이상 네덜란드 독점 상품이 아니게 됨. 레위니옹, 마다가스카르, 서아프리카에도 향신료 재배 확산.</p></div>`,
+    pts:[[2.35,48.84],[57.55,-20.35],[128,-2],[57.55,-20.35],[55.53,-21.12],[2.35,48.84]]},
+  hooker:{title:'조지프 후커 히말라야 탐사',sub:'1847–1849 · 큐 가든 원장의 아들',color:'#9B3A5A',
+    body:`<p>큐 가든 초대 원장 윌리엄 후커의 아들 조지프 달튼 후커가 수행한 히말라야 탐사.</p>
+    <div class="psec"><h4>진달래의 발견</h4><p>시킴과 동네팔에서 <strong>약 700종의 식물</strong>을 수집, 기존 50종에 <strong>25종의 새로운 진달래(Rhododendron)</strong>를 추가. 영국에 진달래 재배 열풍.</p></div>
+    <div class="psec"><h4>체포 사건</h4><p>후커와 캠벨이 시킴-티베트 국경 침범으로 체포. 영국 정부의 침공 위협 후 석방.</p></div>`,
+    pts:[[-0.29,51.47],[32,31.5],[57.55,-20.35],[80.77,7.87],[88.36,22.57],[88.61,27.33],[88.36,22.57],[-0.29,51.47]]},
+};
+
+// ── State ──
+let curC='all', curN=null, activeE=new Set(), proj, path, svg;
+
+// ── Init ──
+async function init(){
+  const W=960,H=520;
+  svg=d3.select('#map');
+  proj=d3.geoNaturalEarth1().scale(160).translate([W/2,H/2+20]);
+  path=d3.geoPath().projection(proj);
+
+  svg.append('path').datum(d3.geoGraticule().step([30,30])).attr('class','graticule').attr('d',path);
+
+  try {
+    const world=await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+    svg.append('g').selectAll('.land')
+      .data(topojson.feature(world,world.objects.countries).features)
+      .enter().append('path').attr('class','land').attr('d',path);
+  } catch(e) {
+    svg.append('path').datum({type:'Sphere'}).attr('d',path).attr('fill','#E2DDD4').attr('stroke','#C4BBA8').attr('stroke-width',.5);
+  }
+
+  svg.append('g').attr('id','rl'); // routes layer
+  svg.append('g').attr('id','el'); // expedition layer
+  svg.append('g').attr('id','ll'); // locations layer
+
+  drawRoutes();
+  drawLocs();
+  updVis();
+}
+
+function P(id){ const l=locs.find(x=>x.id===id); return l?proj([l.lon,l.lat]):[0,0]; }
+
+function drawRoutes(){
+  const g=svg.select('#rl');
+  routes.forEach(r=>{
+    const f=P(r.from),t=P(r.to);
+    const dx=t[0]-f[0],dy=t[1]-f[1];
+    const cx=(f[0]+t[0])/2-dy*.18, cy=(f[1]+t[1])/2+dx*.12;
+    g.append('path')
+      .attr('class','route')
+      .attr('d',`M${f[0]},${f[1]} Q${cx},${cy} ${t[0]},${t[1]}`)
+      .attr('stroke',r.color||CC[r.c]||'#999')
+      .attr('stroke-width',r.w)
+      .attr('stroke-opacity',.55)
+      .attr('data-c',r.c)
+      .attr('data-n',r.net);
+  });
+}
+
+function drawLocs(){
+  const g=svg.select('#ll');
+  locs.forEach(l=>{
+    const [x,y]=proj([l.lon,l.lat]);
+    const grp=g.append('g').attr('class','loc').attr('transform',`translate(${x},${y})`)
+      .on('click',()=>showLoc(l))
+      .on('mouseenter',e=>showTT(e,l))
+      .on('mouseleave',hideTT);
+
+    if(l.type==='hub'){
+      grp.append('circle').attr('class','hub-aura').attr('r',11).attr('stroke',l.color);
+      grp.append('circle').attr('class','hub-aura').attr('r',7).attr('stroke',l.color).attr('opacity',.12);
+    }
+
+    const r=l.type==='hub'?4.5:l.type==='trade'?3.5:3;
+    grp.append('circle').attr('class','dot').attr('r',r).attr('fill',l.color).attr('stroke','#fff').attr('stroke-width',l.type==='hub'?1.8:1.2);
+
+    grp.append('text')
+      .attr('x',l.lx).attr('y',l.ly)
+      .attr('text-anchor',l.anchor)
+      .attr('font-size',l.type==='hub'?'10px':'8.5px')
+      .attr('font-weight',l.type==='hub'?600:400)
+      .attr('fill',l.color)
+      .attr('font-family',"'Noto Sans KR',sans-serif")
+      .text(l.name);
+  });
+}
+
+// ── Visibility ──
+function updVis(){
+  svg.selectAll('.route').each(function(){
+    const el=d3.select(this);
+    const rc=el.attr('data-c'), rn=el.attr('data-n');
+    let show=true;
+    if(curC!=='all' && rc!==curC && rc!=='all') show=false;
+    if(curN && rn!==curN && rn!=='garden') show=false;
+    el.attr('opacity', show ? .55 : .04);
+  });
+}
+
+function setC(c){
+  curC=c; curN=null;
+  document.querySelectorAll('[data-c]').forEach(b=>b.classList.toggle('on',b.dataset.c===c));
+  document.querySelectorAll('[data-n]').forEach(b=>b.classList.remove('on'));
+  updVis();
+}
+function setN(n){
+  if(curN===n){curN=null; document.querySelectorAll('[data-n]').forEach(b=>b.classList.remove('on'));}
+  else{curN=n; curC='all';
+    document.querySelectorAll('[data-c]').forEach(b=>b.classList.toggle('on',b.dataset.c==='all'));
+    document.querySelectorAll('[data-n]').forEach(b=>b.classList.toggle('on',b.dataset.n===n));
+  }
+  updVis();
+}
+
+// ── Expeditions ──
+function togE(id){
+  const btn=document.querySelector(`[data-e="${id}"]`);
+  if(activeE.has(id)){ activeE.delete(id); btn.classList.remove('on'); rmExp(id); }
+  else{ activeE.add(id); btn.classList.add('on'); drawExp(id); }
+}
+
+function drawExp(id){
+  const e=exps[id]; if(!e) return;
+  const g=svg.select('#el');
+  const pts=e.pts.map(p=>proj(p));
+  const line=d3.line().curve(d3.curveCatmullRom.alpha(.5));
+  g.append('path').attr('class',`exp-${id}`).attr('d',line(pts)).attr('fill','none')
+    .attr('stroke',e.color).attr('stroke-width',4).attr('opacity',.12);
+  g.append('path').attr('class',`exp-${id}`).attr('d',line(pts)).attr('fill','none')
+    .attr('stroke',e.color).attr('stroke-width',2).attr('stroke-dasharray','7 4');
+  pts.forEach((p,i)=>{
+    g.append('circle').attr('class',`exp-${id}`).attr('cx',p[0]).attr('cy',p[1])
+      .attr('r',i===0?3.5:2).attr('fill',e.color).attr('stroke','#fff').attr('stroke-width',1);
+  });
+}
+function rmExp(id){ svg.select('#el').selectAll(`.exp-${id}`).remove(); }
+
+// ── Tooltip ──
+const tagN={tea:'차',cotton:'면화',rubber:'고무',cinchona:'키니네',sugar:'사탕수수',opium:'아편',breadfruit:'빵나무',spice:'향신료'};
+function showTT(ev,l){
+  const tt=document.getElementById('tt');
+  let tags='';
+  l.comms.forEach(c=>{tags+=`<span class="tag" style="background:${CC[c]}">${tagN[c]}</span>`;});
+  tt.innerHTML=`<h4>${l.name}</h4><div class="ts">${l.en}</div><p>${l.desc.substring(0,140)}…</p>${tags?'<div style="margin-top:6px">'+tags+'</div>':''}`;
+  tt.classList.add('show');
+  const svgR=document.getElementById('map').getBoundingClientRect();
+  const sc=svgR.width/960;
+  const [px,py]=proj([l.lon,l.lat]);
+  let left=px*sc+14, top=py*sc-16;
+  if(left+300>svgR.width) left=px*sc-314;
+  if(top<0) top=8;
+  tt.style.left=left+'px'; tt.style.top=top+'px';
+}
+function hideTT(){ document.getElementById('tt').classList.remove('show'); }
+
+// ── Panel ──
+function showLoc(l){
+  document.getElementById('pt').textContent=l.name;
+  document.getElementById('ps').textContent=l.en;
+  let tags='';
+  l.comms.forEach(c=>{tags+=`<span style="display:inline-block;font-size:11px;padding:3px 10px;border-radius:12px;margin:2px 3px 2px 0;background:${CC[c]};color:#fff;font-weight:500">${tagN[c]}</span>`;});
+  document.getElementById('pb').innerHTML=`<p>${l.desc}</p>`+(tags?`<div class="psec"><h4>관련 작물</h4>${tags}</div>`:'')+`<div class="psec"><h4>네트워크</h4><p style="text-transform:capitalize">${l.net==='british'?'영국 (큐 가든)':l.net==='french'?'프랑스 (자르댕 뒤 루아)':l.net==='spanish'?'스페인 (마드리드 왕립 식물원)':l.net==='dutch'?'네덜란드 (VOC / 레이던)':'기타'}</p></div>`;
+  openP();
+}
+function showExp(id){
+  const e=exps[id]; if(!e) return;
+  document.getElementById('pt').textContent=e.title;
+  document.getElementById('ps').textContent=e.sub;
+  document.getElementById('pb').innerHTML=e.body;
+  openP();
+  if(!activeE.has(id)) togE(id);
+}
+function openP(){ document.getElementById('pnl').classList.add('open'); document.getElementById('ov').classList.add('show'); }
+function closeP(){ document.getElementById('pnl').classList.remove('open'); document.getElementById('ov').classList.remove('show'); }
+
+init();
+</script>
+</body>
+</html>

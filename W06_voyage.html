@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인데버호의 항해 — 제임스 쿡, 금성 관측, 그리고 투파이아</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Noto+Serif+KR:wght@300;400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--parchment:#f4ead5;--parchment-dark:#e8d9b8;--ink:#2c1810;--ink-light:#5a3d2b;--ink-faint:#8b7355;--gold:#b8860b;--gold-light:#d4a832;--ocean:#1e3a4a;--ocean-deep:#0f2230;--red-accent:#c0392b}
+html{scroll-behavior:smooth}
+body{background:var(--ocean-deep);color:var(--parchment);font-family:'Noto Serif KR','Cormorant Garamond',serif;overflow-x:hidden}
+
+.hero{position:relative;height:100vh;min-height:600px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 30%,#1a2f3d 0%,#0d1b24 60%,#050d12 100%);overflow:hidden}
+#hero-stars{position:absolute;inset:0}
+.hero-content{position:relative;z-index:2;text-align:center}
+.hero-content h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,6vw,5rem);font-weight:300;letter-spacing:.15em;color:var(--parchment);opacity:0;animation:fadeUp 2s ease forwards .5s}
+.hero-content .sub{font-size:clamp(.9rem,2vw,1.3rem);color:var(--gold-light);letter-spacing:.3em;text-transform:uppercase;margin-top:.6em;opacity:0;animation:fadeUp 2s ease forwards 1s}
+.hero-content .date{font-size:clamp(.75rem,1.2vw,.9rem);color:rgba(244,234,213,.4);letter-spacing:.2em;margin-top:1.5em;opacity:0;animation:fadeUp 2s ease forwards 1.5s}
+.scroll-hint{position:absolute;bottom:2rem;z-index:2;color:rgba(244,234,213,.35);font-size:.7rem;letter-spacing:.25em;display:flex;flex-direction:column;align-items:center;gap:.4rem;animation:pulse 2.5s ease-in-out infinite}
+.scroll-hint svg{width:20px;height:20px;stroke:rgba(244,234,213,.35);fill:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.7}}
+
+.transit-section{background:var(--parchment);color:var(--ink);padding:6rem 2rem}
+.section-inner{max-width:1100px;margin:0 auto}
+.section-label{font-family:'Cormorant Garamond',serif;font-size:.72rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem}
+.section-title{font-size:clamp(1.7rem,3.5vw,2.6rem);font-weight:600;line-height:1.4;margin-bottom:1.8rem}
+.section-body{font-size:clamp(.92rem,1.4vw,1.05rem);line-height:2;color:var(--ink-light);max-width:720px}
+.section-body p+p{margin-top:1.4em}
+#transit-svg{margin:3rem auto;display:block}
+.transit-phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-top:2.5rem;max-width:900px;margin-left:auto;margin-right:auto}
+.phase-card{background:rgba(44,24,16,.03);border:1px solid rgba(44,24,16,.08);border-radius:3px;padding:1.3rem;transition:border-color .3s}
+.phase-card:hover{border-color:var(--gold)}
+.phase-card .num{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--gold);line-height:1}
+.phase-card h4{font-size:.9rem;margin:.4rem 0;font-weight:600}
+.phase-card p{font-size:.82rem;color:var(--ink-faint);line-height:1.6}
+
+.map-section{background:var(--ocean-deep);color:var(--parchment);padding:5rem 1rem 4rem}
+.map-section .section-label{color:var(--gold-light)}
+.map-section .section-title{color:var(--parchment)}
+.map-section .section-body{color:rgba(244,234,213,.65);max-width:720px}
+#map-container{width:100%;max-width:1200px;margin:2.5rem auto 1.5rem}
+#map-container svg{width:100%;height:auto;display:block}
+.map-legend{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-top:1rem;font-size:.78rem;color:rgba(244,234,213,.5)}
+.map-legend span{display:flex;align-items:center;gap:.4rem}
+.legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.map-info-bar{max-width:1200px;margin:0 auto;padding:1rem 1.5rem;background:rgba(244,234,213,.04);border:1px solid rgba(244,234,213,.06);border-radius:4px;min-height:52px;font-size:.88rem;color:rgba(244,234,213,.65);line-height:1.6;transition:all .3s}
+.map-info-bar strong{color:var(--gold-light)}
+.map-info-bar em{color:rgba(244,234,213,.45);font-style:normal;font-size:.8rem}
+
+.tupaia-section{background:linear-gradient(180deg,var(--parchment) 0%,var(--parchment-dark) 100%);color:var(--ink);padding:6rem 2rem}
+#tupaia-chart{margin:3rem auto;display:block}
+.tupaia-quote{max-width:680px;margin:2.5rem auto;padding:1.5rem 2rem;font-style:italic;font-size:1.05rem;line-height:2;color:var(--ink-light);border-left:3px solid var(--gold)}
+.tupaia-quote cite{display:block;margin-top:.8rem;font-style:normal;font-size:.8rem;color:var(--ink-faint)}
+
+.timeline-section{background:var(--parchment);color:var(--ink);padding:6rem 2rem}
+#timeline-svg{margin:2.5rem auto;display:block}
+
+.crew-section{background:var(--parchment-dark);color:var(--ink);padding:6rem 2rem}
+.crew-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1.3rem;max-width:1000px;margin:2.5rem auto 0}
+.crew-card{background:var(--parchment);border:1px solid rgba(44,24,16,.07);padding:1.8rem 1.3rem;border-radius:3px;text-align:center;transition:transform .3s,box-shadow .3s}
+.crew-card:hover{transform:translateY(-3px);box-shadow:0 6px 24px rgba(44,24,16,.08)}
+.crew-icon{width:46px;height:46px;margin:0 auto .8rem;border-radius:50%;background:var(--ocean);display:flex;align-items:center;justify-content:center;color:var(--parchment);font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600}
+.crew-card h4{font-size:.95rem;margin-bottom:.2rem}
+.crew-card .role{font-size:.75rem;color:var(--gold);letter-spacing:.08em;margin-bottom:.6rem}
+.crew-card p{font-size:.8rem;color:var(--ink-faint);line-height:1.6}
+
+.ending{background:radial-gradient(ellipse at 50% 70%,#1a2f3d,#050d12);color:var(--parchment);text-align:center;padding:7rem 2rem}
+.ending .section-title{color:var(--parchment)}
+.ending .section-body{color:rgba(244,234,213,.55);margin:0 auto;text-align:center}
+.ending .source{margin-top:2.5rem;font-size:.65rem;color:rgba(244,234,213,.25);letter-spacing:.1em}
+
+.divider{display:flex;align-items:center;justify-content:center;gap:.8rem;padding:2.5rem 0}
+.divider.on-dark{background:var(--ocean-deep)}
+.divider.on-light{background:var(--parchment)}
+.divider::before,.divider::after{content:'';flex:1;max-width:100px;height:1px;background:currentColor;opacity:.2}
+.divider svg{width:16px;height:16px;opacity:.25}
+
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:600px){.transit-phases{grid-template-columns:1fr}.crew-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <svg id="hero-stars" width="100%" height="100%"></svg>
+  <div class="hero-content">
+    <h1>HM Bark Endeavour</h1>
+    <div class="sub">1768 — 1771</div>
+    <div class="date">제임스 쿡의 첫 번째 항해 · 금성 관측 · 투파이아의 항해술</div>
+  </div>
+  <div class="scroll-hint"><span>SCROLL</span><svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+</section>
+
+<div class="divider on-light" style="color:var(--ink)"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width=".8"/><circle cx="8" cy="8" r="1" fill="currentColor"/></svg></div>
+
+<section class="transit-section">
+  <div class="section-inner reveal">
+    <div class="section-label">I · The Transit of Venus</div>
+    <div class="section-title">금성의 태양면 통과</div>
+    <div class="section-body" style="margin:0 auto">
+      <p>1769년 6월 3일, 타히티 포인트 비너스에서 쿡 선장과 천문학자 찰스 그린은 태양 앞을 지나가는 금성을 관측했다. 이 관측은 지구에서 태양까지의 거리를 측정하기 위한 시도였으며, 왕립학회가 이 항해를 조직한 핵심 이유였다.</p>
+      <p>금성은 태양면을 가로지르며 작은 검은 원반처럼 보였다. 관측자들은 네 단계의 접촉 시점을 기록했으나, '블랙 드롭 효과'라 불리는 현상이 정확한 시간 측정을 방해했다.</p>
+    </div>
+    <svg id="transit-svg" viewBox="0 0 700 360" style="max-width:700px;width:100%;cursor:pointer"></svg>
+    <div class="transit-phases">
+      <div class="phase-card"><div class="num">I</div><h4>외접 (1차 접촉)</h4><p>금성이 태양 원반의 바깥 가장자리에 처음 닿는 순간</p></div>
+      <div class="phase-card"><div class="num">II</div><h4>내접 (2차 접촉)</h4><p>금성이 완전히 태양 안으로 들어가며 블랙 드롭 효과 발생</p></div>
+      <div class="phase-card"><div class="num">III</div><h4>내접 (3차 접촉)</h4><p>금성이 태양 반대편 가장자리에 닿으며 빠져나가기 시작</p></div>
+      <div class="phase-card"><div class="num">IV</div><h4>외접 (4차 접촉)</h4><p>금성이 태양면을 완전히 벗어나는 마지막 순간</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider on-dark" style="color:var(--parchment)"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width=".8"/><circle cx="8" cy="8" r="1" fill="currentColor"/></svg></div>
+
+<section class="map-section">
+  <div class="section-inner">
+    <div class="section-label reveal">II · The Voyage</div>
+    <div class="section-title reveal">인데버호의 항해 경로</div>
+    <div class="section-body reveal">
+      <p>1768년 8월 플리머스를 출발한 인데버호는 대서양을 횡단하고 케이프 혼을 돌아 태평양으로 진입했다. 타히티에서 금성 관측을 마친 후, 비밀 지령에 따라 뉴질랜드와 호주 동해안을 탐사하며 해도를 제작했다. 바타비아에서 수리 후 희망봉을 거쳐 약 3년 만에 영국으로 귀환했다.</p>
+    </div>
+    <div id="map-container"></div>
+    <div class="map-legend">
+      <span><span class="legend-dot" style="background:var(--gold-light)"></span> 기항지</span>
+      <span><span class="legend-dot" style="background:#e85d3a"></span> 금성 관측 (타히티)</span>
+      <span><span class="legend-dot" style="background:#7ec8e3"></span> 투파이아 합류</span>
+      <span><span class="legend-dot" style="background:var(--red-accent)"></span> 투파이아 사망</span>
+    </div>
+    <div class="map-info-bar" id="map-info">기항지 위에 마우스를 올리면 상세 정보를 볼 수 있습니다.</div>
+  </div>
+</section>
+
+<div class="divider on-light" style="color:var(--ink)"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width=".8"/><circle cx="8" cy="8" r="1" fill="currentColor"/></svg></div>
+
+<section class="tupaia-section">
+  <div class="section-inner">
+    <div class="section-label reveal">III · Tupaia — Star Navigator</div>
+    <div class="section-title reveal">투파이아, 별의 항해사</div>
+    <div class="section-body reveal">
+      <p>투파이아(c.1725–1770)는 소시에테 제도 라이아테아 출신의 폴리네시아 항해사이자 아리오이 사제였다. 별과 해류, 바람과 파도를 읽어 광활한 태평양을 항해하는 '별의 항해사'였다.</p>
+      <p>1769년 7월 타히티에서 인데버호에 합류한 투파이아는 반경 3,200km에 걸친 약 130개 섬의 위치를 알고 있었으며, 그 중 74개를 해도에 기록했다. 뉴질랜드에서 마오리족과의 의사소통을 담당하며 항해의 핵심 인물이 되었다.</p>
+    </div>
+    <svg id="tupaia-chart" viewBox="0 0 800 600" style="max-width:800px;width:100%"></svg>
+    <div class="tupaia-quote reveal">
+      마오리족은 투파이아를 '토훙아(전문가)'로서 환대하며 귀한 개가죽 망토를 선물했다. 쿡이 1773년 뉴질랜드에 재방문했을 때, 마오리족은 인데버호를 '투파이아의 배'라 부르며 그의 이름을 외쳤다.
+      <cite>— Te Ara: Encyclopedia of New Zealand</cite>
+    </div>
+  </div>
+</section>
+
+<div class="divider on-light" style="color:var(--ink)"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width=".8"/><circle cx="8" cy="8" r="1" fill="currentColor"/></svg></div>
+
+<section class="timeline-section">
+  <div class="section-inner">
+    <div class="section-label reveal">IV · Timeline</div>
+    <div class="section-title reveal">항해 연대기</div>
+    <svg id="timeline-svg" viewBox="0 0 900 960" style="max-width:900px;width:100%"></svg>
+  </div>
+</section>
+
+<div class="divider on-light" style="color:var(--ink);background:var(--parchment-dark)"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width=".8"/><circle cx="8" cy="8" r="1" fill="currentColor"/></svg></div>
+
+<section class="crew-section">
+  <div class="section-inner">
+    <div class="section-label reveal">V · The Crew</div>
+    <div class="section-title reveal">인데버호의 사람들</div>
+    <div class="crew-grid">
+      <div class="crew-card reveal"><div class="crew-icon">JC</div><h4>제임스 쿡</h4><div class="role">선장 · 해도학자</div><p>요크셔 출신의 항해사이자 천문학자. 40세에 왕립학회의 탐험대를 이끌었다.</p></div>
+      <div class="crew-card reveal"><div class="crew-icon">CG</div><h4>찰스 그린</h4><div class="role">천문학자</div><p>그리니치 천문대 보조 천문학자. 금성 관측의 핵심 인물이었으나 귀국 중 사망.</p></div>
+      <div class="crew-card reveal"><div class="crew-icon">JB</div><h4>조셉 뱅크스</h4><div class="role">박물학자</div><p>26세의 부유한 자연학자. 투파이아를 승선시키는 데 결정적 역할을 했다.</p></div>
+      <div class="crew-card reveal"><div class="crew-icon" style="background:var(--red-accent)">T</div><h4>투파이아</h4><div class="role">항해사 · 사제 · 통역관</div><p>폴리네시아 별 항해사. 130개 섬의 위치를 알았으며 마오리족 통역을 담당했다.</p></div>
+      <div class="crew-card reveal"><div class="crew-icon">DS</div><h4>다니엘 솔란더</h4><div class="role">스웨덴 식물학자</div><p>린네의 제자. 뱅크스와 함께 수천 종의 미지의 식물을 채집하고 분류했다.</p></div>
+      <div class="crew-card reveal"><div class="crew-icon">SP</div><h4>시드니 파킨슨</h4><div class="role">식물 화가</div><p>항해 중 수백 점의 식물·동물 그림을 그렸으나 바타비아에서 이질로 사망.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="ending">
+  <div class="section-inner reveal">
+    <div class="section-title">두 세계의 항해술이 만나다</div>
+    <div class="section-body"><p>쿡의 육분의와 해시계, 투파이아의 별과 파도 —<br>서로 다른 두 항해 체계가 인데버호 위에서 만났다.</p></div>
+    <div class="source">Philosophical Transactions, Vol. LXI (1771) · Royal Society of London · D3.js 기반 인터랙티브 시각화</div>
+  </div>
+</section>
+
+<script>
+// HERO STARS
+(function(){
+  const svg=d3.select('#hero-stars');
+  const w=window.innerWidth,h=window.innerHeight;
+  d3.range(180).forEach(()=>{
+    svg.append('circle').attr('cx',Math.random()*w).attr('cy',Math.random()*h)
+      .attr('r',Math.random()*1.3+.3).attr('fill','#f4ead5').attr('opacity',Math.random()*.5+.15);
+  });
+})();
+
+// TRANSIT
+(function(){
+  const svg=d3.select('#transit-svg');
+  const W=700,H=360,cx=W/2,cy=H/2,sunR=130,vR=20;
+  const defs=svg.append('defs');
+  const sg=defs.append('radialGradient').attr('id','sG');
+  sg.append('stop').attr('offset','0%').attr('stop-color','#ffd700');
+  sg.append('stop').attr('offset','75%').attr('stop-color','#daa520');
+  sg.append('stop').attr('offset','100%').attr('stop-color','#b8860b');
+  svg.append('circle').attr('cx',cx).attr('cy',cy).attr('r',sunR+25).attr('fill','none').attr('stroke','#daa520').attr('stroke-width',.5).attr('opacity',.2);
+  svg.append('circle').attr('cx',cx).attr('cy',cy).attr('r',sunR).attr('fill','url(#sG)').attr('stroke','#b8860b').attr('stroke-width',.8);
+  d3.range(25).forEach(()=>{const a=Math.random()*Math.PI*2,d2=Math.random()*sunR*.85;svg.append('circle').attr('cx',cx+Math.cos(a)*d2).attr('cy',cy+Math.sin(a)*d2).attr('r',Math.random()*2.5+.5).attr('fill','#c8a020').attr('opacity',Math.random()*.25+.05);});
+  const pY=cy-25;
+  svg.append('line').attr('x1',50).attr('y1',pY).attr('x2',W-50).attr('y2',pY).attr('stroke','#8b7355').attr('stroke-width',.5).attr('stroke-dasharray','4,4').attr('opacity',.35);
+  [{x:cx-sunR-vR,l:'I'},{x:cx-sunR+vR,l:'II'},{x:cx+sunR-vR,l:'III'},{x:cx+sunR+vR,l:'IV'}].forEach(p=>{
+    svg.append('text').attr('x',p.x).attr('y',pY-vR-14).attr('text-anchor','middle').attr('fill','#8b7355').attr('font-size','10px').attr('font-family','Cormorant Garamond,serif').text(p.l);
+    svg.append('line').attr('x1',p.x).attr('y1',pY-vR-9).attr('x2',p.x).attr('y2',pY-vR-3).attr('stroke','#8b7355').attr('stroke-width',.5).attr('opacity',.5);
+  });
+  const venus=svg.append('circle').attr('cx',70).attr('cy',pY).attr('r',vR).attr('fill','#1a1a1a').attr('stroke','#333').attr('stroke-width',.5);
+  svg.append('text').attr('x',cx).attr('y',H-18).attr('text-anchor','middle').attr('fill','#8b7355').attr('font-size','10px').attr('font-family','Noto Serif KR,serif').text('클릭하여 금성의 태양면 통과를 관찰하세요');
+  let running=false;
+  svg.on('click',()=>{if(running)return;running=true;venus.transition().duration(7000).ease(d3.easeLinear).attr('cx',W-70).on('end',()=>{running=false;venus.attr('cx',70);});});
+})();
+
+// WORLD MAP
+(function(){
+  const container=d3.select('#map-container');
+  const W=1200,H=620;
+  const svg=container.append('svg').attr('viewBox',`0 0 ${W} ${H}`);
+
+  const projection=d3.geoNaturalEarth1().rotate([-160,0]).scale(210).translate([W/2,H/2+20]);
+  const pathGen=d3.geoPath().projection(projection);
+
+  // Ocean bg
+  svg.append('rect').attr('width',W).attr('height',H).attr('fill','#0f2230').attr('rx',4);
+
+  // Sphere outline
+  svg.append('path').datum({type:'Sphere'}).attr('d',pathGen).attr('fill','rgba(30,58,74,0.4)').attr('stroke','rgba(244,234,213,0.08)').attr('stroke-width',.5);
+
+  // Graticule
+  svg.append('path').datum(d3.geoGraticule().step([20,20])()).attr('d',pathGen).attr('fill','none').attr('stroke','rgba(244,234,213,0.04)').attr('stroke-width',.4);
+
+  // Waypoints data
+  const waypoints=[
+    {name:'플리머스',en:'Plymouth, England',lon:-4.14,lat:50.37,date:'1768.08.26',type:'port',desc:'94명 승무원과 함께 출항'},
+    {name:'마데이라',en:'Funchal, Madeira',lon:-16.9,lat:32.65,date:'1768.09.13',type:'port',desc:'와인과 보급품 적재'},
+    {name:'리우데자네이루',en:'Rio de Janeiro',lon:-43.17,lat:-22.9,date:'1768.11~12',type:'port',desc:'포르투갈 총독의 의심 속 기항'},
+    {name:'티에라 델 푸에고',en:'Tierra del Fuego',lon:-65,lat:-54.8,date:'1769.01',type:'pass',desc:'혹한의 남미 최남단'},
+    {name:'케이프 혼',en:'Cape Horn',lon:-67.27,lat:-55.98,date:'1769.01.25',type:'pass',desc:'태평양 진입'},
+    {name:'타히티',en:'Tahiti (Point Venus)',lon:-149.45,lat:-17.53,date:'1769.04~08',type:'venus',desc:'금성 태양면 통과 관측 (6월 3일)'},
+    {name:'라이아테아',en:"Ra'iatea",lon:-151.43,lat:-16.83,date:'1769.07',type:'tupaia',desc:'투파이아의 고향 · 인데버호 합류'},
+    {name:'뉴질랜드',en:'Poverty Bay, NZ',lon:178.02,lat:-38.68,date:'1769.10.08',type:'port',desc:'마오리족 첫 만남 · 투파이아 통역'},
+    {name:'퀸 샬럿 해협',en:'Queen Charlotte Sound',lon:174.25,lat:-41.1,date:'1770.01',type:'port',desc:'쿡 해협 발견'},
+    {name:'보터니 베이',en:'Botany Bay, Australia',lon:151.2,lat:-34,date:'1770.04.29',type:'port',desc:'호주 동해안 최초 상륙'},
+    {name:'쿡타운',en:'Cooktown, QLD',lon:145.25,lat:-15.47,date:'1770.06~08',type:'port',desc:'배리어 리프 좌초 · 7주간 수리'},
+    {name:'케이프 요크',en:'Cape York',lon:142.5,lat:-10.7,date:'1770.08',type:'pass',desc:'토레스 해협 통과'},
+    {name:'바타비아',en:'Batavia (Jakarta)',lon:106.84,lat:-6.2,date:'1770.10~12',type:'death',desc:'투파이아 사망 (12.20) · 말라리아 만연'},
+    {name:'희망봉',en:'Cape of Good Hope',lon:18.5,lat:-34.35,date:'1771.03.13',type:'port',desc:'대서양 귀환'},
+    {name:'세인트헬레나',en:'Saint Helena',lon:-5.72,lat:-15.96,date:'1771.05',type:'port',desc:'보급 기항'},
+    {name:'딜',en:'Deal, England',lon:1.4,lat:51.22,date:'1771.07.12',type:'port',desc:'약 3년간의 항해 종료'}
+  ];
+
+  // Route coords including intermediate ocean points
+  const routeCoords=[
+    [-4.14,50.37],[-10,45],[-16.9,32.65],[-25,15],[-35,0],[-43.17,-22.9],
+    [-55,-40],[-65,-54.8],[-67.27,-55.98],
+    [-80,-52],[-100,-40],[-120,-30],[-140,-22],[-149.45,-17.53],[-151.43,-16.83],
+    [-155,-20],[-165,-25],[-175,-30],[178,-36],[178.02,-38.68],
+    [176,-40],[174.25,-41.1],[170,-40],[165,-38],[158,-36],[151.2,-34],
+    [152,-28],[150,-22],[147,-18],[145.25,-15.47],[143,-12],[142.5,-10.7],
+    [138,-8],[130,-7],[120,-7],[112,-6.5],[106.84,-6.2],
+    [100,-8],[90,-12],[80,-16],[70,-20],[55,-25],[40,-30],[28,-33],[18.5,-34.35],
+    [10,-30],[0,-20],[-5.72,-15.96],[-8,-5],[-10,10],[-8,30],[-5,42],[0,48],[1.4,51.22]
+  ];
+
+  function drawLandAndRoute(landFeatures) {
+    // Draw land
+    svg.append('g').attr('class','land').selectAll('path')
+      .data(landFeatures)
+      .enter().append('path')
+      .attr('d',pathGen)
+      .attr('fill','rgba(180,165,140,0.12)')
+      .attr('stroke','rgba(244,234,213,0.15)')
+      .attr('stroke-width',.4);
+
+    // Country borders (subtle)
+    if (landFeatures.length > 1) {
+      svg.append('g').attr('class','borders').selectAll('path')
+        .data(landFeatures)
+        .enter().append('path')
+        .attr('d',pathGen)
+        .attr('fill','none')
+        .attr('stroke','rgba(244,234,213,0.06)')
+        .attr('stroke-width',.3);
+    }
+
+    // Project route
+    const proj=routeCoords.map(c=>projection(c)).filter(c=>c&&isFinite(c[0])&&isFinite(c[1]));
+
+    // Route glow
+    svg.append('path').attr('d',d3.line().curve(d3.curveCatmullRom.alpha(.4))(proj))
+      .attr('fill','none').attr('stroke','rgba(212,168,50,0.12)').attr('stroke-width',8).attr('stroke-linecap','round');
+
+    // Route line (animated)
+    const routeLine=svg.append('path').attr('d',d3.line().curve(d3.curveCatmullRom.alpha(.4))(proj))
+      .attr('fill','none').attr('stroke','rgba(212,168,50,0.65)').attr('stroke-width',2.2).attr('stroke-linecap','round');
+
+    const totalLen=routeLine.node().getTotalLength();
+    routeLine.attr('stroke-dasharray',totalLen).attr('stroke-dashoffset',totalLen);
+
+    // Dashed secondary line (always visible, faint)
+    svg.append('path').attr('d',d3.line().curve(d3.curveCatmullRom.alpha(.4))(proj))
+      .attr('fill','none').attr('stroke','rgba(212,168,50,0.1)').attr('stroke-width',1).attr('stroke-dasharray','4,6');
+
+    // Animate on scroll
+    let anim=false;
+    new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting&&!anim){anim=true;routeLine.transition().duration(5000).ease(d3.easeLinear).attr('stroke-dashoffset',0);}
+      });
+    },{threshold:.2}).observe(container.node());
+
+    // Waypoint markers
+    const infoBar=d3.select('#map-info');
+
+    waypoints.forEach((wp,i)=>{
+      const p=projection([wp.lon,wp.lat]);
+      if(!p||!isFinite(p[0]))return;
+      const[px,py]=p;
+      const color=wp.type==='venus'?'#e85d3a':wp.type==='tupaia'?'#7ec8e3':wp.type==='death'?'#c0392b':wp.type==='pass'?'rgba(212,168,50,0.5)':'#d4a832';
+      const r=wp.type==='venus'?7:wp.type==='tupaia'?6:wp.type==='death'?6:wp.type==='pass'?3:4;
+
+      if(wp.type==='venus'||wp.type==='tupaia'||wp.type==='death'){
+        svg.append('circle').attr('cx',px).attr('cy',py).attr('r',r).attr('fill','none').attr('stroke',color).attr('stroke-width',.8).attr('opacity',.35)
+          .append('animate').attr('attributeName','r').attr('values',`${r};${r+12};${r}`).attr('dur','2.5s').attr('repeatCount','indefinite');
+      }
+
+      svg.append('circle').attr('cx',px).attr('cy',py).attr('r',r).attr('fill',color).attr('stroke','rgba(255,255,255,0.25)').attr('stroke-width',.5);
+
+      // Label positioning
+      let anchor='start',dx=10,dy=3;
+      // Adjust for crowded areas
+      if(wp.name==='라이아테아'){anchor='end';dx=-10;dy=-8;}
+      else if(wp.name==='케이프 혼'){dy=14;}
+      else if(wp.name==='티에라 델 푸에고'){anchor='end';dx=-10;}
+      else if(wp.name==='퀸 샬럿 해협'){anchor='end';dx=-10;}
+      else if(px>W*.65){anchor='end';dx=-10;}
+
+      svg.append('text').attr('x',px+dx).attr('y',py+dy)
+        .attr('text-anchor',anchor).attr('fill','rgba(244,234,213,0.6)').attr('font-size','8px')
+        .attr('font-family','Noto Serif KR,serif').text(wp.name);
+
+      // Hover
+      svg.append('circle').attr('cx',px).attr('cy',py).attr('r',18).attr('fill','transparent').style('cursor','pointer')
+        .on('mouseenter',()=>{infoBar.html(`<strong>${wp.name}</strong> &nbsp;${wp.en} &nbsp;<em>${wp.date}</em><br>${wp.desc||''}`);})
+        .on('mouseleave',()=>{infoBar.html('기항지 위에 마우스를 올리면 상세 정보를 볼 수 있습니다.');});
+    });
+
+    // Ship marker
+    const ship=svg.append('g').attr('opacity',.85);
+    ship.append('polygon').attr('points','0,-6 4,5 -4,5').attr('fill','#f4ead5');
+    const startPt=proj[0];
+    ship.attr('transform',`translate(${startPt[0]},${startPt[1]})`);
+
+    setTimeout(()=>{
+      const node=routeLine.node();
+      d3.timer(elapsed=>{
+        const t=Math.min(1,elapsed/14000);
+        const pt=node.getPointAtLength(t*totalLen);
+        const pt2=node.getPointAtLength(Math.min(totalLen,t*totalLen+3));
+        const angle=Math.atan2(pt2.y-pt.y,pt2.x-pt.x)*180/Math.PI+90;
+        ship.attr('transform',`translate(${pt.x},${pt.y}) rotate(${angle})`);
+        if(t>=1) return true;
+      });
+    },5500);
+  }
+
+  // Try loading TopoJSON world atlas
+  const worldUrl='https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
+  const worldUrl2='https://unpkg.com/world-atlas@2/countries-110m.json';
+
+  d3.json(worldUrl).then(world=>{
+    const land=topojson.feature(world,world.objects.countries);
+    drawLandAndRoute(land.features);
+  }).catch(()=>{
+    d3.json(worldUrl2).then(world=>{
+      const land=topojson.feature(world,world.objects.countries);
+      drawLandAndRoute(land.features);
+    }).catch(()=>{
+      // Fallback: use d3.json with land-110m
+      d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json').then(world=>{
+        const land=topojson.feature(world,world.objects.land);
+        drawLandAndRoute(land.features||[land]);
+      }).catch(()=>{
+        // Final fallback: simplified land polygons
+        const regions=[
+          [[-10,36],[0,36],[10,38],[20,35],[25,36],[30,42],[28,45],[30,48],[25,55],[20,58],[15,62],[10,63],[5,60],[0,50],[-5,48],[-10,44],[-10,36]],
+          [[-17,15],[-5,5],[8,4],[20,5],[33,10],[43,12],[50,12],[42,0],[40,-10],[36,-20],[28,-34],[20,-35],[12,-5],[-5,5],[-17,15]],
+          [[-80,10],[-62,11],[-52,5],[-35,-5],[-35,-12],[-50,-25],[-65,-40],[-70,-55],[-76,-52],[-73,-30],[-80,-2],[-80,10]],
+          [[-170,62],[-140,60],[-125,50],[-125,40],[-110,30],[-95,28],[-82,25],[-75,35],[-65,45],[-55,50],[-65,60],[-100,70],[-170,62]],
+          [[114,-15],[135,-12],[149,-15],[153,-25],[145,-38],[130,-32],[115,-33],[114,-25],[114,-15]],
+          [[173,-35],[178,-37],[178,-41],[174,-39],[173,-35]],
+          [[167,-44],[174,-42],[174,-47],[168,-46],[167,-44]],
+          [[50,25],[70,15],[90,22],[100,5],[110,20],[120,23],[130,35],[140,40],[155,50],[170,65],[180,70],[100,55],[60,40],[50,25]],
+          [[95,-5],[108,-7],[120,-8],[141,-5],[141,-8],[118,-9],[105,-6],[95,-5]],
+        ];
+        const features=regions.map(coords=>{
+          return {type:"Feature",geometry:{type:"Polygon",coordinates:[coords.map(c=>[...c]).concat([coords[0].slice()])]}};
+        });
+        drawLandAndRoute(features);
+      });
+    });
+  });
+})();
+
+// TUPAIA CHART
+(function(){
+  const svg=d3.select('#tupaia-chart');
+  const W=800,H=600,cx=W/2,cy=H/2;
+  svg.append('circle').attr('cx',cx).attr('cy',cy).attr('r',255).attr('fill','rgba(42,74,94,0.06)').attr('stroke','rgba(42,74,94,0.12)').attr('stroke-width',.8);
+  [70,130,190,250].forEach(r=>{svg.append('circle').attr('cx',cx).attr('cy',cy).attr('r',r).attr('fill','none').attr('stroke','rgba(42,74,94,0.08)').attr('stroke-width',.4).attr('stroke-dasharray','2,3');});
+  d3.range(8).forEach(i=>{const a=(i*45-90)*Math.PI/180;svg.append('line').attr('x1',cx).attr('y1',cy).attr('x2',cx+Math.cos(a)*265).attr('y2',cy+Math.sin(a)*265).attr('stroke','rgba(42,74,94,0.07)').attr('stroke-width',.4);});
+  [{a:0,l:'Avatea (정오/북)'},{a:90,l:'동'},{a:180,l:'남'},{a:270,l:'서'}].forEach(d=>{const rad=(d.a-90)*Math.PI/180;svg.append('text').attr('x',cx+Math.cos(rad)*275).attr('y',cy+Math.sin(rad)*275+4).attr('text-anchor','middle').attr('fill','rgba(42,74,94,0.35)').attr('font-size','9px').text(d.l);});
+  const isl=[{n:"Ra'iatea",k:'라이아테아',x:cx-15,y:cy-10,r:6,c:'#8b2500',home:1},{n:'Tahiti',k:'타히티',x:cx+50,y:cy+18,r:7,c:'#d4a832'},{n:'Bora Bora',k:'보라보라',x:cx-55,y:cy-45,r:4,c:'#5a3d2b'},{n:'Huahine',k:'후아히네',x:cx+8,y:cy-40,r:4,c:'#5a3d2b'},{n:"Mo'orea",k:'모레아',x:cx+75,y:cy+8,r:4,c:'#5a3d2b'},{n:'Tuamotu',k:'투아모투',x:cx+135,y:cy+45,r:3,c:'#5a3d2b'},{n:'Marquesas',k:'마르키즈',x:cx+125,y:cy-75,r:3,c:'#5a3d2b'},{n:'Tonga',k:'통가',x:cx-135,y:cy+75,r:3,c:'#5a3d2b'},{n:'Samoa',k:'사모아',x:cx-155,y:cy+25,r:3,c:'#5a3d2b'},{n:'Fiji',k:'피지',x:cx-175,y:cy+55,r:3,c:'#5a3d2b'},{n:'Rotuma',k:'로투마',x:cx-195,y:cy-15,r:3,c:'#8b7355'},{n:"Hawai'i",k:'하와이',x:cx+75,y:cy-155,r:3,c:'#8b7355'},{n:'Rapa Nui',k:'이스터 섬',x:cx+195,y:cy+115,r:3,c:'#8b7355'}];
+  [[0,1],[0,2],[0,3],[1,4],[1,5],[5,6],[0,8],[8,7],[7,9],[9,10]].forEach(([a,b])=>{svg.append('line').attr('x1',isl[a].x).attr('y1',isl[a].y).attr('x2',isl[b].x).attr('y2',isl[b].y).attr('stroke','rgba(139,38,0,0.12)').attr('stroke-width',.8).attr('stroke-dasharray','3,3');});
+  isl.forEach(is=>{
+    if(is.home){svg.append('circle').attr('cx',is.x).attr('cy',is.y).attr('r',is.r+5).attr('fill','none').attr('stroke','#8b2500').attr('stroke-width',.8).attr('opacity',.35).attr('stroke-dasharray','2,2');}
+    svg.append('circle').attr('cx',is.x).attr('cy',is.y).attr('r',is.r).attr('fill',is.c).attr('opacity',.65);
+    svg.append('text').attr('x',is.x).attr('y',is.y+is.r+11).attr('text-anchor','middle').attr('fill','rgba(44,24,16,0.5)').attr('font-size','7.5px').attr('font-family','Cormorant Garamond,serif').text(is.n);
+    svg.append('text').attr('x',is.x).attr('y',is.y+is.r+22).attr('text-anchor','middle').attr('fill','rgba(44,24,16,0.35)').attr('font-size','7.5px').text(is.k);
+  });
+  svg.append('text').attr('x',cx).attr('y',H-18).attr('text-anchor','middle').attr('fill','rgba(44,24,16,0.3)').attr('font-size','9px').attr('font-family','Cormorant Garamond,serif').attr('letter-spacing','.12em').text("투파이아의 별 나침반 — 폴리네시아 항해 체계의 개념적 재현");
+})();
+
+// TIMELINE
+(function(){
+  const svg=d3.select('#timeline-svg');
+  const evs=[
+    {d:'1768.08.26',t:'플리머스 출항',s:'94명의 승무원과 함께 출발'},
+    {d:'1768.09',t:'마데이라 기항',s:'보급품 적재'},
+    {d:'1768.11~12',t:'리우데자네이루',s:'포르투갈의 의심 속 기항'},
+    {d:'1769.01',t:'케이프 혼 통과',s:'남미 최남단 · 태평양 진입'},
+    {d:'1769.04.13',t:'타히티 도착',s:'포인트 비너스에 관측소 건설'},
+    {d:'1769.06.03',t:'금성 태양면 통과 관측',s:'쿡, 그린, 솔란더 독립 관측',h:1},
+    {d:'1769.07',t:'투파이아 합류',s:'뱅크스의 요청으로 인데버호 승선',h:1},
+    {d:'1769.08',t:'소시에테 제도 탐사',s:'투파이아의 해도 제작 시작'},
+    {d:'1769.10.08',t:'뉴질랜드 상륙',s:'빈곤만 · 마오리족 첫 만남'},
+    {d:'1769.10~1770.03',t:'뉴질랜드 해도 제작',s:'6개월간 전 해안선 측량'},
+    {d:'1770.04.19',t:'호주 동해안 도달',s:'유럽인 최초의 동해안 탐사'},
+    {d:'1770.06.11',t:'그레이트 배리어 리프 좌초',s:'7주간 쿡타운에서 수리'},
+    {d:'1770.10',t:'바타비아 입항',s:'선박 수리 · 말라리아 만연'},
+    {d:'1770.12.20',t:'투파이아 사망',s:'바타비아에서 병사',h:1},
+    {d:'1771.03.13',t:'희망봉 통과',s:'대서양 귀환'},
+    {d:'1771.07.12',t:'딜 항 귀환',s:'약 3년간의 항해 종료'}
+  ];
+  const rH=56;
+  svg.append('line').attr('x1',130).attr('y1',25).attr('x2',130).attr('y2',evs.length*rH+15).attr('stroke','rgba(44,24,16,0.12)').attr('stroke-width',1);
+  evs.forEach((ev,i)=>{
+    const y=35+i*rH,g=svg.append('g').attr('transform',`translate(0,${y})`);
+    g.append('circle').attr('cx',130).attr('cy',10).attr('r',ev.h?5:3).attr('fill',ev.h?'#8b2500':'#b8860b').attr('opacity',ev.h?1:.6);
+    if(ev.h){g.append('circle').attr('cx',130).attr('cy',10).attr('r',5).attr('fill','none').attr('stroke','#8b2500').attr('stroke-width',.8).attr('opacity',.25).append('animate').attr('attributeName','r').attr('values','5;13;5').attr('dur','2.5s').attr('repeatCount','indefinite');}
+    g.append('text').attr('x',115).attr('y',14).attr('text-anchor','end').attr('fill',ev.h?'#8b2500':'rgba(44,24,16,0.45)').attr('font-size','10.5px').attr('font-family','Cormorant Garamond,serif').attr('font-weight',ev.h?'600':'400').text(ev.d);
+    g.append('text').attr('x',150).attr('y',10).attr('fill',ev.h?'#2c1810':'rgba(44,24,16,0.75)').attr('font-size','12.5px').attr('font-weight',ev.h?'600':'400').text(ev.t);
+    g.append('text').attr('x',150).attr('y',26).attr('fill','rgba(44,24,16,0.4)').attr('font-size','10.5px').text(ev.s);
+  });
+})();
+
+// SCROLL REVEAL
+new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.12}).observe;
+document.querySelectorAll('.reveal').forEach(el=>{
+  new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.12}).observe(el);
+});
+</script>
+</body>
+</html>
