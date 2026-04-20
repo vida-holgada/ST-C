@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ST&amp;C W07 - 증기기관은 어떻게 만들어졌나</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Roboto+Slab:wght@500;700&display=swap');
+
+:root {
+  --paper: #f5f0e6;
+  --paper-2: #ebe0cf;
+  --panel: #fffaf2;
+  --ink: #211d19;
+  --muted: #71665b;
+  --faint: #9a8d80;
+  --line: rgba(33, 29, 25, 0.16);
+  --line-dark: rgba(33, 29, 25, 0.34);
+  --iron: #3f4548;
+  --iron-2: #656b6d;
+  --brass: #b78237;
+  --copper: #b55f3a;
+  --steam: #e66f4c;
+  --water: #2c7fb8;
+  --teal: #2d7f73;
+  --violet: #5f579c;
+  --shadow: 0 18px 44px rgba(49, 34, 19, 0.12);
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background:
+    linear-gradient(90deg, rgba(33, 29, 25, 0.035) 1px, transparent 1px),
+    linear-gradient(180deg, var(--paper) 0%, #e7d9c4 100%);
+  background-size: 32px 32px, auto;
+  color: var(--ink);
+  font-family: 'Noto Sans KR', system-ui, sans-serif;
+  line-height: 1.62;
+}
+
+button {
+  font: inherit;
+}
+
+.page {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 22px 18px 48px;
+}
+
+.topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.back-link {
+  color: var(--muted);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+.hero {
+  min-height: 230px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: 28px;
+  align-items: end;
+  padding: 38px 0 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow {
+  color: var(--copper);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 8px 0 10px;
+  font-family: 'Roboto Slab', 'Noto Sans KR', serif;
+  font-size: clamp(34px, 5vw, 68px);
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+.hero-copy {
+  margin: 0;
+  max-width: 720px;
+  color: var(--muted);
+  font-size: 17px;
+}
+
+.hero-motif {
+  width: 100%;
+  min-height: 150px;
+}
+
+.hero-motif svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.timeline-nav {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.era-btn {
+  min-height: 74px;
+  appearance: none;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 250, 242, 0.68);
+  color: var(--ink);
+  padding: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.era-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--line-dark);
+}
+
+.era-btn.is-active {
+  background: var(--panel);
+  border-color: var(--copper);
+  box-shadow: inset 0 3px 0 var(--copper);
+}
+
+.era-year {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.era-name {
+  margin-top: 2px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 16px;
+}
+
+.machine-panel,
+.side-card,
+.explain-card,
+.cycle-card {
+  background: rgba(255, 250, 242, 0.82);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+}
+
+.machine-panel {
+  padding: 14px;
+}
+
+.stage-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 10px;
+}
+
+.stage-kicker {
+  color: var(--copper);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.stage-title {
+  margin-top: 2px;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.stage-tagline {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.stage-badge {
+  display: grid;
+  place-items: center;
+  min-width: 72px;
+  min-height: 56px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--brass);
+  font-family: 'Roboto Slab', serif;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.anim-box {
+  border: 1px solid rgba(33, 29, 25, 0.12);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f9f4eb;
+}
+
+.machine-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: auto minmax(120px, 1fr) 128px;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.play-btn {
+  min-width: 112px;
+  border: 1px solid var(--line-dark);
+  border-radius: 6px;
+  background: var(--ink);
+  color: #fffaf2;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.play-btn:hover {
+  background: #3a332c;
+}
+
+.progress-track {
+  height: 8px;
+  background: rgba(33, 29, 25, 0.11);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--water), var(--steam), var(--brass));
+  transition: width 0.1s linear;
+}
+
+.phase-label {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.side {
+  display: grid;
+  gap: 10px;
+}
+
+.side-card {
+  padding: 13px;
+  box-shadow: none;
+}
+
+.metric-label,
+.section-label {
+  color: var(--faint);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.metric-value {
+  margin-top: 4px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.metric-bar {
+  height: 6px;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(33, 29, 25, 0.1);
+}
+
+.metric-fill {
+  height: 100%;
+  background: var(--copper);
+}
+
+.parts-list {
+  display: grid;
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.part-row {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: var(--copper);
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.explain-card {
+  padding: 15px;
+  box-shadow: none;
+}
+
+.explain-card p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.cycle-card {
+  margin-top: 16px;
+  padding: 15px;
+  box-shadow: none;
+}
+
+.cycle-steps {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.cycle-step {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+  padding: 8px;
+  border-radius: 6px;
+  color: var(--muted);
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.cycle-step.is-active {
+  background: rgba(44, 127, 184, 0.12);
+  color: var(--ink);
+}
+
+.step-num {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(33, 29, 25, 0.1);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.cycle-step.is-active .step-num {
+  background: var(--water);
+  color: white;
+}
+
+.follow-up {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.question-btn {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 250, 242, 0.7);
+  color: var(--ink);
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.question-btn:hover {
+  border-color: var(--copper);
+}
+
+.answer-box {
+  min-height: 44px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--copper);
+  color: var(--muted);
+  background: rgba(255, 250, 242, 0.66);
+  font-size: 13px;
+}
+
+.svg-label {
+  fill: #332b24;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.svg-small {
+  fill: #6e6258;
+  font-size: 11px;
+}
+
+.metal { fill: var(--iron-2); stroke: var(--iron); }
+.copper { fill: var(--copper); stroke: #7f3e27; }
+.brass { fill: var(--brass); stroke: #73501e; }
+.steam { fill: var(--steam); }
+.water { fill: var(--water); }
+.teal { fill: var(--teal); stroke: #195c52; }
+.violet { fill: var(--violet); stroke: #423b76; }
+.pipe { fill: none; stroke: var(--iron); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.thin-pipe { fill: none; stroke: var(--iron-2); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.brace { fill: none; stroke: #75512d; stroke-width: 7; stroke-linecap: round; }
+.flow { fill: none; stroke-width: 5; stroke-linecap: round; stroke-dasharray: 10 12; }
+.rivets circle { fill: rgba(33, 29, 25, 0.42); }
+
+@media (max-width: 980px) {
+  .hero,
+  .main-grid,
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .page { padding: 14px 12px 36px; }
+  .timeline-nav { grid-template-columns: 1fr; }
+  .stage-header,
+  .controls {
+    grid-template-columns: 1fr;
+  }
+  .stage-badge {
+    width: 72px;
+  }
+  .phase-label {
+    text-align: left;
+  }
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="topline">
+    <a class="back-link" href="./index.html">ST&amp;C 자료 목록</a>
+    <span class="eyebrow">Week 07 · Industrial Revolution</span>
+  </div>
+
+  <section class="hero" aria-labelledby="page-title">
+    <div>
+      <div class="eyebrow">1698-1784</div>
+      <h1 id="page-title">증기기관은 어떻게 만들어졌나</h1>
+      <p class="hero-copy">완성품 하나가 갑자기 등장한 이야기가 아니다. 세이버리의 압력 탱크, 파팽의 피스톤, 뉴커먼의 요동빔, 와트의 분리 응축기와 회전 기구가 차례로 덧붙으며 산업혁명의 동력원이 만들어졌다.</p>
+    </div>
+    <div class="hero-motif" aria-hidden="true">
+      <svg viewBox="0 0 420 180" role="img">
+        <path class="pipe" d="M36 128H144C168 128 166 82 196 82H352"/>
+        <circle cx="85" cy="128" r="34" fill="none" stroke="#3f4548" stroke-width="8"/>
+        <circle cx="85" cy="128" r="8" fill="#3f4548"/>
+        <circle cx="270" cy="82" r="42" fill="none" stroke="#b78237" stroke-width="9"/>
+        <circle cx="270" cy="82" r="16" fill="none" stroke="#b55f3a" stroke-width="7"/>
+        <path d="M34 156H386" stroke="rgba(33,29,25,.18)" stroke-width="3"/>
+        <g fill="#e66f4c" opacity=".38">
+          <circle cx="156" cy="42" r="16"/>
+          <circle cx="184" cy="30" r="10"/>
+          <circle cx="218" cy="42" r="13"/>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <nav class="timeline-nav" aria-label="증기기관 발전 단계"></nav>
+
+  <section class="main-grid">
+    <div class="machine-panel">
+      <div class="stage-header" id="stage-header"></div>
+      <div class="anim-box" id="anim-box"></div>
+      <div class="controls">
+        <button class="play-btn" id="play-btn" type="button">정지</button>
+        <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="cycle-bar"></div></div>
+        <div class="phase-label" id="phase-label">대기 중</div>
+      </div>
+    </div>
+
+    <aside class="side" id="stats-panel" aria-label="기술 요약"></aside>
+  </section>
+
+  <section class="details-grid">
+    <article class="explain-card">
+      <div class="section-label">개조: 무엇을 더했나</div>
+      <p id="tinker-text"></p>
+    </article>
+    <article class="explain-card">
+      <div class="section-label">수리: 무엇이 계속 고장났나</div>
+      <p id="maint-text"></p>
+    </article>
+  </section>
+
+  <section class="cycle-card">
+    <div class="section-label">작동 사이클</div>
+    <div class="cycle-steps" id="cycle-steps"></div>
+    <div class="follow-up" id="follow-up"></div>
+    <div class="answer-box" id="answer-box">질문을 누르면 수업 토론용 짧은 설명이 여기에 표시됩니다.</div>
+  </section>
+</main>
+
+<script>
+const stages = [
+  {
+    short: "세이버리",
+    name: "토머스 세이버리: 광부의 친구",
+    year: "1698",
+    tagline: "피스톤 없이 증기 압력과 응축 진공만으로 물을 밀고 빨아올린 기관",
+    eff: "0.5x",
+    power: "약 1마력",
+    useDesc: "얕은 갱도 양수",
+    effScore: 13,
+    tinker: "두 개의 구리 수조가 번갈아 작동했다. 한쪽은 보일러에서 온 증기 압력으로 물을 위로 밀어올리고, 다른 쪽은 찬물을 맞아 응축 진공을 만들며 갱도 물을 빨아올렸다. 핵심 부품은 압력 수조, 흡입 체크밸브, 토출 체크밸브, 수동 증기밸브였다.",
+    maint: "압력을 올릴수록 물은 더 높이 올라갔지만, 납땜 이음매와 구리 수조가 버티지 못했다. 밸브는 손으로 맞춰 깎아 누설이 잦았고, 뜨거운 수조에 냉각수를 뿌리는 열충격도 큰 문제였다.",
+    parts: [
+      ["압력 수조 A/B", "#b55f3a"],
+      ["보일러와 증기밸브", "#b78237"],
+      ["흡입/토출 체크밸브", "#3f4548"],
+      ["냉각수 분사관", "#2c7fb8"]
+    ],
+    cycle: [
+      "증기밸브를 열어 수조 A를 증기로 채운다.",
+      "수조 A의 증기 압력이 물을 토출관 위로 밀어올린다.",
+      "수조 A 외벽에 찬물을 뿌려 증기를 응축시킨다.",
+      "수조 A 안의 진공이 아래 갱도 물을 빨아올리고, 수조 B가 반대로 작동한다."
+    ],
+    questions: [
+      ["왜 깊은 갱도에는 적합하지 않았나?", "물이 올라가는 높이를 압력으로 해결해야 했기 때문이다. 당시 보일러와 수조는 고압을 안전하게 견디기 어려웠고, 흡입 자체도 대기압 한계 때문에 얕은 깊이에 묶였다."],
+      ["피스톤이 없다는 점이 왜 중요한가?", "피스톤이 없으면 왕복 운동을 바로 만들 수 없다. 세이버리 기관은 회전 동력이나 기계 구동보다 양수용 압력 장치에 가까웠다."]
+    ],
+    svg: saverySvg,
+    animate: animateSavery
+  },
+  {
+    short: "파팽",
+    name: "드니 파팽: 피스톤이라는 발상",
+    year: "1690-1707",
+    tagline: "증기 응축으로 피스톤 아래에 진공을 만들고 대기압이 일을 하게 한 실험",
+    eff: "0.6x",
+    power: "실험용",
+    useDesc: "원리 시연",
+    effScore: 15,
+    tinker: "파팽은 한 통 안에서 물을 끓이고 식히며 피스톤이 오르내릴 수 있음을 보였다. 실용 동력원은 아니었지만, 실린더와 피스톤이 대기압 기관의 핵심 부품이 될 수 있다는 점을 선명하게 만들었다.",
+    maint: "같은 실린더를 매번 가열하고 냉각해야 했기 때문에 열 손실이 컸다. 금속 실린더는 열 팽창과 수축을 반복하며 뒤틀렸고, 피스톤 가장자리의 밀봉도 안정적이지 않았다. 안전밸브 발상은 이 위험을 다루는 중요한 유산이었다.",
+    parts: [
+      ["세로 실린더", "#5f579c"],
+      ["피스톤과 로드", "#3f4548"],
+      ["가열수와 증기", "#e66f4c"],
+      ["안전밸브", "#b78237"]
+    ],
+    cycle: [
+      "실린더 바닥의 물을 가열해 증기를 만든다.",
+      "증기압이 피스톤을 밀어올린다.",
+      "열원을 치우고 실린더를 냉각한다.",
+      "증기가 응축되며 진공이 생기고 대기압이 피스톤을 내리누른다."
+    ],
+    questions: [
+      ["파팽이 실용 엔진을 만들지 못한 이유는?", "가열과 냉각이 같은 실린더 안에서 반복되어 너무 느리고 비효율적이었다. 정밀한 실린더 제작과 안정적인 밸브 제어도 아직 부족했다."],
+      ["안전밸브는 왜 중요했나?", "압력이 일정 수준을 넘으면 증기를 배출해 폭발을 막는다. 증기기관이 커질수록 안전밸브는 보일러 운전의 기본 장치가 되었다."]
+    ],
+    svg: papinSvg,
+    animate: animatePapin
+  },
+  {
+    short: "뉴커먼",
+    name: "토머스 뉴커먼: 대기압 기관",
+    year: "1712",
+    tagline: "피스톤, 별도 보일러, 요동빔, 갱도 펌프가 결합된 첫 실용 기관",
+    eff: "1.0x",
+    power: "약 5.5마력",
+    useDesc: "깊은 갱도 양수",
+    effScore: 25,
+    tinker: "뉴커먼은 피스톤 아래에 증기를 넣고 실린더 안에 찬물을 분사했다. 증기가 한순간에 응축되면 대기압이 피스톤을 아래로 누르고, 요동빔 반대편 펌프로드가 올라가며 갱도 물을 끌어올렸다. 플러그로드와 밸브줄은 사람 손을 자동 기구로 바꿔 가는 출발점이었다.",
+    maint: "매 스트로크마다 실린더를 데웠다가 식혀야 했으므로 석탄을 많이 먹었다. 거친 주철 실린더와 피스톤 틈새는 젖은 가죽 패킹과 물막으로 막았고, 사슬과 빔 축은 계속 마모됐다.",
+    parts: [
+      ["요동빔과 중심축", "#b78237"],
+      ["실린더와 피스톤", "#b55f3a"],
+      ["냉수 분사 노즐", "#2c7fb8"],
+      ["갱도 펌프로드", "#2d7f73"]
+    ],
+    cycle: [
+      "보일러 증기가 실린더를 채우며 피스톤이 올라간다.",
+      "분사밸브가 열리고 찬물이 실린더 안으로 들어간다.",
+      "증기가 응축되어 진공이 생기고 대기압이 피스톤을 내린다.",
+      "요동빔 반대편의 펌프로드가 올라가며 갱도 물을 퍼올린다."
+    ],
+    questions: [
+      ["왜 뉴커먼 기관은 석탄을 많이 썼나?", "응축을 실린더 안에서 했기 때문에 매번 뜨거워야 할 실린더를 일부러 식혔다. 다음 스트로크에는 그 금속을 다시 데우느라 증기가 낭비됐다."],
+      ["요동빔은 어떤 일을 했나?", "피스톤의 위아래 운동을 반대편 펌프로드의 위아래 운동으로 전달했다. 광산에서는 이 구조가 긴 펌프로드를 움직이는 데 특히 유용했다."]
+    ],
+    svg: newcomenSvg,
+    animate: animateNewcomen
+  },
+  {
+    short: "와트 1차",
+    name: "제임스 와트 1차 개조: 분리 응축기",
+    year: "1765",
+    tagline: "실린더는 계속 뜨겁게 두고, 응축은 별도의 차가운 용기에서 처리",
+    eff: "3.0x",
+    power: "약 10마력",
+    useDesc: "연료 절감 양수",
+    effScore: 75,
+    tinker: "와트의 핵심은 실린더와 응축기를 분리한 것이다. 실린더는 증기 자켓으로 뜨겁게 유지하고, 배기 증기는 차가운 응축기로 보내 진공을 만들었다. 공기펌프는 응축수와 공기를 빼내 진공을 유지했다.",
+    maint: "부품이 늘어난 만큼 정비 지점도 늘었다. 분리 응축기, 공기펌프, 배관, 밸브가 모두 기밀을 유지해야 했다. 그래도 실린더를 매번 식히지 않았기 때문에 연료 소비가 크게 줄었다.",
+    parts: [
+      ["증기 자켓 실린더", "#b78237"],
+      ["분리 응축기", "#2d7f73"],
+      ["공기펌프", "#2c7fb8"],
+      ["보일러 배관", "#b55f3a"]
+    ],
+    cycle: [
+      "보일러 증기가 뜨거운 실린더로 들어간다.",
+      "배기밸브가 열리며 증기가 분리 응축기로 빠져나간다.",
+      "응축기에서 증기가 물로 바뀌어 진공을 만든다.",
+      "공기펌프가 응축수와 공기를 뽑아내고, 실린더는 뜨겁게 유지된다."
+    ],
+    questions: [
+      ["분리 응축기는 무엇을 해결했나?", "뉴커먼 기관의 가장 큰 낭비, 즉 실린더를 매번 식히고 다시 데우는 문제를 해결했다. 뜨거운 곳과 차가운 곳을 분리한 것이 핵심이다."],
+      ["정밀 보링머신은 왜 필요했나?", "실린더가 둥글고 매끈해야 피스톤이 새지 않고 움직인다. 존 윌킨슨의 보링 기술은 와트 기관을 실제 크기로 만들 수 있게 했다."]
+    ],
+    svg: wattCondenserSvg,
+    animate: animateWattCondenser
+  },
+  {
+    short: "와트 2차",
+    name: "제임스 와트 2차 개조: 회전 기관",
+    year: "1781-1784",
+    tagline: "복동식 실린더, 평행운동 링크, 태양-행성 기어, 원심 조속기의 결합",
+    eff: "4.0x",
+    power: "약 40마력",
+    useDesc: "공장 동력원",
+    effScore: 100,
+    tinker: "와트의 두 번째 개조는 양수 기관을 공장 동력원으로 바꿨다. 복동식 실린더는 피스톤 양쪽에 번갈아 증기를 넣어 매 스트로크마다 일을 했고, 평행운동 링크는 피스톤로드를 곧게 움직였다. 태양-행성 기어와 플라이휠은 왕복 운동을 회전 운동으로 바꿨다.",
+    maint: "회전 기관은 연속 운전을 전제로 했다. 스터핑 박스, 편심륜, 베어링, 기어 이, 조속기 볼의 균형이 모두 계획 정비 대상이 되었다. 공장제 생산은 이런 반복 정비 체계를 함께 요구했다.",
+    parts: [
+      ["복동식 실린더", "#2c7fb8"],
+      ["평행운동 링크", "#b78237"],
+      ["태양-행성 기어와 플라이휠", "#2d7f73"],
+      ["원심 조속기와 스로틀", "#5f579c"]
+    ],
+    cycle: [
+      "피스톤 위쪽으로 증기가 들어가 아래 방향 일을 만든다.",
+      "밸브가 전환되며 위쪽은 배기, 아래쪽은 흡기가 된다.",
+      "피스톤 아래쪽 증기가 위 방향 일을 만든다.",
+      "링크와 기어가 왕복 운동을 회전으로 바꾸고 조속기가 속도를 조절한다."
+    ],
+    questions: [
+      ["태양-행성 기어는 왜 썼나?", "크랭크 특허를 피하면서도 빔의 왕복 운동을 회전 운동으로 바꾸기 위해 사용했다. 공장 축을 돌리는 데 필요한 핵심 변환 장치였다."],
+      ["원심 조속기는 왜 중요한가?", "부하가 줄면 회전수가 오르고 조속기 볼이 벌어져 증기 유입을 줄인다. 부하가 늘면 반대로 증기를 더 열어 속도를 안정화한다."]
+    ],
+    svg: wattRotarySvg,
+    animate: animateWattRotary
+  }
+];
+
+let currentStage = 0;
+let animPhase = 0;
+let animTime = 0;
+let playing = true;
+let rafId = null;
+
+const nav = document.querySelector(".timeline-nav");
+const playBtn = document.getElementById("play-btn");
+
+function makeStageButtons() {
+  nav.innerHTML = stages.map((stage, index) => `
+    <button class="era-btn" type="button" data-era="${index}" aria-label="${stage.year} ${stage.short}">
+      <div class="era-year">${stage.year}</div>
+      <div class="era-name">${stage.short}</div>
+    </button>
+  `).join("");
+
+  nav.querySelectorAll(".era-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      currentStage = Number(button.dataset.era);
+      animPhase = 0;
+      animTime = 0;
+      renderStage();
+    });
+  });
+}
+
+function renderStage() {
+  const stage = stages[currentStage];
+
+  document.getElementById("stage-header").innerHTML = `
+    <div>
+      <div class="stage-kicker">${stage.year}</div>
+      <div class="stage-title">${stage.name}</div>
+      <div class="stage-tagline">${stage.tagline}</div>
+    </div>
+    <div class="stage-badge">${stage.eff}</div>
+  `;
+
+  document.getElementById("anim-box").innerHTML = stage.svg();
+
+  document.getElementById("stats-panel").innerHTML = `
+    <div class="side-card">
+      <div class="metric-label">상대 효율</div>
+      <div class="metric-value">${stage.eff}</div>
+      <div class="metric-bar"><div class="metric-fill" style="width:${stage.effScore}%"></div></div>
+    </div>
+    <div class="side-card">
+      <div class="metric-label">출력</div>
+      <div class="metric-value">${stage.power}</div>
+    </div>
+    <div class="side-card">
+      <div class="metric-label">주요 용도</div>
+      <div class="metric-value">${stage.useDesc}</div>
+    </div>
+    <div class="side-card">
+      <div class="metric-label">눈여겨볼 부품</div>
+      <div class="parts-list">
+        ${stage.parts.map(([name, color]) => `
+          <div class="part-row"><span class="dot" style="background:${color}"></span><span>${name}</span></div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+
+  document.getElementById("tinker-text").textContent = stage.tinker;
+  document.getElementById("maint-text").textContent = stage.maint;
+  document.getElementById("cycle-steps").innerHTML = stage.cycle.map((step, index) => `
+    <div class="cycle-step" data-step="${index}">
+      <div class="step-num">${index + 1}</div>
+      <div>${step}</div>
+    </div>
+  `).join("");
+
+  document.getElementById("follow-up").innerHTML = stage.questions.map(([question], index) => `
+    <button class="question-btn" type="button" data-question="${index}">${question}</button>
+  `).join("");
+  document.getElementById("answer-box").textContent = "질문을 누르면 수업 토론용 짧은 설명이 여기에 표시됩니다.";
+  document.querySelectorAll(".question-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      const [, answer] = stage.questions[Number(button.dataset.question)];
+      document.getElementById("answer-box").textContent = answer;
+    });
+  });
+
+  document.querySelectorAll(".era-btn").forEach((button, index) => {
+    button.classList.toggle("is-active", index === currentStage);
+  });
+
+  updateAnimation(0);
+}
+
+function e(id) {
+  return document.getElementById(id);
+}
+
+function set(id, attr, value) {
+  const element = e(id);
+  if (element) element.setAttribute(attr, value);
+}
+
+function style(id, prop, value) {
+  const element = e(id);
+  if (element) element.style[prop] = value;
+}
+
+function lerp(start, end, t) {
+  return start + (end - start) * t;
+}
+
+function phaseText(title, desc) {
+  set("phase-title", "textContent", title);
+  const titleElement = e("phase-title");
+  const descElement = e("phase-desc");
+  if (titleElement) titleElement.textContent = title;
+  if (descElement) descElement.textContent = desc;
+  document.getElementById("phase-label").textContent = title;
+}
+
+function updateCycleSteps() {
+  document.querySelectorAll(".cycle-step").forEach((step, index) => {
+    step.classList.toggle("is-active", index === animPhase);
+  });
+}
+
+function updateAnimation(subT) {
+  const stage = stages[currentStage];
+  stage.animate(animPhase, subT);
+  updateCycleSteps();
+}
+
+function step(timestamp) {
+  if (!playing) return;
+  if (!step.last) step.last = timestamp;
+  const dt = (timestamp - step.last) / 1000;
+  step.last = timestamp;
+  animTime += dt;
+
+  const phaseDuration = 1.55;
+  const phaseCount = stages[currentStage].cycle.length;
+  const totalDuration = phaseDuration * phaseCount;
+  const cycleTime = animTime % totalDuration;
+  animPhase = Math.floor(cycleTime / phaseDuration);
+  const subT = (cycleTime % phaseDuration) / phaseDuration;
+
+  document.getElementById("cycle-bar").style.width = `${(cycleTime / totalDuration) * 100}%`;
+  updateAnimation(subT);
+  rafId = requestAnimationFrame(step);
+}
+
+playBtn.addEventListener("click", () => {
+  playing = !playing;
+  playBtn.textContent = playing ? "정지" : "재생";
+  if (playing) {
+    step.last = null;
+    rafId = requestAnimationFrame(step);
+  } else if (rafId) {
+    cancelAnimationFrame(rafId);
+  }
+});
+
+function saverySvg() {
+  return `<svg class="machine-svg" viewBox="0 0 780 420" role="img" aria-label="세이버리 증기기관 상세 도식">
+    <defs>
+      <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2c7fb8"/></marker>
+      <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#e66f4c"/></marker>
+    </defs>
+    <rect x="0" y="0" width="780" height="420" fill="#f9f4eb"/>
+    <path d="M40 358H730" stroke="rgba(33,29,25,.18)" stroke-width="4"/>
+    <rect x="575" y="86" width="128" height="274" fill="rgba(33,29,25,.07)" stroke="rgba(33,29,25,.18)"/>
+    <text x="639" y="78" text-anchor="middle" class="svg-label">갱도</text>
+    <rect x="595" y="300" width="88" height="42" fill="#2c7fb8" opacity=".42"/>
+    <text x="639" y="349" text-anchor="middle" class="svg-small">갱도 물</text>
+
+    <g id="boiler0">
+      <ellipse cx="112" cy="305" rx="58" ry="22" class="brass" opacity=".92"/>
+      <rect x="54" y="246" width="116" height="60" class="brass" opacity=".88"/>
+      <ellipse cx="112" cy="246" rx="58" ry="22" fill="#c89349" stroke="#73501e" stroke-width="2"/>
+      <rect x="75" y="272" width="74" height="22" fill="rgba(255,255,255,.14)" stroke="rgba(33,29,25,.18)"/>
+      <g class="rivets">
+        <circle cx="72" cy="252" r="3"/><circle cx="92" cy="246" r="3"/><circle cx="112" cy="244" r="3"/><circle cx="132" cy="246" r="3"/><circle cx="152" cy="252" r="3"/>
+      </g>
+      <path d="M72 333Q82 314 92 333M101 333Q112 311 122 333M132 333Q143 315 153 333" fill="none" stroke="#e66f4c" stroke-width="5" stroke-linecap="round"/>
+      <text x="112" y="238" text-anchor="middle" class="svg-label">보일러</text>
+      <circle id="pressurePulse0" cx="112" cy="246" r="8" fill="#e66f4c" opacity=".24"/>
+    </g>
+
+    <path class="pipe" d="M170 258H226C246 258 246 214 268 214H300"/>
+    <path class="pipe" d="M170 258H226C246 258 246 214 268 214H413"/>
+    <rect id="steamValveA0" x="258" y="198" width="28" height="32" rx="4" class="metal"/>
+    <rect id="steamValveB0" x="371" y="198" width="28" height="32" rx="4" class="metal"/>
+    <path id="steamFlow0" class="flow" d="M176 258H226C246 258 246 214 300 214" stroke="#e66f4c" marker-end="url(#arrow-red)" opacity=".75"/>
+
+    <g id="tankA0">
+      <ellipse cx="314" cy="138" rx="44" ry="15" class="copper"/>
+      <rect x="270" y="138" width="88" height="128" class="copper" opacity=".74"/>
+      <ellipse cx="314" cy="266" rx="44" ry="15" fill="#8c432b" stroke="#7f3e27" stroke-width="2"/>
+      <rect id="tankAwater0" x="274" y="222" width="80" height="42" fill="#2c7fb8" opacity=".55"/>
+      <ellipse id="tankAwaterTop0" cx="314" cy="222" rx="40" ry="10" fill="#62a8d6" opacity=".62"/>
+      <circle id="tankAsteam0" cx="314" cy="168" r="24" fill="#e66f4c" opacity=".36"/>
+      <g class="rivets">
+        <circle cx="282" cy="151" r="3"/><circle cx="346" cy="151" r="3"/><circle cx="282" cy="252" r="3"/><circle cx="346" cy="252" r="3"/>
+      </g>
+      <text x="314" y="122" text-anchor="middle" class="svg-label">압력 수조 A</text>
+    </g>
+
+    <g id="tankB0">
+      <ellipse cx="426" cy="138" rx="44" ry="15" class="copper"/>
+      <rect x="382" y="138" width="88" height="128" class="copper" opacity=".74"/>
+      <ellipse cx="426" cy="266" rx="44" ry="15" fill="#8c432b" stroke="#7f3e27" stroke-width="2"/>
+      <rect id="tankBwater0" x="386" y="180" width="80" height="84" fill="#2c7fb8" opacity=".55"/>
+      <ellipse id="tankBwaterTop0" cx="426" cy="180" rx="40" ry="10" fill="#62a8d6" opacity=".62"/>
+      <circle id="tankBsteam0" cx="426" cy="228" r="8" fill="#e66f4c" opacity=".28"/>
+      <g class="rivets">
+        <circle cx="394" cy="151" r="3"/><circle cx="458" cy="151" r="3"/><circle cx="394" cy="252" r="3"/><circle cx="458" cy="252" r="3"/>
+      </g>
+      <text x="426" y="122" text-anchor="middle" class="svg-label">압력 수조 B</text>
+    </g>
+
+    <path class="thin-pipe" d="M314 266V324H610V300" />
+    <path class="thin-pipe" d="M426 266V324H610V300" />
+    <path id="suctionFlow0" class="flow" d="M624 306H426V266" stroke="#2c7fb8" marker-end="url(#arrow-blue)" opacity=".7"/>
+    <g transform="translate(606 303)">
+      <path d="M0 0L26 0L13 -16Z" fill="#3f4548"/>
+      <text x="13" y="22" text-anchor="middle" class="svg-small">흡입 체크밸브</text>
+    </g>
+
+    <path class="thin-pipe" d="M314 138V72H514V38H662" />
+    <path class="thin-pipe" d="M426 138V72" />
+    <path id="deliveryFlow0" class="flow" d="M314 138V72H514V38H650" stroke="#2c7fb8" marker-end="url(#arrow-blue)" opacity=".7"/>
+    <g transform="translate(506 58)">
+      <path d="M0 0L28 0L14 -18Z" fill="#3f4548"/>
+      <text x="14" y="20" text-anchor="middle" class="svg-small">토출 체크밸브</text>
+    </g>
+
+    <g id="sprayA0" opacity="0">
+      <rect x="248" y="84" width="66" height="18" rx="4" fill="#dcecf5" stroke="#2c7fb8"/>
+      <path d="M260 104L276 130M282 104L304 130M305 104L330 132" stroke="#2c7fb8" stroke-width="3" stroke-dasharray="4 5"/>
+      <text x="281" y="80" text-anchor="middle" class="svg-small">냉각수</text>
+    </g>
+    <g id="sprayB0" opacity="0">
+      <rect x="402" y="84" width="66" height="18" rx="4" fill="#dcecf5" stroke="#2c7fb8"/>
+      <path d="M413 104L397 130M436 104L424 132M459 104L443 130" stroke="#2c7fb8" stroke-width="3" stroke-dasharray="4 5"/>
+      <text x="435" y="80" text-anchor="middle" class="svg-small">냉각수</text>
+    </g>
+
+    <text id="phase-title" x="390" y="386" text-anchor="middle" class="svg-label">증기 주입</text>
+    <text id="phase-desc" x="390" y="404" text-anchor="middle" class="svg-small">수조 A를 압력으로 채움</text>
+  </svg>`;
+}
+
+function papinSvg() {
+  return `<svg class="machine-svg" viewBox="0 0 780 420" role="img" aria-label="파팽 피스톤 실험 장치 상세 도식">
+    <rect width="780" height="420" fill="#f9f4eb"/>
+    <path d="M54 360H718" stroke="rgba(33,29,25,.18)" stroke-width="4"/>
+
+    <g transform="translate(300 58)">
+      <rect x="0" y="52" width="160" height="246" rx="6" fill="#dcd6e8" stroke="#423b76" stroke-width="5"/>
+      <rect x="18" y="72" width="124" height="206" rx="4" fill="rgba(255,255,255,.28)" stroke="rgba(66,59,118,.32)" stroke-width="2"/>
+      <rect id="piston1" x="20" y="128" width="120" height="26" rx="4" fill="#5f579c" stroke="#423b76" stroke-width="3"/>
+      <path id="pistonRing1" d="M25 136H135M25 146H135" stroke="#d7d0ef" stroke-width="2"/>
+      <rect id="rod1" x="73" y="-16" width="14" height="146" fill="#656b6d" stroke="#3f4548" stroke-width="2"/>
+      <circle cx="80" cy="-20" r="20" fill="#656b6d" stroke="#3f4548" stroke-width="3"/>
+      <text x="80" y="-46" text-anchor="middle" class="svg-label">피스톤 로드</text>
+      <text x="80" y="318" text-anchor="middle" class="svg-label">밀폐 실린더</text>
+      <rect x="26" y="262" width="108" height="16" fill="#2c7fb8" opacity=".52"/>
+      <g id="steamCloud1" opacity=".3">
+        <circle cx="42" cy="238" r="12" fill="#e66f4c"/>
+        <circle cx="76" cy="216" r="16" fill="#e66f4c"/>
+        <circle cx="116" cy="238" r="12" fill="#e66f4c"/>
+      </g>
+      <g id="vacuum1" opacity="0">
+        <path d="M34 176H126M34 202H126M34 228H126" stroke="#2c7fb8" stroke-width="3" stroke-dasharray="6 8"/>
+        <text x="80" y="198" text-anchor="middle" class="svg-small">응축 진공</text>
+      </g>
+    </g>
+
+    <g id="burner1">
+      <path d="M342 368Q354 340 366 368M376 368Q390 336 404 368M414 368Q426 342 438 368" fill="none" stroke="#e66f4c" stroke-width="6" stroke-linecap="round"/>
+      <rect x="328" y="372" width="128" height="16" rx="4" fill="#3f4548"/>
+      <text x="392" y="404" text-anchor="middle" class="svg-small">가열</text>
+    </g>
+
+    <g id="coolant1" opacity="0">
+      <rect x="488" y="166" width="116" height="40" rx="5" fill="#dcecf5" stroke="#2c7fb8" stroke-width="2"/>
+      <path d="M490 216L462 230M506 216L462 250M522 216L462 270" stroke="#2c7fb8" stroke-width="4" stroke-dasharray="5 7"/>
+      <text x="546" y="191" text-anchor="middle" class="svg-label">냉각수</text>
+    </g>
+
+    <g transform="translate(180 98)">
+      <path d="M0 210H72" class="thin-pipe"/>
+      <rect x="10" y="168" width="52" height="42" class="brass"/>
+      <path id="safetyValve1" d="M36 168V130M22 130H82" stroke="#73501e" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="36" cy="168" r="8" fill="#b78237" stroke="#73501e" stroke-width="2"/>
+      <circle cx="82" cy="130" r="9" fill="#b55f3a" stroke="#7f3e27" stroke-width="2"/>
+      <text x="38" y="232" text-anchor="middle" class="svg-label">안전밸브</text>
+    </g>
+
+    <path d="M80 100C110 70 156 70 190 104" fill="none" stroke="#3f4548" stroke-width="5"/>
+    <rect x="74" y="104" width="122" height="78" rx="6" fill="rgba(63,69,72,.12)" stroke="#3f4548" stroke-width="3"/>
+    <text x="135" y="145" text-anchor="middle" class="svg-label">대기압</text>
+    <path d="M135 184V238" stroke="#3f4548" stroke-width="5" marker-end="url(#papin-arrow)"/>
+    <defs><marker id="papin-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#3f4548"/></marker></defs>
+
+    <text id="phase-title" x="390" y="32" text-anchor="middle" class="svg-label">가열 시작</text>
+    <text id="phase-desc" x="390" y="50" text-anchor="middle" class="svg-small">물이 끓으며 피스톤을 밀어올릴 증기 생성</text>
+  </svg>`;
+}
+
+function newcomenSvg() {
+  return `<svg class="machine-svg" viewBox="0 0 780 440" role="img" aria-label="뉴커먼 대기압 기관 상세 도식">
+    <rect width="780" height="440" fill="#f9f4eb"/>
+    <path d="M36 382H744" stroke="rgba(33,29,25,.18)" stroke-width="4"/>
+    <path d="M382 92L340 382H424L382 92Z" fill="rgba(63,69,72,.12)" stroke="#3f4548" stroke-width="5"/>
+    <circle cx="382" cy="92" r="14" fill="#3f4548"/>
+    <g id="beam2" transform="rotate(0 382 92)">
+      <path d="M116 80H648" stroke="#8a5c28" stroke-width="18" stroke-linecap="round"/>
+      <path d="M120 80H644" stroke="#d39a45" stroke-width="6" stroke-linecap="round" opacity=".55"/>
+      <path id="chainLeft2" d="M166 89C166 118 168 142 172 170" fill="none" stroke="#3f4548" stroke-width="5" stroke-linecap="round"/>
+      <path id="chainRight2" d="M600 89C600 122 598 146 594 174" fill="none" stroke="#3f4548" stroke-width="5" stroke-linecap="round"/>
+    </g>
+
+    <g transform="translate(108 176)">
+      <rect x="0" y="50" width="118" height="145" rx="6" fill="#c57a40" stroke="#7f3e27" stroke-width="5"/>
+      <ellipse cx="59" cy="50" rx="59" ry="18" fill="#d08b51" stroke="#7f3e27" stroke-width="4"/>
+      <rect id="piston2" x="10" y="82" width="98" height="24" rx="4" fill="#656b6d" stroke="#3f4548" stroke-width="3"/>
+      <rect id="rod2" x="52" y="-4" width="14" height="92" fill="#656b6d" stroke="#3f4548" stroke-width="2"/>
+      <g id="steam2" opacity=".75">
+        <circle cx="34" cy="134" r="12" fill="#e66f4c"/>
+        <circle cx="62" cy="152" r="14" fill="#e66f4c"/>
+        <circle cx="88" cy="132" r="11" fill="#e66f4c"/>
+      </g>
+      <g id="spray2" opacity="0">
+        <path d="M118 70L88 103M126 82L88 122M134 94L88 142" stroke="#2c7fb8" stroke-width="4" stroke-dasharray="5 6"/>
+        <text x="132" y="66" class="svg-small">냉수분사</text>
+      </g>
+      <text x="59" y="216" text-anchor="middle" class="svg-label">실린더</text>
+    </g>
+
+    <g transform="translate(28 268)">
+      <rect x="0" y="32" width="80" height="74" fill="#b78237" stroke="#73501e" stroke-width="4"/>
+      <ellipse cx="40" cy="32" rx="40" ry="14" fill="#c99547" stroke="#73501e" stroke-width="3"/>
+      <path d="M16 118Q24 100 32 118M40 118Q50 96 60 118" fill="none" stroke="#e66f4c" stroke-width="5" stroke-linecap="round"/>
+      <text x="40" y="24" text-anchor="middle" class="svg-label">보일러</text>
+    </g>
+    <path class="thin-pipe" d="M108 320H82V300" />
+    <path id="steamFlow2" class="flow" d="M84 300H108" stroke="#e66f4c" opacity=".7"/>
+
+    <g transform="translate(264 156)">
+      <path id="plugRod2" d="M0 0V208" stroke="#3f4548" stroke-width="5" stroke-linecap="round"/>
+      <rect x="-9" y="46" width="18" height="8" fill="#b78237"/>
+      <rect x="-9" y="92" width="18" height="8" fill="#b78237"/>
+      <rect x="-9" y="138" width="18" height="8" fill="#b78237"/>
+      <path id="valveCord2" d="M0 48C-40 62 -60 88 -78 114" fill="none" stroke="#6f5a45" stroke-width="3" stroke-dasharray="6 5"/>
+      <text x="34" y="66" class="svg-small">플러그로드</text>
+    </g>
+
+    <g transform="translate(560 150)">
+      <rect x="0" y="76" width="94" height="180" fill="rgba(45,127,115,.14)" stroke="#195c52" stroke-width="5"/>
+      <rect id="pumpBucket2" x="12" y="146" width="70" height="26" rx="4" fill="#2d7f73" stroke="#195c52" stroke-width="3"/>
+      <rect id="pumpRod2" x="44" y="0" width="12" height="158" fill="#656b6d" stroke="#3f4548" stroke-width="2"/>
+      <rect id="pumpWater2" x="8" y="202" width="78" height="48" fill="#2c7fb8" opacity=".46"/>
+      <path d="M94 98H144V42" class="thin-pipe"/>
+      <path id="pumpFlow2" class="flow" d="M94 98H140V48" stroke="#2c7fb8" opacity=".7"/>
+      <text x="47" y="278" text-anchor="middle" class="svg-label">갱도 펌프</text>
+    </g>
+
+    <text id="phase-title" x="390" y="28" text-anchor="middle" class="svg-label">증기 유입</text>
+    <text id="phase-desc" x="390" y="46" text-anchor="middle" class="svg-small">피스톤이 올라가고 반대편 펌프가 내려감</text>
+  </svg>`;
+}
+
+function wattCondenserSvg() {
+  return `<svg class="machine-svg" viewBox="0 0 780 440" role="img" aria-label="와트 분리 응축기 기관 상세 도식">
+    <rect width="780" height="440" fill="#f9f4eb"/>
+    <path d="M36 382H744" stroke="rgba(33,29,25,.18)" stroke-width="4"/>
+    <path d="M390 82L350 382H430L390 82Z" fill="rgba(63,69,72,.12)" stroke="#3f4548" stroke-width="5"/>
+    <circle cx="390" cy="82" r="14" fill="#3f4548"/>
+    <g id="beam3" transform="rotate(0 390 82)">
+      <path d="M120 70H650" stroke="#8a5c28" stroke-width="18" stroke-linecap="round"/>
+      <path d="M128 70H642" stroke="#d39a45" stroke-width="6" stroke-linecap="round" opacity=".55"/>
+      <path d="M170 80C170 116 172 148 176 180" fill="none" stroke="#3f4548" stroke-width="5" stroke-linecap="round"/>
+    </g>
+
+    <g transform="translate(120 156)">
+      <rect x="-16" y="34" width="150" height="184" rx="7" fill="rgba(183,130,55,.28)" stroke="#73501e" stroke-width="3"/>
+      <rect x="0" y="52" width="118" height="148" rx="6" fill="#c99547" stroke="#73501e" stroke-width="5"/>
+      <rect id="piston3" x="10" y="90" width="98" height="24" rx="4" fill="#656b6d" stroke="#3f4548" stroke-width="3"/>
+      <rect id="rod3" x="52" y="-8" width="14" height="106" fill="#656b6d" stroke="#3f4548" stroke-width="2"/>
+      <g id="hotSteam3" opacity=".75">
+        <circle cx="34" cy="142" r="12" fill="#e66f4c"/>
+        <circle cx="66" cy="162" r="16" fill="#e66f4c"/>
+        <circle cx="94" cy="142" r="12" fill="#e66f4c"/>
+      </g>
+      <text x="59" y="240" text-anchor="middle" class="svg-label">뜨거운 실린더</text>
+      <text x="59" y="254" text-anchor="middle" class="svg-small">증기 자켓</text>
+    </g>
+
+    <g transform="translate(40 282)">
+      <rect x="0" y="36" width="78" height="66" class="brass"/>
+      <ellipse cx="39" cy="36" rx="39" ry="14" fill="#c99547" stroke="#73501e" stroke-width="3"/>
+      <path d="M14 114Q24 94 34 114M42 114Q54 92 66 114" fill="none" stroke="#e66f4c" stroke-width="5" stroke-linecap="round"/>
+      <text x="39" y="26" text-anchor="middle" class="svg-label">보일러</text>
+    </g>
+    <path class="thin-pipe" d="M118 326H88V306H104V208H120"/>
+    <path id="boilerFlow3" class="flow" d="M92 306H104V208H120" stroke="#e66f4c" opacity=".7"/>
+
+    <path class="pipe" d="M238 292H322V250H386"/>
+    <path id="condenserFlow3" class="flow" d="M238 292H322V250H386" stroke="#e66f4c" opacity=".0"/>
+    <g transform="translate(386 198)">
+      <rect x="0" y="28" width="100" height="120" rx="8" fill="rgba(45,127,115,.3)" stroke="#195c52" stroke-width="5"/>
+      <ellipse cx="50" cy="28" rx="50" ry="18" fill="#76b6ad" stroke="#195c52" stroke-width="4"/>
+      <ellipse cx="50" cy="148" rx="50" ry="18" fill="#2d7f73" opacity=".72" stroke="#195c52" stroke-width="3"/>
+      <g id="coldCoils3">
+        <path d="M18 54C78 54 22 76 82 76S22 100 82 100S22 122 82 122" fill="none" stroke="#2c7fb8" stroke-width="4"/>
+      </g>
+      <g id="vacuum3" opacity=".0">
+        <path d="M24 62H76M24 84H76M24 106H76" stroke="#2c7fb8" stroke-width="3" stroke-dasharray="6 8"/>
+      </g>
+      <text x="50" y="178" text-anchor="middle" class="svg-label">분리 응축기</text>
+    </g>
+
+    <g transform="translate(548 238)">
+      <circle cx="52" cy="76" r="44" fill="rgba(44,127,184,.18)" stroke="#2c7fb8" stroke-width="4"/>
+      <rect id="airPumpPiston3" x="32" y="66" width="40" height="18" rx="3" fill="#2c7fb8" stroke="#14547c" stroke-width="3"/>
+      <rect id="airPumpRod3" x="48" y="0" width="8" height="70" fill="#656b6d" stroke="#3f4548" stroke-width="2"/>
+      <path class="thin-pipe" d="M0 76H8"/>
+      <path d="M96 76H128V106" class="thin-pipe"/>
+      <text x="52" y="142" text-anchor="middle" class="svg-label">공기펌프</text>
+    </g>
+
+    <text id="phase-title" x="390" y="28" text-anchor="middle" class="svg-label">증기 → 실린더</text>
+    <text id="phase-desc" x="390" y="46" text-anchor="middle" class="svg-small">실린더는 계속 뜨거운 상태로 유지</text>
+  </svg>`;
+}
+
+function wattRotarySvg() {
+  return `<svg class="machine-svg" viewBox="0 0 820 460" role="img" aria-label="와트 회전 증기기관 상세 도식">
+    <rect width="820" height="460" fill="#f9f4eb"/>
+    <path d="M38 402H780" stroke="rgba(33,29,25,.18)" stroke-width="4"/>
+
+    <path d="M288 92L250 402H326L288 92Z" fill="rgba(63,69,72,.12)" stroke="#3f4548" stroke-width="5"/>
+    <circle cx="288" cy="92" r="14" fill="#3f4548"/>
+    <g id="beam4" transform="rotate(0 288 92)">
+      <path d="M78 80H500" stroke="#8a5c28" stroke-width="18" stroke-linecap="round"/>
+      <path d="M86 80H492" stroke="#d39a45" stroke-width="6" stroke-linecap="round" opacity=".55"/>
+      <path d="M124 90C124 120 126 150 132 178" fill="none" stroke="#3f4548" stroke-width="5" stroke-linecap="round"/>
+    </g>
+
+    <g transform="translate(82 178)">
+      <rect x="0" y="28" width="116" height="162" rx="6" fill="rgba(44,127,184,.22)" stroke="#14547c" stroke-width="5"/>
+      <rect id="piston4" x="10" y="94" width="96" height="24" rx="4" fill="#656b6d" stroke="#3f4548" stroke-width="3"/>
+      <rect id="rod4" x="51" y="-8" width="14" height="112" fill="#656b6d" stroke="#3f4548" stroke-width="2"/>
+      <g id="steamTop4" opacity=".75">
+        <circle cx="30" cy="54" r="10" fill="#e66f4c"/>
+        <circle cx="62" cy="64" r="13" fill="#e66f4c"/>
+        <circle cx="92" cy="52" r="10" fill="#e66f4c"/>
+      </g>
+      <g id="steamBot4" opacity=".0">
+        <circle cx="30" cy="150" r="10" fill="#e66f4c"/>
+        <circle cx="62" cy="160" r="13" fill="#e66f4c"/>
+        <circle cx="92" cy="148" r="10" fill="#e66f4c"/>
+      </g>
+      <rect id="topValve4" x="122" y="48" width="36" height="22" rx="3" fill="#3f4548"/>
+      <rect id="bottomValve4" x="122" y="146" width="36" height="22" rx="3" fill="#3f4548" opacity=".45"/>
+      <path class="thin-pipe" d="M158 58H194M158 156H194"/>
+      <text x="58" y="214" text-anchor="middle" class="svg-label">복동식 실린더</text>
+    </g>
+
+    <g id="parallelMotion4" transform="translate(166 118)">
+      <path d="M0 0L58 48L98 28L40 -20Z" fill="none" stroke="#b78237" stroke-width="5" stroke-linejoin="round"/>
+      <circle cx="0" cy="0" r="6" fill="#b78237"/>
+      <circle cx="58" cy="48" r="6" fill="#b78237"/>
+      <circle cx="98" cy="28" r="6" fill="#b78237"/>
+      <circle cx="40" cy="-20" r="6" fill="#b78237"/>
+      <text x="70" y="-34" text-anchor="middle" class="svg-small">평행운동 링크</text>
+    </g>
+
+    <line x1="486" y1="92" x2="548" y2="204" stroke="#3f4548" stroke-width="5" stroke-linecap="round"/>
+    <g transform="translate(548 246)">
+      <circle id="flywheel4" cx="0" cy="0" r="78" fill="none" stroke="#3f4548" stroke-width="10"/>
+      <circle cx="0" cy="0" r="12" fill="#3f4548"/>
+      <path d="M-66 0H66M0 -66V66M-46 -46L46 46M46 -46L-46 46" stroke="#656b6d" stroke-width="5" stroke-linecap="round"/>
+      <g id="sunGear4">
+        <circle cx="0" cy="0" r="30" fill="#2d7f73" opacity=".32" stroke="#195c52" stroke-width="4"/>
+        <path d="M0 -38L6 -29L18 -34L18 -22L30 -18L22 -8L38 0L22 8L30 18L18 22L18 34L6 29L0 38L-6 29L-18 34L-18 22L-30 18L-22 8L-38 0L-22 -8L-30 -18L-18 -22L-18 -34L-6 -29Z" fill="none" stroke="#195c52" stroke-width="2"/>
+      </g>
+      <g id="planetGear4">
+        <circle cx="50" cy="0" r="18" fill="#79b8ad" stroke="#195c52" stroke-width="4"/>
+        <circle cx="50" cy="0" r="5" fill="#195c52"/>
+      </g>
+      <text y="108" text-anchor="middle" class="svg-label">태양-행성 기어와 플라이휠</text>
+    </g>
+
+    <g transform="translate(700 114)">
+      <line x1="0" y1="0" x2="0" y2="162" stroke="#3f4548" stroke-width="5"/>
+      <g id="govBalls4">
+        <line x1="0" y1="0" x2="-32" y2="66" stroke="#3f4548" stroke-width="4"/>
+        <line x1="0" y1="0" x2="32" y2="66" stroke="#3f4548" stroke-width="4"/>
+        <circle cx="-32" cy="66" r="13" fill="#5f579c" stroke="#423b76" stroke-width="3"/>
+        <circle cx="32" cy="66" r="13" fill="#5f579c" stroke="#423b76" stroke-width="3"/>
+      </g>
+      <rect id="throttle4" x="-28" y="178" width="56" height="24" rx="4" fill="#3f4548"/>
+      <path d="M-88 190H-28M28 190H70" class="thin-pipe"/>
+      <text y="232" text-anchor="middle" class="svg-label">원심 조속기</text>
+    </g>
+
+    <text id="phase-title" x="410" y="30" text-anchor="middle" class="svg-label">상측 증기</text>
+    <text id="phase-desc" x="410" y="48" text-anchor="middle" class="svg-small">피스톤 위쪽에 증기 유입, 아래 방향 스트로크</text>
+  </svg>`;
+}
+
+function animateSavery(phase, t) {
+  const titles = [
+    ["증기 주입", "수조 A를 증기로 채워 내부 압력을 높임"],
+    ["물 밀어올림", "증기 압력이 토출 체크밸브를 열고 물을 위로 보냄"],
+    ["냉각수 분사", "수조 A 외벽 냉각으로 증기가 빠르게 응축"],
+    ["진공 흡입", "수조 A가 갱도 물을 빨아들이고 수조 B는 반대로 작동"]
+  ];
+  phaseText(titles[phase][0], titles[phase][1]);
+  set("pressurePulse0", "r", 8 + Math.sin(animTime * 8) * 5);
+  set("steamFlow0", "opacity", phase === 0 ? 0.85 : 0.12);
+  set("deliveryFlow0", "opacity", phase === 1 ? 0.85 : 0.12);
+  set("suctionFlow0", "opacity", phase === 3 ? 0.85 : 0.12);
+  set("sprayA0", "opacity", phase === 2 ? 1 : 0);
+  set("sprayB0", "opacity", phase === 3 ? 0.8 : 0);
+  set("steamValveA0", "fill", phase <= 1 ? "#e66f4c" : "#3f4548");
+  set("steamValveB0", "fill", phase === 3 ? "#e66f4c" : "#3f4548");
+
+  let aWaterY = 222;
+  let aWaterH = 42;
+  let bWaterY = 180;
+  let bWaterH = 84;
+  let aSteam = 24;
+  let bSteam = 8;
+
+  if (phase === 0) {
+    aSteam = lerp(10, 40, t);
+    aWaterY = 222;
+    aWaterH = 42;
+    bSteam = 8;
+  } else if (phase === 1) {
+    aSteam = lerp(40, 30, t);
+    aWaterY = lerp(222, 252, t);
+    aWaterH = lerp(42, 12, t);
+  } else if (phase === 2) {
+    aSteam = lerp(30, 2, t);
+    aWaterY = 252;
+    aWaterH = 12;
+  } else {
+    aSteam = 2;
+    aWaterY = lerp(252, 190, t);
+    aWaterH = lerp(12, 74, t);
+    bSteam = lerp(8, 38, t);
+    bWaterY = lerp(180, 222, t);
+    bWaterH = lerp(84, 42, t);
+  }
+
+  set("tankAsteam0", "r", aSteam);
+  set("tankAwater0", "y", aWaterY);
+  set("tankAwater0", "height", aWaterH);
+  set("tankAwaterTop0", "cy", aWaterY);
+  set("tankBsteam0", "r", bSteam);
+  set("tankBwater0", "y", bWaterY);
+  set("tankBwater0", "height", bWaterH);
+  set("tankBwaterTop0", "cy", bWaterY);
+}
+
+function animatePapin(phase, t) {
+  const titles = [
+    ["가열 시작", "실린더 바닥의 물이 끓으며 증기 발생"],
+    ["피스톤 상승", "증기압이 피스톤을 밀어올림"],
+    ["냉각 개시", "열원을 치우고 실린더를 식힘"],
+    ["피스톤 하강", "응축 진공과 대기압으로 일 스트로크 발생"]
+  ];
+  phaseText(titles[phase][0], titles[phase][1]);
+  let y = 128;
+  if (phase === 0) y = 128;
+  if (phase === 1) y = lerp(128, 72, t);
+  if (phase === 2) y = 72;
+  if (phase === 3) y = lerp(72, 128, t);
+
+  set("piston1", "y", y);
+  set("pistonRing1", "transform", `translate(0 ${y - 128})`);
+  set("rod1", "y", y - 144);
+  set("rod1", "height", 148 + (128 - y));
+  set("steamCloud1", "opacity", phase < 2 ? lerp(0.35, 0.78, phase === 1 ? 1 : t) : lerp(0.7, 0, t));
+  set("vacuum1", "opacity", phase === 3 ? lerp(0.2, 0.85, t) : 0);
+  set("coolant1", "opacity", phase === 2 || phase === 3 ? (phase === 2 ? lerp(0, 1, t) : lerp(1, 0.35, t)) : 0);
+  set("burner1", "opacity", phase <= 1 ? 1 : lerp(1, 0.15, t));
+  set("safetyValve1", "transform", phase === 1 ? `rotate(${Math.sin(animTime * 10) * 6} 36 168)` : "rotate(0 36 168)");
+}
+
+function animateNewcomen(phase, t) {
+  const titles = [
+    ["증기 유입", "피스톤이 올라가고 펌프 쪽은 내려감"],
+    ["냉수 분사", "실린더 내부에 찬물을 직접 분사"],
+    ["진공 + 강하", "대기압이 피스톤을 아래로 누름"],
+    ["펌프 스트로크", "반대편 펌프로드가 올라가 물을 끌어올림"]
+  ];
+  phaseText(titles[phase][0], titles[phase][1]);
+
+  let pistonY = 82;
+  let angle = 0;
+  if (phase === 0) {
+    pistonY = lerp(116, 62, t);
+    angle = lerp(4, -5, t);
+  } else if (phase === 1) {
+    pistonY = 62;
+    angle = -5;
+  } else if (phase === 2) {
+    pistonY = lerp(62, 116, t);
+    angle = lerp(-5, 6, t);
+  } else {
+    pistonY = 116;
+    angle = lerp(6, 2, t);
+  }
+
+  set("beam2", "transform", `rotate(${angle} 382 92)`);
+  set("piston2", "y", pistonY);
+  set("rod2", "y", pistonY - 86);
+  set("rod2", "height", 92 + (82 - pistonY));
+  set("steam2", "opacity", phase === 0 ? 0.78 : phase === 1 ? lerp(0.78, 0.1, t) : 0.05);
+  set("steamFlow2", "opacity", phase === 0 ? 0.8 : 0.1);
+  set("spray2", "opacity", phase === 1 ? lerp(0, 1, t) : phase === 2 ? lerp(1, 0, t) : 0);
+  set("plugRod2", "transform", `translate(0 ${angle * 1.7})`);
+  set("valveCord2", "transform", `translate(0 ${angle * 1.7})`);
+
+  const pumpY = lerp(146, 92, (pistonY - 62) / 54);
+  set("pumpBucket2", "y", pumpY);
+  set("pumpRod2", "y", pumpY - 146);
+  set("pumpRod2", "height", 158 + (146 - pumpY));
+  set("pumpWater2", "height", phase === 3 ? lerp(48, 22, t) : 48);
+  set("pumpFlow2", "opacity", phase === 3 ? 0.85 : 0.12);
+}
+
+function animateWattCondenser(phase, t) {
+  const titles = [
+    ["증기 → 실린더", "뜨거운 실린더가 증기로 채워짐"],
+    ["응축기로 배기", "배기 증기가 차가운 응축기로 빠짐"],
+    ["진공 + 강하", "응축기가 진공을 만들고 피스톤을 움직임"],
+    ["공기펌프 배출", "응축수와 공기를 빼내 진공을 유지"]
+  ];
+  phaseText(titles[phase][0], titles[phase][1]);
+
+  let pistonY = 90;
+  let angle = 0;
+  if (phase === 0) {
+    pistonY = lerp(112, 76, t);
+    angle = lerp(3, -4, t);
+  } else if (phase === 1) {
+    pistonY = 76;
+    angle = -4;
+  } else if (phase === 2) {
+    pistonY = lerp(76, 112, t);
+    angle = lerp(-4, 5, t);
+  } else {
+    pistonY = 112;
+    angle = lerp(5, 1, t);
+  }
+
+  set("beam3", "transform", `rotate(${angle} 390 82)`);
+  set("piston3", "y", pistonY);
+  set("rod3", "y", pistonY - 98);
+  set("rod3", "height", 106 + (90 - pistonY));
+  set("hotSteam3", "opacity", phase === 0 ? 0.82 : phase === 1 ? lerp(0.82, 0.35, t) : 0.18);
+  set("boilerFlow3", "opacity", phase === 0 ? 0.82 : 0.12);
+  set("condenserFlow3", "opacity", phase === 1 ? 0.86 : 0.1);
+  set("vacuum3", "opacity", phase === 2 ? lerp(0.1, 0.85, t) : phase === 3 ? 0.45 : 0);
+  const pumpY = phase === 3 ? lerp(66, 92, t) : 66 + Math.sin(animTime * 5) * 2;
+  set("airPumpPiston3", "y", pumpY);
+  set("airPumpRod3", "height", pumpY + 8);
+  set("coldCoils3", "opacity", phase === 1 || phase === 2 ? 1 : 0.5);
+}
+
+function animateWattRotary(phase, t) {
+  const titles = [
+    ["상측 증기", "피스톤 위쪽 흡기, 아래 방향 스트로크"],
+    ["밸브 전환", "위쪽은 배기, 아래쪽은 흡기로 전환"],
+    ["하측 증기", "피스톤 아래쪽 흡기, 위 방향 스트로크"],
+    ["회전 + 조속", "기어와 플라이휠이 회전하고 조속기가 스로틀을 조절"]
+  ];
+  phaseText(titles[phase][0], titles[phase][1]);
+
+  let pistonY = 94;
+  let angle = 0;
+  if (phase === 0) {
+    pistonY = lerp(74, 122, t);
+    angle = lerp(-4, 5, t);
+  } else if (phase === 1) {
+    pistonY = 122;
+    angle = 5;
+  } else if (phase === 2) {
+    pistonY = lerp(122, 74, t);
+    angle = lerp(5, -4, t);
+  } else {
+    pistonY = 74;
+    angle = -4;
+  }
+
+  set("beam4", "transform", `rotate(${angle} 288 92)`);
+  set("piston4", "y", pistonY);
+  set("rod4", "y", pistonY - 102);
+  set("rod4", "height", 112 + (94 - pistonY));
+  set("parallelMotion4", "transform", `translate(166 ${118 + angle * 1.2}) rotate(${angle * 0.7} 50 20)`);
+  set("steamTop4", "opacity", phase === 0 ? 0.85 : phase === 1 ? lerp(0.85, 0.15, t) : phase === 3 ? lerp(0.15, 0.75, t) : 0.08);
+  set("steamBot4", "opacity", phase === 2 ? 0.85 : phase === 1 ? lerp(0.1, 0.72, t) : phase === 3 ? lerp(0.72, 0.08, t) : 0.08);
+  set("topValve4", "opacity", phase === 0 || phase === 3 ? 1 : 0.45);
+  set("bottomValve4", "opacity", phase === 1 || phase === 2 ? 1 : 0.45);
+
+  const rotation = (animTime * 110) % 360;
+  set("flywheel4", "transform", `rotate(${rotation} 0 0)`);
+  set("sunGear4", "transform", `rotate(${rotation} 0 0)`);
+  set("planetGear4", "transform", `rotate(${rotation * 1.8} 0 0)`);
+
+  const spread = 26 + Math.sin(animTime * 5) * 8;
+  const drop = 60 - (spread - 26) * 0.5;
+  const balls = e("govBalls4");
+  if (balls) {
+    balls.innerHTML = `
+      <line x1="0" y1="0" x2="${-spread}" y2="${drop}" stroke="#3f4548" stroke-width="4"/>
+      <line x1="0" y1="0" x2="${spread}" y2="${drop}" stroke="#3f4548" stroke-width="4"/>
+      <circle cx="${-spread}" cy="${drop}" r="13" fill="#5f579c" stroke="#423b76" stroke-width="3"/>
+      <circle cx="${spread}" cy="${drop}" r="13" fill="#5f579c" stroke="#423b76" stroke-width="3"/>
+    `;
+  }
+  set("throttle4", "transform", `rotate(${(spread - 26) * 1.6} 0 190)`);
+}
+
+makeStageButtons();
+renderStage();
+rafId = requestAnimationFrame(step);
+</script>
+</body>
+</html>
