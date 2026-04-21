@@ -1470,6 +1470,335 @@ function animateWattRotary(phase, t) {
   set("throttle4", "transform", `rotate(${(spread - 26) * 1.6} 0 190)`);
 }
 
+function papinSvg() {
+  return `<svg class="machine-svg" viewBox="0 0 900 430" role="img" aria-label="파팽 피스톤 기관 핵심 변화 도식">
+    <defs>
+      <marker id="papinPressureArrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <path d="M0 0L9 4.5L0 9Z" fill="#3f4548"/>
+      </marker>
+      <marker id="papinSteamArrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <path d="M0 0L9 4.5L0 9Z" fill="#b55f3a"/>
+      </marker>
+    </defs>
+    <rect width="900" height="430" fill="#f9f4eb"/>
+    <path d="M54 362H846" stroke="rgba(33,29,25,.18)" stroke-width="4"/>
+
+    <g transform="translate(82 88)">
+      <text x="0" y="0" class="svg-label">핵심 변화</text>
+      <text x="0" y="24" class="svg-small">증기 압력과 응축 진공을 피스톤의 왕복 운동으로 바꿈</text>
+      <path d="M4 52H190" stroke="#3f4548" stroke-width="3"/>
+      <path d="M4 86H190" stroke="#b55f3a" stroke-width="3" marker-end="url(#papinSteamArrow)"/>
+      <text x="0" y="78" class="svg-small">가열: 증기압이 피스톤 상승</text>
+      <path d="M4 124H190" stroke="#2c7fb8" stroke-width="3" stroke-dasharray="7 7"/>
+      <text x="0" y="116" class="svg-small">냉각: 응축 진공 + 대기압이 하강</text>
+    </g>
+
+    <g transform="translate(430 58)">
+      <rect x="0" y="58" width="166" height="250" rx="8" fill="#fffaf2" stroke="#3f4548" stroke-width="5"/>
+      <rect x="22" y="82" width="122" height="202" rx="4" fill="rgba(44,127,184,.08)" stroke="rgba(33,29,25,.28)" stroke-width="2"/>
+      <rect id="piston1" x="24" y="128" width="118" height="25" rx="4" fill="#656b6d" stroke="#3f4548" stroke-width="4"/>
+      <path id="pistonRing1" d="M32 137H134M32 146H134" stroke="#fffaf2" stroke-width="2"/>
+      <rect id="rod1" x="77" y="-16" width="12" height="148" fill="#3f4548"/>
+      <circle cx="83" cy="-18" r="18" fill="#fffaf2" stroke="#3f4548" stroke-width="4"/>
+      <path d="M83 0V56" stroke="#3f4548" stroke-width="4"/>
+      <path d="M24 284H142" stroke="#2c7fb8" stroke-width="14" opacity=".35"/>
+      <g id="steamCloud1" opacity=".35">
+        <circle cx="48" cy="248" r="13" fill="#b55f3a"/>
+        <circle cx="83" cy="228" r="17" fill="#b55f3a"/>
+        <circle cx="116" cy="250" r="12" fill="#b55f3a"/>
+      </g>
+      <g id="vacuum1" opacity="0">
+        <path d="M34 178H132M34 204H132M34 230H132" stroke="#2c7fb8" stroke-width="3" stroke-dasharray="6 8"/>
+        <text x="83" y="210" text-anchor="middle" class="svg-small">진공</text>
+      </g>
+      <text x="83" y="334" text-anchor="middle" class="svg-label">밀폐 실린더 + 피스톤</text>
+    </g>
+
+    <g id="burner1" transform="translate(438 356)">
+      <path d="M14 20Q26 -2 38 20M52 20Q66 -7 80 20M94 20Q106 0 118 20" fill="none" stroke="#e66f4c" stroke-width="6" stroke-linecap="round"/>
+      <rect x="0" y="25" width="138" height="14" rx="4" fill="#3f4548"/>
+    </g>
+
+    <g id="coolant1" opacity="0">
+      <rect x="638" y="176" width="118" height="38" rx="5" fill="#dcecf5" stroke="#2c7fb8" stroke-width="2"/>
+      <path d="M646 224L598 238M672 224L598 260M700 224L598 282" stroke="#2c7fb8" stroke-width="4" stroke-dasharray="5 7"/>
+      <text x="697" y="200" text-anchor="middle" class="svg-label">냉각</text>
+    </g>
+
+    <g transform="translate(652 94)">
+      <path d="M36 178V132" stroke="#73501e" stroke-width="5" stroke-linecap="round"/>
+      <g id="safetyValve1">
+        <path d="M20 132H94" stroke="#73501e" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="94" cy="132" r="9" fill="#b55f3a" stroke="#7f3e27" stroke-width="2"/>
+      </g>
+      <circle cx="36" cy="178" r="9" fill="#b78237" stroke="#73501e" stroke-width="2"/>
+      <text x="58" y="214" text-anchor="middle" class="svg-label">안전밸브</text>
+    </g>
+
+    <g transform="translate(272 118)">
+      <rect x="0" y="0" width="92" height="56" rx="6" fill="rgba(63,69,72,.10)" stroke="#3f4548" stroke-width="3"/>
+      <text x="46" y="34" text-anchor="middle" class="svg-label">대기압</text>
+      <path d="M46 70V150" stroke="#3f4548" stroke-width="5" marker-end="url(#papinPressureArrow)"/>
+    </g>
+
+    <text id="phase-title" x="450" y="32" text-anchor="middle" class="svg-label">가열 시작</text>
+    <text id="phase-desc" x="450" y="50" text-anchor="middle" class="svg-small">물이 끓으며 피스톤을 밀어올릴 증기 생성</text>
+  </svg>`;
+}
+
+function newcomenSvg() {
+  return `<svg class="machine-svg" viewBox="0 0 940 430" role="img" aria-label="뉴커먼 대기압 기관 핵심 변화 도식">
+    <defs>
+      <marker id="arrowSteam2r" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#b55f3a"/></marker>
+      <marker id="arrowWater2r" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2c7fb8"/></marker>
+      <marker id="arrowForce2r" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#3f4548"/></marker>
+    </defs>
+    <rect width="940" height="430" fill="#f9f4eb"/>
+    <path d="M48 364H890" stroke="rgba(33,29,25,.18)" stroke-width="4"/>
+
+    <g transform="translate(116 284)">
+      <path d="M0 38A58 34 0 0 1 116 38V86H0Z" fill="#d2c1a0" stroke="#73501e" stroke-width="4"/>
+      <rect x="-8" y="86" width="132" height="32" fill="#8a5c28" opacity=".24"/>
+      <path d="M22 106Q34 88 46 106M62 106Q76 82 90 106" fill="none" stroke="#e66f4c" stroke-width="6" stroke-linecap="round"/>
+      <text x="58" y="30" text-anchor="middle" class="svg-label">보일러</text>
+    </g>
+
+    <path class="thin-pipe" d="M236 320H282V304H318"/>
+    <path id="steamFlow2" class="flow" d="M238 320H282V304H316" stroke="#b55f3a" marker-end="url(#arrowSteam2r)" opacity=".8"/>
+    <rect x="274" y="292" width="30" height="24" rx="3" fill="#3f4548"/>
+    <text x="286" y="284" text-anchor="middle" class="svg-small">증기</text>
+
+    <g id="newcomenCylinder2">
+      <rect x="318" y="198" width="126" height="152" rx="6" fill="#fffaf2" stroke="#3f4548" stroke-width="5"/>
+      <ellipse cx="381" cy="198" rx="63" ry="17" fill="#fffaf2" stroke="#3f4548" stroke-width="4"/>
+      <rect id="piston2" x="332" y="238" width="98" height="24" rx="3" fill="#656b6d" stroke="#3f4548" stroke-width="3"/>
+      <rect id="rod2" x="374" y="126" width="14" height="116" fill="#3f4548"/>
+      <g id="steam2" opacity=".75">
+        <circle cx="354" cy="288" r="12" fill="#b55f3a"/>
+        <circle cx="382" cy="306" r="15" fill="#b55f3a"/>
+        <circle cx="410" cy="286" r="11" fill="#b55f3a"/>
+      </g>
+      <g id="vacuum2" opacity="0">
+        <path d="M344 278H418M344 300H418M344 322H418" stroke="#2c7fb8" stroke-width="3" stroke-dasharray="6 8"/>
+        <text x="381" y="304" text-anchor="middle" class="svg-small">진공</text>
+      </g>
+      <g id="spray2" opacity="0">
+        <rect x="466" y="198" width="86" height="26" rx="5" fill="#dcecf5" stroke="#2c7fb8" stroke-width="2"/>
+        <path d="M470 224L420 248M486 224L420 270M504 224L420 292" stroke="#2c7fb8" stroke-width="4" stroke-dasharray="5 6"/>
+        <text x="509" y="216" text-anchor="middle" class="svg-small">냉수 분사</text>
+      </g>
+      <text x="381" y="379" text-anchor="middle" class="svg-label">대기압 실린더</text>
+    </g>
+
+    <g id="beam2" transform="rotate(0 540 112)">
+      <path d="M360 104C440 92 610 92 790 112" stroke="#8a5c28" stroke-width="22" stroke-linecap="round" fill="none"/>
+      <path d="M372 103C454 96 615 96 778 112" stroke="#d39a45" stroke-width="6" stroke-linecap="round" fill="none" opacity=".62"/>
+    </g>
+    <path d="M540 126L504 364H576L540 126Z" fill="rgba(63,69,72,.08)" stroke="#3f4548" stroke-width="5"/>
+    <circle cx="540" cy="112" r="16" fill="#3f4548"/>
+    <path d="M381 122V154" stroke="#3f4548" stroke-width="5" stroke-linecap="round"/>
+    <path d="M748 126V188" stroke="#3f4548" stroke-width="5" stroke-linecap="round"/>
+    <path d="M381 64V114" stroke="#3f4548" stroke-width="4" marker-end="url(#arrowForce2r)"/>
+    <text x="381" y="56" text-anchor="middle" class="svg-small">대기압이 누름</text>
+    <text x="540" y="82" text-anchor="middle" class="svg-label">요동빔</text>
+
+    <g id="plugRod2" transform="translate(470 172)">
+      <path d="M0 0V164" stroke="#3f4548" stroke-width="5" stroke-linecap="round"/>
+      <rect x="-12" y="34" width="24" height="8" fill="#b78237"/>
+      <rect x="-12" y="78" width="24" height="8" fill="#b78237"/>
+      <rect x="-12" y="122" width="24" height="8" fill="#b78237"/>
+      <text x="42" y="86" class="svg-small">플러그로드</text>
+    </g>
+
+    <g id="newcomenPump2">
+      <rect x="690" y="204" width="112" height="150" fill="rgba(45,127,115,.10)" stroke="#195c52" stroke-width="5"/>
+      <rect id="pumpBucket2" x="704" y="264" width="84" height="28" rx="4" fill="#2d7f73" stroke="#195c52" stroke-width="3"/>
+      <rect id="pumpRod2" x="739" y="180" width="14" height="90" fill="#3f4548"/>
+      <rect id="pumpWater2" x="700" y="318" width="92" height="28" fill="#2c7fb8" opacity=".46"/>
+      <path d="M802 238H858V192" class="thin-pipe"/>
+      <path id="pumpFlow2" class="flow" d="M804 238H854V196" stroke="#2c7fb8" marker-end="url(#arrowWater2r)" opacity=".12"/>
+      <text x="746" y="379" text-anchor="middle" class="svg-label">갱도 펌프</text>
+    </g>
+
+    <g transform="translate(64 88)">
+      <text x="0" y="0" class="svg-label">핵심 변화</text>
+      <text x="0" y="24" class="svg-small">실린더 안에 찬물을 분사해 진공을 만들고</text>
+      <text x="0" y="42" class="svg-small">대기압이 피스톤을 내리면 반대쪽 펌프가 올라감</text>
+    </g>
+
+    <text id="phase-title" x="470" y="32" text-anchor="middle" class="svg-label">증기 유입</text>
+    <text id="phase-desc" x="470" y="50" text-anchor="middle" class="svg-small">증기가 실린더를 채우고 피스톤이 올라감</text>
+  </svg>`;
+}
+
+function wattCondenserSvg() {
+  return `<svg class="machine-svg" viewBox="0 0 940 430" role="img" aria-label="와트 분리 응축기 핵심 변화 도식">
+    <defs>
+      <marker id="arrowSteam3r" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#b55f3a"/></marker>
+      <marker id="arrowWater3r" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2c7fb8"/></marker>
+    </defs>
+    <rect width="940" height="430" fill="#f9f4eb"/>
+    <path d="M48 364H890" stroke="rgba(33,29,25,.18)" stroke-width="4"/>
+
+    <g transform="translate(88 284)">
+      <path d="M0 38A58 34 0 0 1 116 38V86H0Z" fill="#d2c1a0" stroke="#73501e" stroke-width="4"/>
+      <path d="M22 106Q34 88 46 106M62 106Q76 82 90 106" fill="none" stroke="#e66f4c" stroke-width="6" stroke-linecap="round"/>
+      <text x="58" y="30" text-anchor="middle" class="svg-label">보일러</text>
+    </g>
+
+    <path class="thin-pipe" d="M204 320H248V226H318"/>
+    <path id="boilerFlow3" class="flow" d="M206 320H248V226H316" stroke="#b55f3a" marker-end="url(#arrowSteam3r)" opacity=".8"/>
+
+    <g id="wattCylinder3">
+      <rect x="304" y="174" width="160" height="184" rx="8" fill="rgba(183,130,55,.12)" stroke="#73501e" stroke-width="5"/>
+      <rect x="326" y="202" width="116" height="130" rx="5" fill="#fffaf2" stroke="#3f4548" stroke-width="5"/>
+      <path d="M300 174H468M300 358H468" stroke="#b78237" stroke-width="6" opacity=".65"/>
+      <rect id="piston3" x="340" y="244" width="88" height="24" rx="4" fill="#656b6d" stroke="#3f4548" stroke-width="3"/>
+      <rect id="rod3" x="377" y="126" width="14" height="122" fill="#3f4548"/>
+      <g id="hotSteam3" opacity=".75">
+        <circle cx="356" cy="292" r="11" fill="#b55f3a"/>
+        <circle cx="385" cy="306" r="14" fill="#b55f3a"/>
+        <circle cx="412" cy="292" r="10" fill="#b55f3a"/>
+      </g>
+      <text x="384" y="381" text-anchor="middle" class="svg-label">뜨거운 실린더</text>
+    </g>
+
+    <g id="beam3" transform="rotate(0 548 112)">
+      <path d="M378 104C462 92 612 92 792 112" stroke="#8a5c28" stroke-width="22" stroke-linecap="round" fill="none"/>
+      <path d="M390 103C474 96 617 96 780 112" stroke="#d39a45" stroke-width="6" stroke-linecap="round" fill="none" opacity=".62"/>
+    </g>
+    <path d="M548 126L512 364H584L548 126Z" fill="rgba(63,69,72,.08)" stroke="#3f4548" stroke-width="5"/>
+    <circle cx="548" cy="112" r="16" fill="#3f4548"/>
+    <path d="M384 122V154" stroke="#3f4548" stroke-width="5" stroke-linecap="round"/>
+    <text x="548" y="82" text-anchor="middle" class="svg-label">요동빔</text>
+
+    <path class="pipe" d="M442 292H518V252H584"/>
+    <path id="condenserFlow3" class="flow" d="M444 292H518V252H582" stroke="#b55f3a" marker-end="url(#arrowSteam3r)" opacity=".1"/>
+    <g id="condenser3">
+      <rect x="584" y="202" width="118" height="138" rx="10" fill="rgba(45,127,115,.22)" stroke="#195c52" stroke-width="5"/>
+      <ellipse cx="643" cy="202" rx="59" ry="18" fill="#76b6ad" stroke="#195c52" stroke-width="4"/>
+      <ellipse cx="643" cy="340" rx="59" ry="18" fill="#2d7f73" opacity=".65" stroke="#195c52" stroke-width="3"/>
+      <g id="coldCoils3">
+        <path d="M610 236C676 236 610 258 676 258S610 282 676 282S610 306 676 306" fill="none" stroke="#2c7fb8" stroke-width="4"/>
+      </g>
+      <g id="vacuum3" opacity="0">
+        <path d="M612 242H674M612 268H674M612 294H674" stroke="#2c7fb8" stroke-width="3" stroke-dasharray="6 8"/>
+        <text x="643" y="286" text-anchor="middle" class="svg-small">진공</text>
+      </g>
+      <text x="643" y="381" text-anchor="middle" class="svg-label">분리 응축기</text>
+    </g>
+
+    <path d="M702 278H742" class="thin-pipe"/>
+    <g id="airPump3">
+      <rect x="742" y="224" width="92" height="124" rx="8" fill="rgba(44,127,184,.12)" stroke="#2c7fb8" stroke-width="4"/>
+      <rect id="airPumpPiston3" x="758" y="284" width="60" height="20" rx="3" fill="#2c7fb8" stroke="#14547c" stroke-width="3"/>
+      <rect id="airPumpRod3" x="783" y="160" width="10" height="128" fill="#3f4548"/>
+      <path d="M834 286H876V324" class="thin-pipe"/>
+      <path id="airPumpOut3" class="flow" d="M836 286H872V320" stroke="#2c7fb8" marker-end="url(#arrowWater3r)" opacity=".15"/>
+      <text x="788" y="381" text-anchor="middle" class="svg-label">공기펌프</text>
+    </g>
+
+    <g transform="translate(62 88)">
+      <text x="0" y="0" class="svg-label">핵심 변화</text>
+      <text x="0" y="24" class="svg-small">실린더는 계속 뜨겁게 유지</text>
+      <text x="0" y="42" class="svg-small">응축은 별도 차가운 용기에서 처리</text>
+    </g>
+
+    <text id="phase-title" x="470" y="32" text-anchor="middle" class="svg-label">증기 → 실린더</text>
+    <text id="phase-desc" x="470" y="50" text-anchor="middle" class="svg-small">실린더는 뜨겁게, 응축은 별도 용기에서 처리</text>
+  </svg>`;
+}
+
+function wattRotarySvg() {
+  return `<svg class="machine-svg" viewBox="0 0 980 450" role="img" aria-label="와트 회전 기관 핵심 변화 도식">
+    <defs>
+      <marker id="arrowSteam4r" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#b55f3a"/></marker>
+    </defs>
+    <rect width="980" height="450" fill="#f9f4eb"/>
+    <path d="M48 382H930" stroke="rgba(33,29,25,.18)" stroke-width="4"/>
+
+    <g id="rotaryCylinder4">
+      <rect x="126" y="188" width="122" height="168" rx="7" fill="#fffaf2" stroke="#3f4548" stroke-width="5"/>
+      <rect id="piston4" x="138" y="254" width="98" height="24" rx="4" fill="#656b6d" stroke="#3f4548" stroke-width="3"/>
+      <rect id="rod4" x="180" y="126" width="14" height="132" fill="#3f4548"/>
+      <g id="steamTop4" opacity=".75">
+        <circle cx="154" cy="214" r="10" fill="#b55f3a"/>
+        <circle cx="186" cy="224" r="13" fill="#b55f3a"/>
+        <circle cx="218" cy="214" r="10" fill="#b55f3a"/>
+      </g>
+      <g id="steamBot4" opacity="0">
+        <circle cx="154" cy="318" r="10" fill="#b55f3a"/>
+        <circle cx="186" cy="328" r="13" fill="#b55f3a"/>
+        <circle cx="218" cy="318" r="10" fill="#b55f3a"/>
+      </g>
+      <rect id="topValve4" x="260" y="212" width="40" height="24" rx="4" fill="#3f4548"/>
+      <rect id="bottomValve4" x="260" y="312" width="40" height="24" rx="4" fill="#3f4548" opacity=".45"/>
+      <path d="M300 224H346M300 324H346" class="thin-pipe"/>
+      <path id="topSteamFlow4" class="flow" d="M346 224H302" stroke="#b55f3a" marker-end="url(#arrowSteam4r)" opacity=".7"/>
+      <path id="bottomSteamFlow4" class="flow" d="M346 324H302" stroke="#b55f3a" marker-end="url(#arrowSteam4r)" opacity=".1"/>
+      <text x="187" y="383" text-anchor="middle" class="svg-label">복동식 실린더</text>
+    </g>
+
+    <g id="beam4" transform="rotate(0 384 112)">
+      <path d="M186 104C284 92 438 92 586 112" stroke="#8a5c28" stroke-width="22" stroke-linecap="round" fill="none"/>
+      <path d="M198 103C296 96 445 96 574 112" stroke="#d39a45" stroke-width="6" stroke-linecap="round" fill="none" opacity=".62"/>
+    </g>
+    <path d="M384 126L348 382H420L384 126Z" fill="rgba(63,69,72,.08)" stroke="#3f4548" stroke-width="5"/>
+    <circle cx="384" cy="112" r="16" fill="#3f4548"/>
+    <path d="M187 122V154" stroke="#3f4548" stroke-width="5" stroke-linecap="round"/>
+    <text x="384" y="82" text-anchor="middle" class="svg-label">요동빔</text>
+
+    <g id="parallelMotion4">
+      <path d="M226 150L276 182L318 158L266 126Z" fill="none" stroke="#b78237" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M187 150L226 150" stroke="#b78237" stroke-width="4"/>
+      <circle cx="226" cy="150" r="6" fill="#b78237"/>
+      <circle cx="276" cy="182" r="6" fill="#b78237"/>
+      <circle cx="318" cy="158" r="6" fill="#b78237"/>
+      <circle cx="266" cy="126" r="6" fill="#b78237"/>
+      <text x="282" y="116" text-anchor="middle" class="svg-small">평행운동 링크</text>
+    </g>
+
+    <path id="connectingRod4" d="M574 112L664 260" stroke="#3f4548" stroke-width="5" stroke-linecap="round"/>
+    <g transform="translate(686 266)">
+      <g id="flywheel4">
+        <circle cx="0" cy="0" r="86" fill="none" stroke="#3f4548" stroke-width="10"/>
+        <path d="M-74 0H74M0 -74V74M-52 -52L52 52M52 -52L-52 52" stroke="#656b6d" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="0" cy="0" r="12" fill="#3f4548"/>
+      </g>
+      <g id="sunGear4">
+        <circle cx="0" cy="0" r="30" fill="rgba(45,127,115,.18)" stroke="#195c52" stroke-width="4"/>
+      </g>
+      <g id="planetGear4">
+        <circle cx="48" cy="0" r="18" fill="#79b8ad" stroke="#195c52" stroke-width="4"/>
+        <circle cx="48" cy="0" r="5" fill="#195c52"/>
+      </g>
+      <text y="116" text-anchor="middle" class="svg-label">기어와 플라이휠</text>
+    </g>
+
+    <g transform="translate(860 116)">
+      <line x1="0" y1="0" x2="0" y2="162" stroke="#3f4548" stroke-width="5"/>
+      <g id="govBalls4">
+        <line x1="0" y1="0" x2="-32" y2="66" stroke="#3f4548" stroke-width="4"/>
+        <line x1="0" y1="0" x2="32" y2="66" stroke="#3f4548" stroke-width="4"/>
+        <circle cx="-32" cy="66" r="13" fill="#5f579c" stroke="#423b76" stroke-width="3"/>
+        <circle cx="32" cy="66" r="13" fill="#5f579c" stroke="#423b76" stroke-width="3"/>
+      </g>
+      <rect id="throttle4" x="-30" y="178" width="60" height="24" rx="4" fill="#3f4548"/>
+      <path d="M-100 190H-30M30 190H72" class="thin-pipe"/>
+      <text y="232" text-anchor="middle" class="svg-label">원심 조속기</text>
+    </g>
+
+    <g transform="translate(62 68)">
+      <text x="0" y="0" class="svg-label">핵심 변화</text>
+      <text x="0" y="24" class="svg-small">왕복 운동을 공장 축을 돌리는 회전 동력으로 전환</text>
+      <text x="0" y="42" class="svg-small">복동식 실린더와 조속기로 더 연속적인 운전</text>
+    </g>
+
+    <text id="phase-title" x="490" y="32" text-anchor="middle" class="svg-label">상측 증기</text>
+    <text id="phase-desc" x="490" y="50" text-anchor="middle" class="svg-small">복동식 실린더가 양방향 스트로크를 만들고, 기어가 회전으로 바꿈</text>
+  </svg>`;
+}
+
 makeStageButtons();
 renderStage();
 rafId = requestAnimationFrame(step);
