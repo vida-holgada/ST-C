@@ -5,246 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>천문학 체계 비교: 기하학적 필연성과 변혁</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@300;500;800&display=swap');
-        
-        body { 
-            background-color: #000000; 
-            color: #ffffff; 
-            font-family: 'Inter', 'Noto Sans KR', sans-serif; 
-            overflow-x: hidden;
-        }
-        
-        canvas { 
-            width: 100%; 
-            height: auto; 
-            background-color: #000000;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 1rem;
-        }
 
-        .glass { 
-            background: rgba(5, 5, 5, 0.95); 
-            backdrop-filter: blur(15px); 
-            border: 1px solid rgba(255, 255, 255, 0.15); 
-        }
 
-        .accent-ptolemy { color: #FFD700; }
-        .accent-copernicus { color: #4299E1; }
-        .accent-tycho { color: #ED64A6; }
-        .accent-kepler { color: #48BB78; }
-
-        .heading-gradient { 
-            background: linear-gradient(to right, #6366f1, #a855f7, #ec4899, #f59e0b); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-        }
-
-        .data-panel {
-            font-family: monospace;
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.6);
-            background: rgba(255, 255, 255, 0.03);
-            padding: 8px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-    </style>
-<style>#ptolemyLab{--paper:#fff;--ink:#25292d;--muted:#626b71;--line:#d8dfe2;--wash:#f3f6f7;--blue:#1962a5;--earth:#1962a5;--planet:#b65122;--purple:#79529a;--green:#197768;--red:#b63736;--sans:Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
-#ptolemyLab *{box-sizing:border-box}
-#ptolemyLab{margin:0;background:var(--paper);color:var(--ink);font:17px/1.7 var(--sans);word-break:keep-all}
-#ptolemyLab button,#ptolemyLab input,#ptolemyLab select{font:inherit}
-#ptolemyLab button,#ptolemyLab a,#ptolemyLab input,#ptolemyLab select{touch-action:manipulation}
-#ptolemyLab button{cursor:pointer}
-#ptolemyLab a{color:var(--blue);text-underline-offset:3px}
-#ptolemyLab button:focus-visible,#ptolemyLab a:focus-visible,#ptolemyLab input:focus-visible,#ptolemyLab select:focus-visible,#ptolemyLab summary:focus-visible{outline:3px solid var(--blue);outline-offset:4px}
-#ptolemyLab button:disabled{opacity:.4;cursor:default}
-#ptolemyLab [hidden]{display:none!important}
-#ptolemyLab .wrap{max-width:1480px;margin:auto;padding:28px 42px 40px}
-#ptolemyLab .masthead{display:flex;justify-content:space-between;gap:16px;align-items:center;color:var(--muted);font-size:13px;letter-spacing:.04em}
-#ptolemyLab .masthead strong{font-weight:750;color:var(--ink)}
-#ptolemyLab h1{font-size:clamp(30px,3.4vw,49px);font-weight:850;letter-spacing:-.055em;line-height:1.2;margin:24px 0 12px}
-#ptolemyLab h2,#ptolemyLab h3,#ptolemyLab p{margin:0}
-#ptolemyLab header .intro{max-width:930px;color:#4c565d;font-size:18px;margin-bottom:23px}
-#ptolemyLab .rule{border:0;border-top:2px solid #a8adb0;margin:0}
-#ptolemyLab .tabs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line);margin:0 0 26px}
-#ptolemyLab .tab{border:0;border-bottom:4px solid transparent;background:transparent;text-align:left;padding:17px 14px 14px;color:var(--muted);line-height:1.4;font-weight:600;font-size:16px}
-#ptolemyLab .tab small{display:block;font-weight:400;font-size:12px;margin-top:4px}
-#ptolemyLab .tab[aria-pressed=true]{border-bottom-color:var(--blue);color:var(--blue);background:#f3f7fb}
-#ptolemyLab .tab:hover{background:#f3f6f7}
-#ptolemyLab .lesson-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
-#ptolemyLab .lesson-head h2{font-size:27px;line-height:1.3;letter-spacing:-.03em}
-#ptolemyLab .eyebrow{font-size:12px;color:var(--blue);font-weight:750;letter-spacing:.08em;margin-bottom:6px}
-#ptolemyLab .secondary{border:1px solid #bbc5cb;background:white;padding:7px 13px;border-radius:4px;white-space:nowrap;font-size:14px;min-height:42px}
-#ptolemyLab .secondary:hover{background:#f0f4f6}
-#ptolemyLab .workspace{display:grid;grid-template-columns:minmax(0,1.38fr) minmax(300px,1fr);gap:34px;align-items:start}
-#ptolemyLab .visual{min-width:0}
-#ptolemyLab .visual-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;font-size:14px;margin-bottom:8px}
-#ptolemyLab .visual-top strong{font-size:15px;font-weight:650}
-#ptolemyLab .toggle{display:flex;gap:4px;background:var(--wash);padding:3px;border-radius:5px}
-#ptolemyLab .toggle button{border:0;padding:5px 11px;min-height:34px;font-size:13px;background:transparent;color:var(--muted);border-radius:3px}
-#ptolemyLab .toggle button[aria-pressed=true]{background:#fff;box-shadow:0 1px 3px #21354925;color:var(--ink);font-weight:650}
-#ptolemyLab .diagram-frame{border:1px solid var(--line);position:relative;background:linear-gradient(135deg,#fbfcfd,#f4f7f8);border-radius:5px;overflow:hidden}
-#ptolemyLab .diagram-frame canvas{display:block;width:100%;height:350px}
-#ptolemyLab .legend{display:flex;flex-wrap:wrap;column-gap:17px;row-gap:4px;font-size:12px;color:#4f5960;margin:9px 0 11px}
-#ptolemyLab .key{display:inline-flex;align-items:center;gap:6px}
-#ptolemyLab .dot{width:9px;height:9px;display:inline-block;border-radius:50%;background:var(--c)}
-#ptolemyLab .square{border-radius:0;transform:rotate(45deg)}
-#ptolemyLab .dash{display:inline-block;width:18px;border-top:2px dashed var(--purple)}
-#ptolemyLab .observation{border-top:1px solid var(--line);padding-top:12px}
-#ptolemyLab .observation-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;font-size:13px}
-#ptolemyLab .observation-head strong{font-size:15px}
-#ptolemyLab .motion-state{font-weight:750;color:var(--blue)}
-#ptolemyLab .motion-state.retro{color:var(--red)}
-#ptolemyLab .sky canvas{height:114px;width:100%;display:block}
-#ptolemyLab .measure canvas{height:130px;width:100%;display:block}
-#ptolemyLab .observation-caption{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.6;min-height:20px}
-#ptolemyLab .transport{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:17px;padding:13px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-#ptolemyLab .primary{background:var(--ink);border:1px solid var(--ink);color:white;border-radius:4px;min-height:42px;padding:7px 15px;font-weight:650;font-size:14px;min-width:90px}
-#ptolemyLab .scrub{flex:1;min-width:140px}
-#ptolemyLab .scrub-label{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;line-height:1.4}
-#ptolemyLab input[type=range]{width:100%;accent-color:var(--blue);display:block;cursor:pointer;height:25px;margin:0}
-#ptolemyLab select{border:1px solid var(--line);background:white;border-radius:4px;padding:6px;font-size:13px;min-height:42px}
-#ptolemyLab .compact-label{display:flex;align-items:center;gap:6px;font-size:12px}
-#ptolemyLab .model-tools{display:flex;align-items:center;flex-wrap:wrap;gap:13px;margin:14px 0 8px}
-#ptolemyLab .model-control{flex:1;min-width:150px}
-#ptolemyLab .model-control label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:1px}
-#ptolemyLab .quick-action{border:1px solid #b9cbd8;color:var(--blue);background:#f6f9fc;border-radius:4px;padding:6px 11px;font-size:13px;min-height:38px}
-#ptolemyLab .model-limit{font-size:12px;color:var(--muted);line-height:1.65;margin-top:10px}
-#ptolemyLab .reading{padding-top:1px}
-#ptolemyLab .reading .lead{font-size:21px;line-height:1.6;letter-spacing:-.025em;font-weight:700;margin-bottom:16px}
-#ptolemyLab .reading p{font-size:16px;line-height:1.85;margin-bottom:16px}
-#ptolemyLab .reading h3{font-size:15px;color:var(--muted);margin:23px 0 8px}
-#ptolemyLab .reading strong{font-weight:750}
-#ptolemyLab .reading .try{border-left:3px solid var(--blue);padding:0 0 0 15px;margin-top:21px}
-#ptolemyLab .try h3{color:var(--blue);margin:0 0 6px}
-#ptolemyLab .try p{font-size:15px;margin:0}
-#ptolemyLab .reading .historical{border-top:1px solid var(--line);padding-top:17px;margin-top:23px}
-#ptolemyLab .reading .historical h3{color:var(--ink);margin:0 0 9px}
-#ptolemyLab .citation{font-size:12px!important;color:var(--muted);margin-top:-4px!important}
-#ptolemyLab .next-row{display:flex;justify-content:space-between;gap:15px;margin-top:28px}
-#ptolemyLab .next-row button{border:0;background:transparent;color:var(--blue);font-size:14px;font-weight:650;padding:8px 0}
-#ptolemyLab .reading details{border-top:1px solid var(--line);padding-top:12px;margin-top:17px;font-size:14px}
-#ptolemyLab summary{cursor:pointer;font-weight:600}
-#ptolemyLab details p{margin-top:12px}
-#ptolemyLab .synthesis{margin-top:42px;border-top:2px solid #a8adb0;padding-top:24px}
-#ptolemyLab .synthesis h2{font-size:25px;line-height:1.4;letter-spacing:-.035em;margin-bottom:13px}
-#ptolemyLab .synthesis>p{max-width:1050px;font-size:17px;margin-bottom:22px}
-#ptolemyLab .contexts{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin:24px 0 28px}
-#ptolemyLab .contexts article{border-top:3px solid var(--ink);padding-top:13px}
-#ptolemyLab .contexts h3{font-size:17px;margin-bottom:8px}
-#ptolemyLab .contexts p{font-size:14px;line-height:1.8;color:#4d575d}
-#ptolemyLab .bridge{background:var(--wash);padding:21px 24px;margin:20px 0}
-#ptolemyLab .bridge p{margin-top:6px;font-size:16px}
-#ptolemyLab .link-row{display:flex;gap:18px;flex-wrap:wrap;margin-top:15px;font-size:14px}
-#ptolemyLab .sources{margin-top:30px;border-top:1px solid var(--line);padding-top:17px;color:#515b62;font-size:13px}
-#ptolemyLab .sources ol{padding-left:23px;max-width:1200px;line-height:1.7}
-#ptolemyLab .sources li{margin-bottom:12px}
-#ptolemyLab .source-note{font-size:12px;margin-top:12px}
-#ptolemyLab footer{display:flex;gap:10px;justify-content:space-between;margin-top:35px;border-top:1px solid #a8adb0;padding-top:10px;font-size:12px;color:var(--muted)}
-#ptolemyLab .sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-#ptolemyLab.lecture .reading,#ptolemyLab.lecture .synthesis,#ptolemyLab.lecture .sources,#ptolemyLab.lecture footer,#ptolemyLab.lecture header .intro{display:none}
-#ptolemyLab.lecture .workspace{display:block}
-#ptolemyLab.lecture .visual{max-width:1160px;margin:auto}
-#ptolemyLab.lecture .diagram-frame canvas{height:min(45vh,480px)}
-#ptolemyLab.lecture h1{font-size:28px;margin:13px 0}
-#ptolemyLab.lecture .wrap{padding-top:14px}
-#ptolemyLab.lecture .tabs{margin-bottom:15px}
-#ptolemyLab.lecture .tab{padding-top:9px;padding-bottom:9px}
-#ptolemyLab.lecture .lesson-head{margin-bottom:10px}
-#ptolemyLab.lecture .legend{margin:5px 0}
-#ptolemyLab.lecture .transport{margin-top:8px}
-#ptolemyLab.lecture .model-limit{margin-top:5px}
-#ptolemyLab.lecture .measure canvas{height:100px}
-#ptolemyLab.lecture .sky canvas{height:90px}
-@media(min-width:1600px){#ptolemyLab .diagram-frame canvas{height:405px}
-#ptolemyLab .reading p{font-size:17px}
-#ptolemyLab .reading .lead{font-size:23px}
-}
-@media(max-width:1000px){#ptolemyLab .wrap{padding:23px 26px}
-#ptolemyLab .workspace{gap:25px;grid-template-columns:minmax(0,1.1fr) minmax(285px,1fr)}
-#ptolemyLab .tab{padding-left:9px;font-size:14px}
-#ptolemyLab .diagram-frame canvas{height:320px}
-#ptolemyLab .reading .lead{font-size:19px}
-#ptolemyLab .reading p{font-size:15px}
-}
-@media(max-width:760px){#ptolemyLab .wrap{padding:18px 20px 30px}
-#ptolemyLab header .intro{font-size:16px}
-#ptolemyLab .masthead{font-size:11px}
-#ptolemyLab .masthead span{max-width:48%;text-align:right}
-#ptolemyLab .tabs{grid-template-columns:repeat(2,1fr);margin-bottom:22px}
-#ptolemyLab .tab{padding:12px 10px}
-#ptolemyLab .tab small{font-size:11px}
-#ptolemyLab .workspace{grid-template-columns:1fr;gap:24px}
-#ptolemyLab .lesson-head h2{font-size:23px}
-#ptolemyLab .lesson-head{align-items:flex-start}
-#ptolemyLab .lesson-head .secondary{font-size:12px;padding:6px 9px}
-#ptolemyLab .diagram-frame canvas{height:345px}
-#ptolemyLab .reading{padding-top:4px}
-#ptolemyLab .reading .lead{font-size:21px}
-#ptolemyLab .reading p{font-size:16px}
-#ptolemyLab .contexts{grid-template-columns:1fr;gap:22px}
-#ptolemyLab .contexts p{font-size:15px}
-#ptolemyLab .synthesis{margin-top:28px}
-#ptolemyLab .sky canvas{height:116px}
-#ptolemyLab.lecture .diagram-frame canvas{height:340px}
-#ptolemyLab.lecture .tabs{grid-template-columns:repeat(2,1fr)}
-#ptolemyLab.lecture .wrap{padding:15px}
-#ptolemyLab.lecture .model-limit{display:block}
-#ptolemyLab .synthesis h2{font-size:23px}
-#ptolemyLab .link-row{gap:12px}
-}
-@media(max-width:380px){#ptolemyLab .wrap{padding-left:14px;padding-right:14px}
-#ptolemyLab .diagram-frame canvas{height:320px}
-#ptolemyLab .transport{gap:8px}
-#ptolemyLab .primary{padding:7px 10px;min-width:80px}
-#ptolemyLab .compact-label{font-size:11px}
-#ptolemyLab .lesson-head h2{font-size:21px}
-}
-
-#ptolemyLab{--paper:#080b10;--ink:#eef1f5;--muted:#abb4c1;--line:#303945;--wash:#151b24;--blue:#76baff;--earth:#76baff;--planet:#ffad82;--purple:#c09ae7;--green:#7acfb4;--red:#ff9f9b;background:transparent}
-#ptolemyLab .tab[aria-pressed=true]{background:#152337;color:#9acfff;border-bottom-color:#76baff}
-#ptolemyLab .tab:hover{background:#171f2a}
-#ptolemyLab .secondary,#ptolemyLab select{background:#131a24;color:#edf3fa;border-color:#4a596b}
-#ptolemyLab .secondary:hover{background:#243044}
-#ptolemyLab .diagram-frame{background:#080d15;border-color:#384352}
-#ptolemyLab .legend,#ptolemyLab .contexts p{color:#b9c4cf}
-#ptolemyLab .primary{background:#d9ebff;color:#122137;border-color:#d9ebff}
-#ptolemyLab .quick-action{background:#152336;color:#b2d8ff;border-color:#4b6d92}
-#ptolemyLab .toggle button[aria-pressed=true]{background:#304157;color:white}
-#ptolemyLab .historical{border-color:#394453}
-#ptolemyLab canvas{border:0;border-radius:0;background:transparent}
-#ptolemyLab .reading p{color:#d2d9e2}
-#ptolemyLab .reading .lead{color:#f2f5f9}
-#ptolemyLab .legend .dot{flex:none}
-.course-nav{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:14px;color:#acbdd0;margin:0 0 20px}
-.course-nav a:hover{text-decoration:underline;color:white}
-.module-tabs{display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-bottom:1px solid #344150;padding-bottom:14px;margin-bottom:25px}
-.module-tabs button{font:inherit;font-weight:650;font-size:16px;border:1px solid #455568;border-radius:8px;padding:10px 20px;color:#b6c6d9;background:#0b111b;cursor:pointer}
-.module-tabs button[aria-pressed=true]{background:#d9e8fa;color:#122137;border-color:#d9e8fa}
-.module-tabs span{font-size:13px;color:#adbacb;margin-left:auto}
-.comparison-summary{color:#bec8d5;font-size:15px;line-height:1.8;max-width:1100px;margin:0 0 22px}
-.comparison-controls{display:flex;flex-wrap:wrap;gap:18px;align-items:center;padding:15px 18px;border:1px solid #3b485b;border-radius:12px;margin-bottom:25px;background:#0a1019}
-.comparison-controls button,.comparison-controls select{border:1px solid #5a6e88;border-radius:6px;background:#18273b;padding:8px 13px;font-size:14px;cursor:pointer;color:#edf4ff;min-height:42px}
-.comparison-controls label{display:flex;align-items:center;gap:9px;font-size:14px;color:#bccadb}
-.comparison-controls input[type=range]{accent-color:#92c5ff;width:140px}
-.comparison-controls input[type=checkbox]{accent-color:#92c5ff}
-.data-panel{font-family:inherit!important;font-size:13px!important;line-height:1.8;color:#b5c1cf!important}
-#comparisonPanel .analysis-board{color:#c2cbd7}
-#comparisonPanel .analysis-board p{font-size:15px;line-height:1.85}
-.comparison-foot{font-size:14px;line-height:1.9;color:#c4cfdd;margin:25px 0 30px;border-top:1px solid #3b485b;padding-top:23px}
-.comparison-foot a,.lab-sources a{color:#9dceff;text-decoration:underline;text-underline-offset:3px}
-.lab-sources{font-size:13px;line-height:1.8;color:#b2bdcb;margin:25px 0 30px;padding:18px 0;border-top:1px solid #354254}
-.lab-sources summary{cursor:pointer;font-weight:650}
-.lab-sources ol{list-style:decimal;padding-left:23px;margin-top:15px}
-.lab-sources li{margin:12px 0}
-[hidden]{display:none!important}
-button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #8ccaff;outline-offset:4px}
-@media(max-width:760px){.module-tabs button{padding:9px 12px;font-size:14px}.module-tabs span{width:100%;margin-left:0}.course-nav{font-size:12px}.comparison-controls{gap:13px}.comparison-controls label{font-size:12px}}
-</style>
-<style>#comparisonPanel canvas{width:100%;height:clamp(270px,30vw,400px)}#comparisonPanel h2{font-size:20px}.heading-gradient{font-size:clamp(30px,4.5vw,58px)}@media(max-width:767px){#comparisonPanel canvas{height:330px}}</style><style>
-.focused-lesson #courseHero,.focused-lesson .course-nav,.focused-lesson .module-tabs{display:none}
-@media(min-width:761px){#ptolemyLab.lecture .visual{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,1fr);gap:9px 25px;max-width:none}#ptolemyLab.lecture .visual-top{grid-column:1 / -1}#ptolemyLab.lecture .diagram-frame{grid-column:1;grid-row:2 / 6}#ptolemyLab.lecture .diagram-frame canvas{height:390px}#ptolemyLab.lecture .legend{grid-column:1;grid-row:6}#ptolemyLab.lecture .observation{grid-column:2;grid-row:2}#ptolemyLab.lecture .transport{grid-column:2;grid-row:3}#ptolemyLab.lecture .model-tools{grid-column:2;grid-row:4}#ptolemyLab.lecture .model-limit{grid-column:2;grid-row:5}#ptolemyLab.lecture .measure canvas,#ptolemyLab.lecture .sky canvas{height:160px}}
+<style>@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap');
+:root{color-scheme:light;--ink:#29363e;--muted:#626d73;--line:#d6dcdd;--paper:#fff;--wash:#f3f5f4;--blue:#315d78;--planet:#af592e;--sans:Pretendard,"Noto Sans KR","Apple SD Gothic Neo",sans-serif}
+*{box-sizing:border-box}body{margin:0!important;padding:22px 32px 35px!important;background:#f6f5f1!important;color:var(--ink)!important;font:16px/1.75 var(--sans);word-break:keep-all}body>div{max-width:1440px!important;margin:auto}button,input,select{font:inherit;touch-action:manipulation}button,summary{cursor:pointer}button:disabled{opacity:.45;cursor:default}a{color:var(--blue);text-underline-offset:4px}a:hover{text-decoration:underline}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid #61879b;outline-offset:3px}[hidden]{display:none!important}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.course-nav{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:13px;margin-bottom:18px;color:#617078}#courseHero{text-align:left;margin-bottom:25px}#courseHero h1{font-size:clamp(29px,3vw,42px);font-weight:800;line-height:1.3;letter-spacing:-.045em;margin-bottom:7px;color:var(--ink);background:none;-webkit-text-fill-color:var(--ink);text-transform:none}#courseHero p{font:14px/1.6 var(--sans);letter-spacing:.015em;color:var(--muted);text-transform:none}
+.module-tabs{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;border-bottom:1px solid var(--line);padding-bottom:17px;margin-bottom:22px}.module-tabs button{background:transparent;border:1px solid #c3cccf;color:#56636a;font-weight:650;border-radius:5px;padding:8px 16px;min-height:42px}.module-tabs button[aria-pressed=true]{background:#354e5d;color:white;border-color:#354e5d}.module-tabs span{margin-left:auto;font-size:13px;color:var(--muted)}
+.glass{background:#fff;border:1px solid var(--line);border-radius:7px!important;box-shadow:none!important;backdrop-filter:none;padding:22px!important}.glass h2{font-size:20px!important;font-style:normal!important}.glass h3{font-size:20px!important;font-style:normal!important;letter-spacing:-.03em!important}.accent-ptolemy{color:#8e683b}.accent-copernicus{color:#355d7f}.accent-tycho{color:#855f74}.accent-kepler{color:#357161}.data-panel{font-family:var(--sans);font-size:13px;line-height:1.8;color:#5b676e;background:#f4f6f5;padding:10px 12px;border-radius:4px;margin-top:12px}.comparison-summary{font-size:16px;color:#53626a;line-height:1.85;max-width:1080px;margin-bottom:20px}.comparison-summary button{color:var(--blue)!important}.comparison-controls{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:25px;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.comparison-controls button,.comparison-controls select{background:#fff;border:1px solid #b9c6cd;padding:7px 13px;min-height:42px;border-radius:5px;font-size:14px;color:var(--ink)}.comparison-controls label{display:flex;align-items:center;gap:8px;font-size:14px}.comparison-controls input[type=range]{width:140px}.comparison-foot{font-size:16px;line-height:1.9;margin:24px 0 30px;border-top:1px solid var(--line);padding-top:23px}.comparison-foot p{margin-top:10px}.analysis-board p{font-size:16px;line-height:1.9;color:#56636b}.analysis-board .glass{border-left-width:3px}#comparisonPanel canvas{display:block;width:100%;height:clamp(280px,29vw,390px);background:#fafbf9;border:1px solid #e0e4e3;border-radius:4px}#comparisonPanel .grid{margin-bottom:26px}
+#ptolemyLab .tabs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line);margin-bottom:24px}.tab{border:0;border-bottom:3px solid transparent;background:transparent;text-align:left;padding:12px 13px;color:#69747a;font-size:15px;font-weight:650;line-height:1.4}.tab small{display:block;font-size:12px;font-weight:400;margin-top:5px}.tab[aria-pressed=true]{background:#e9eff0;color:#294e62;border-bottom-color:#607e8e}.tab:hover{background:#edf0ee}.lesson-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:20px}.eyebrow{font-size:11px;font-weight:650;letter-spacing:.07em;color:#718087;margin-bottom:6px}.lesson-head h2{font-size:27px;font-weight:750;line-height:1.35;letter-spacing:-.035em}.secondary{background:transparent;border:1px solid #b8c4c9;color:#465d6b;border-radius:4px;min-height:40px;padding:7px 13px;font-size:13px;white-space:nowrap}
+.workspace{display:block}.visual{display:grid;grid-template-rows:32px auto auto auto auto;grid-template-columns:minmax(0,1.06fr) minmax(0,1fr);gap:10px 28px}.visual-top{grid-column:1;grid-row:1;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px;font-size:15px}.visual-top strong{font-weight:650}.toggle{display:flex;gap:3px;background:#e9eded;padding:3px;border-radius:5px}.toggle button{border:0;background:transparent;padding:6px 10px;border-radius:3px;font-size:12px;color:#596a73;min-height:32px}.toggle button[aria-pressed=true]{background:#fff;color:#2b4a5b;box-shadow:0 1px 3px #263f5018}
+.diagram-frame{grid-column:1;grid-row:2;align-self:start;border:1px solid #d7dddd;background:#fcfcfa;border-radius:6px;overflow:hidden}.diagram-frame canvas{display:block;width:100%;height:350px}.legend{grid-column:1;grid-row:3;display:flex;flex-wrap:wrap;gap:5px 15px;font-size:12px;color:#667279}.key{display:inline-flex;align-items:center;gap:6px}.dot{width:9px;height:9px;border-radius:50%;background:var(--c);display:inline-block}.square{border-radius:0;transform:rotate(45deg)}
+.observation{grid-column:2;grid-row:1 / 4;min-width:0}.observation-head{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap;min-height:32px;margin-bottom:10px;font-size:14px}.observation-head strong{font-size:18px;letter-spacing:-.03em}.motion-state{color:#4c717b;font-size:14px;font-weight:700}.motion-state.retro{color:#a34827}.observer-frame{border:1px solid #d2dce0;border-radius:6px;overflow:hidden;background:#edf2f3}.observer-frame canvas{width:100%;height:350px;display:block}.observation-caption{font-size:12px;color:#68747b;line-height:1.65;margin:9px 0 0;min-height:22px}.observer-actions{display:flex;gap:8px;justify-content:center;margin:9px 0 0}.observer-actions button{border:1px solid #c7d0d3;background:#fff;color:#435a65;border-radius:4px;padding:6px 12px;min-height:36px;font-size:13px}.measure canvas{width:100%;height:160px;display:block}.math-detail{margin-top:13px;font-size:13px;color:#69757b}.math-detail summary{font-weight:500}.math-detail p{font-size:12px;margin:8px 0}
+.transport{grid-column:1 / -1;grid-row:4;display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:14px 0;margin-top:8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.primary{background:#3b5968;color:#fff;border:1px solid #3b5968;border-radius:5px;min-height:44px;min-width:102px;padding:8px 16px;font-weight:650;font-size:15px}.scrub{flex:1;min-width:150px}.scrub-label{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#617078;line-height:1.4;margin-bottom:4px}input[type=range]{display:block;width:100%;height:24px;margin:0;accent-color:#668797;cursor:pointer}input[type=checkbox]{accent-color:#526f80}select{background:#fff;color:#465962;border:1px solid #bfcbd0;padding:7px 10px;min-height:40px;border-radius:4px;font-size:13px}.compact-label{display:flex;align-items:center;gap:6px;font-size:12px;color:#68777f}.model-tools{grid-column:1;grid-row:5;display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:7px}.model-control{flex:1;min-width:150px}.model-control label{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#596b74}.quick-action{background:#fff;border:1px solid #bdcbd1;color:#426174;border-radius:4px;padding:7px 12px;min-height:40px;font-size:13px}.model-limit{grid-column:2;grid-row:5;color:#748087;font-size:12px;line-height:1.7;margin-top:7px}
+.reading{margin:32px auto 0;max-width:1000px;padding:26px 0 0;border-top:1px solid var(--line)}.reading p{font-size:17px;line-height:1.9;color:#4c5b64;margin:0 0 16px}.reading .lead{font-size:23px;font-weight:700;color:#2e414c;line-height:1.6;margin-bottom:19px;letter-spacing:-.025em}.reading h3{font-size:16px;font-weight:700;margin:22px 0 9px}.reading strong{font-weight:700;color:#334b59}.reading .try{border-left:3px solid #99adb4;padding-left:17px;margin-top:22px}.reading .try h3{margin-top:0}.reading .try p{font-size:16px}.reading .historical{margin-top:23px;padding-top:5px}.reading .citation{font-size:13px;color:#718087}.reading details{margin-top:20px;font-size:14px}.reading summary{font-weight:600}.next-row{display:flex;justify-content:space-between;gap:16px;margin-top:24px}.next-row button{border:0;background:transparent;color:#426478;font-weight:600;font-size:14px;padding:8px 0}.lab-sources{margin:30px 0 25px;border-top:1px solid var(--line);padding-top:17px;font-size:13px;color:#68777e;line-height:1.8}.lab-sources summary{font-weight:600}.lab-sources ol{list-style:decimal;padding-left:23px;margin-top:15px}.lab-sources li{margin:12px 0}.source-note{margin-top:12px}footer{color:#8b9395!important;font-size:11px!important;letter-spacing:.08em!important;padding-bottom:12px!important}
+.focused-lesson #courseHero,.focused-lesson .course-nav,.focused-lesson .module-tabs{display:none}.lecture .reading{display:none}.focused-lesson .lab-sources,.focused-lesson footer{display:none}.focused-lesson .lesson-head{margin-bottom:14px}.focused-lesson .tabs{margin-bottom:18px!important}.focused-lesson .diagram-frame canvas,.focused-lesson .observer-frame canvas{height:clamp(240px,calc(100vh - 440px),410px)}
+@media(min-width:1600px){.diagram-frame canvas,.observer-frame canvas{height:410px}.visual{gap:12px 35px}}
+@media(max-width:900px){body{padding:18px 22px 30px!important}.visual{gap:10px 20px}.lesson-head h2{font-size:24px}.tab{padding:11px 9px;font-size:14px}.tab small{font-size:11px}.observation-head strong{font-size:16px}.diagram-frame canvas,.observer-frame canvas{height:320px}.module-tabs span{width:100%;margin-left:0}}
+@media(max-width:700px){body{padding:17px 16px 26px!important}.course-nav{font-size:11px}.module-tabs{margin-bottom:18px}.module-tabs button{font-size:13px;padding:8px 11px}.module-tabs span{font-size:12px}.tabs{grid-template-columns:repeat(2,1fr)!important}.tab{padding:10px 9px}.lesson-head h2{font-size:22px}.secondary{font-size:12px;padding:6px 9px}.visual{display:flex;flex-direction:column;gap:10px}.visual-top{order:0}.diagram-frame{order:1}.legend{order:2}.observation{order:3;margin-top:10px}.transport{order:4;gap:10px;margin-top:2px}.model-tools{order:5}.model-limit{order:6}.diagram-frame canvas{height:310px}.observer-frame canvas{height:290px}.focused-lesson .diagram-frame canvas{height:300px}.focused-lesson .observer-frame canvas{height:290px}.reading{margin-top:22px}.reading p{font-size:16px}.reading .lead{font-size:21px}.comparison-controls label{font-size:12px}.comparison-controls{gap:12px}.comparison-controls input[type=range]{width:100px}#comparisonPanel canvas{height:320px}.glass{padding:17px!important}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style></head>
 <body class="p-4 lg:p-6 min-h-screen flex flex-col overflow-y-auto text-sm">
     <div class="max-w-[1700px] mx-auto w-full">
@@ -252,12 +31,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
         <!-- Header -->
         <div class="text-center mb-8" id="courseHero">
             <h1 class="text-4xl lg:text-6xl font-black tracking-tighter mb-2 heading-gradient uppercase">
-                Celestial Revolution
+                천문학 체계 비교
             </h1>
-            <p class="text-slate-500 text-sm font-light tracking-widest italic uppercase">Ptolemy • Copernicus • Tycho • Kepler</p>
+            <p class="text-slate-600 text-sm font-light tracking-widest italic uppercase">프톨레미 · 코페르니쿠스 · 티코 · 케플러</p>
         </div>
 
-<nav class="module-tabs" aria-label="천문학 학습 화면"><button data-module="comparison" aria-pressed="true">네 체계 비교</button><button data-module="lab" aria-pressed="false">프톨레미의 해법 · 직접 보기</button><span>모형의 구조를 보고, 설명과 선택의 기준을 비교합니다.</span></nav>
+<nav class="module-tabs" aria-label="천문학 학습 화면"><button data-module="comparison" aria-pressed="true">네 체계 비교</button><button data-module="lab" aria-pressed="false">프톨레미의 해법 · 직접 보기</button><span>관측자가 보는 하늘과, 그것을 설명하는 모형</span></nav>
 <section id="comparisonPanel" aria-label="네 천문 체계 비교">
 <p class="comparison-summary">프톨레미·코페르니쿠스·티코·케플러는 하늘의 운동을 어떤 구조로 설명했을까요? 네 화면을 같은 시각으로 움직이며 비교합니다. 이심원·주전원·이심점의 작동은 <button onclick="showModule('lab')" style="color:#9dceff;text-decoration:underline">‘프톨레미의 해법’</button>에서 단계별로 확인할 수 있습니다.</p>
 <div class="comparison-controls"><button id="comparePlay" aria-pressed="false">▶ 재생</button><label>시간 <input id="compareTime" type="range" min="0" max="2000" value="0" aria-label="네 체계의 시간 이동"></label><label>속도 <select id="compareSpeed"><option value=".5">0.5배</option><option value="1" selected>1배</option><option value="2">2배</option></select></label><label><input type="checkbox" id="compareTrace" checked>궤적</label><label><input type="checkbox" id="compareParallax">시차의 시선</label><button id="compareReset">처음으로</button></div>
@@ -310,36 +89,36 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
             <!-- (1) Ptolemy vs Copernicus: Harmony -->
             <div class="glass p-8 rounded-3xl border-l-4 border-indigo-500">
                 <h3 class="text-xl font-black mb-4 uppercase italic tracking-tighter">1. 조화로움과 정합성 비교</h3>
-                <div class="space-y-4 text-sm leading-relaxed text-slate-400">
-                    <p>• <strong class="text-amber-400">프톨레미오스:</strong> 각 행성마다 독립적인 모델을 설계함. 전체 우주를 관통하는 통합적인 궤도 반지름 비를 결정할 수 없는 행성별 구조임. 내행성이 태양에서 크게 벗어나지 않는 관측 등을 개별 모형의 배치 조건으로 표현함. 관측을 계산하는 정교한 체계였지만, 행성 간 거리와 운동을 하나의 배치로 묶는 방식은 코페르니쿠스와 달랐음.</p>
-                    <p>• <strong class="text-blue-400">코페르니쿠스:</strong> 태양 중심 배치를 통해 행성들의 순서와 상대적 거리를 하나의 기하학적 질서(Symmetria)로 연결함. 내행성의 최대 이각과 외행성의 역행을 별도 가설 없이 단일 구조의 필연적 결과로 변모시킴.</p>
+                <div class="space-y-4 text-sm leading-relaxed text-slate-600">
+                    <p>• <strong class="text-amber-800">프톨레미오스:</strong> 각 행성마다 독립적인 모델을 설계함. 전체 우주를 관통하는 통합적인 궤도 반지름 비를 결정할 수 없는 행성별 구조임. 내행성이 태양에서 크게 벗어나지 않는 관측 등을 개별 모형의 배치 조건으로 표현함. 관측을 계산하는 정교한 체계였지만, 행성 간 거리와 운동을 하나의 배치로 묶는 방식은 코페르니쿠스와 달랐음.</p>
+                    <p>• <strong class="text-blue-800">코페르니쿠스:</strong> 태양 중심 배치를 통해 행성들의 순서와 상대적 거리를 하나의 기하학적 질서(Symmetria)로 연결함. 내행성의 최대 이각과 외행성의 역행을 별도 가설 없이 단일 구조의 필연적 결과로 변모시킴.</p>
                 </div>
             </div>
 
             <!-- (2) Copernican Limitations & Tycho's Hesitation -->
             <div class="glass p-8 rounded-3xl border-l-4 border-red-500">
                 <h3 class="text-xl font-black mb-4 uppercase italic tracking-tighter">2. 코페르니쿠스의 한계와 티코의 망설임</h3>
-                <div class="space-y-4 text-sm leading-relaxed text-slate-400">
-                    <p>• <strong class="text-white">코페르니쿠스의 오차:</strong> 균일한 원운동을 요구했으며, 이심점의 기능을 작은 원운동의 조합으로 대체함. 우주의 배치를 바꾸었지만 계산이 단순한 원 몇 개만으로 끝난 것은 아니었고, 초기 예측 정확도가 기존 천문표를 일괄적으로 압도하지도 못함.</p>
-                    <p>• <strong class="text-pink-400">티코 브라헤의 망설임:</strong> 지구가 움직인다면 관측되어야 할 <strong>항성시차</strong>를 당대 최고 정밀 기구로도 발견하지 못함. 시차가 보이지 않는다면 별이 터무니없이 멀거나 지구가 정지해야 하는데, 그는 물리적 직관에 따라 <strong>"지구 정지"</strong>를 선택함. 지동설의 수학적 이점을 취하면서도 지심설의 물리적 안정성을 유지하려 한 절충적 시도임.</p>
+                <div class="space-y-4 text-sm leading-relaxed text-slate-600">
+                    <p>• <strong class="text-slate-800">코페르니쿠스의 오차:</strong> 균일한 원운동을 요구했으며, 이심점의 기능을 작은 원운동의 조합으로 대체함. 우주의 배치를 바꾸었지만 계산이 단순한 원 몇 개만으로 끝난 것은 아니었고, 초기 예측 정확도가 기존 천문표를 일괄적으로 압도하지도 못함.</p>
+                    <p>• <strong class="text-rose-800">티코 브라헤의 망설임:</strong> 지구가 움직인다면 관측되어야 할 <strong>항성시차</strong>를 당대 최고 정밀 기구로도 발견하지 못함. 시차가 보이지 않는다면 별이 터무니없이 멀거나 지구가 정지해야 하는데, 그는 물리적 직관에 따라 <strong>"지구 정지"</strong>를 선택함. 지동설의 수학적 이점을 취하면서도 지심설의 물리적 안정성을 유지하려 한 절충적 시도임.</p>
                 </div>
             </div>
 
             <!-- (3) Kepler's Completion -->
             <div class="glass p-8 rounded-3xl border-l-4 border-emerald-500">
                 <h3 class="text-xl font-black mb-4 uppercase italic tracking-tighter">3. 케플러의 기하학적 완성</h3>
-                <div class="space-y-4 text-sm leading-relaxed text-slate-400">
-                    <p>• <strong class="text-emerald-400 italic font-bold">화성의 8분 오차:</strong> 티코가 남긴 정밀 관측치와 원 궤도 사이의 '8분' 오차를 묵과하지 않음. 원운동에 대한 오랜 철학적 요구를 수정하여 <strong>타원 궤도</strong>를 도입함 (『신천문학』, 1609).</p>
-                    <p>• <strong class="text-emerald-400 italic font-bold">물리적 실재:</strong> 태양을 단순한 기하학적 점이 아닌 동력의 원천으로 인식함. 면적 속도 일정의 법칙을 통해 행성의 가속과 감속을 물리적으로 정당화하며 행성 운동의 기하학과 물리적 원인을 함께 설명하려 함.</p>
+                <div class="space-y-4 text-sm leading-relaxed text-slate-600">
+                    <p>• <strong class="text-emerald-800 italic font-bold">화성의 8분 오차:</strong> 티코가 남긴 정밀 관측치와 원 궤도 사이의 '8분' 오차를 묵과하지 않음. 원운동에 대한 오랜 철학적 요구를 수정하여 <strong>타원 궤도</strong>를 도입함 (『신천문학』, 1609).</p>
+                    <p>• <strong class="text-emerald-800 italic font-bold">물리적 실재:</strong> 태양을 단순한 기하학적 점이 아닌 동력의 원천으로 인식함. 면적 속도 일정의 법칙을 통해 행성의 가속과 감속을 물리적으로 정당화하며 행성 운동의 기하학과 물리적 원인을 함께 설명하려 함.</p>
                 </div>
             </div>
 
             <!-- (4) Comparison of Accuracy -->
             <div class="glass p-8 rounded-3xl border-l-4 border-blue-300">
                 <h3 class="text-xl font-black mb-4 uppercase italic tracking-tighter">4. 체계별 예측 정확도 비교</h3>
-                <div class="space-y-4 text-sm leading-relaxed text-slate-400">
-                    <p>• <strong class="text-slate-200">초기 지동설의 정체:</strong> 라인홀트가 코페르니쿠스의 이론을 바탕으로 만든 프루테닉 표(1551)는 기존 알폰소 표보다 획기적으로 정밀하지 않았음. 구조적 혁신에도 불구하고 수치적 예측력은 지심설을 압도하지 못함.</p>
-                    <p>• <strong class="text-white font-bold">케플러의 승리:</strong> 티코의 관측과 케플러의 이론에 기초한 루돌프 표(1627)는 행성 위치 예측을 크게 개선함. 그렇지만 타원 도입이나 천문표 하나로 논쟁이 즉시 끝난 것은 아니며, 지구 운동의 수용은 여러 증거와 물리학의 변화 속에서 진행됨.</p>
+                <div class="space-y-4 text-sm leading-relaxed text-slate-600">
+                    <p>• <strong class="text-slate-800">초기 지동설의 정체:</strong> 라인홀트가 코페르니쿠스의 이론을 바탕으로 만든 프루테닉 표(1551)는 기존 알폰소 표보다 획기적으로 정밀하지 않았음. 구조적 혁신에도 불구하고 수치적 예측력은 지심설을 압도하지 못함.</p>
+                    <p>• <strong class="text-slate-800 font-bold">케플러의 승리:</strong> 티코의 관측과 케플러의 이론에 기초한 루돌프 표(1627)는 행성 위치 예측을 크게 개선함. 그렇지만 타원 도입이나 천문표 하나로 논쟁이 즉시 끝난 것은 아니며, 지구 운동의 수용은 여러 증거와 물리학의 변화 속에서 진행됨.</p>
                 </div>
             </div>
         </div>
@@ -355,7 +134,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
   <div class="visual-top"><strong id="diagramTitle">원의 중심 C에서는 균일한 운동</strong><div id="viewToggle" class="toggle" hidden aria-label="좌표 기준 선택"><button data-view="sun" aria-pressed="true">태양 기준</button><button data-view="earth" aria-pressed="false">지구 기준</button></div></div>
   <div class="diagram-frame"><canvas id="diagram" role="img" aria-label="지구와 원의 중심이 분리된 이심원 모형">모형의 상세 설명은 이어지는 해설에서 읽을 수 있습니다.</canvas></div>
   <div class="legend" id="legend"></div>
-  <div class="observation"><div class="observation-head"><strong id="observationTitle">같은 시간 동안, 지구에서는 얼마나 움직여 보일까?</strong><span class="motion-state" id="motionState"></span></div><div class="measure" id="measureWrap"><canvas id="measure" role="img" aria-label="관측 위치에 따른 각속도 비교 그래프"></canvas></div><div class="sky" id="skyWrap" hidden><canvas id="sky" role="img" aria-label="시간에 따른 행성 방향 그래프: 붉게 내려가는 구간이 역행"></canvas></div><p class="observation-caption" id="observationCaption"></p></div>
+  <div class="observation">
+   <div class="observation-head"><strong id="observationTitle">지구에서 보이는 P의 크기</strong><span class="motion-state" id="motionState"></span></div>
+   <div class="observer-frame"><canvas id="observer" role="img" aria-label="지구에서 보이는 행성 P의 움직임과 크기"></canvas></div>
+   <p class="observation-caption" id="observationCaption"></p>
+   <div class="observer-actions" id="observerActions"><button id="far">멀리 있을 때</button><button id="near">가까이 있을 때</button></div>
+   <details class="math-detail" id="mathDetail"><summary>각속도 그래프도 함께 보기</summary><div class="measure"><canvas id="measure" role="img" aria-label="지구와 원의 중심, 이심점 기준 각속도 비교"></canvas></div><p>지구 기준은 파란 실선, C 기준은 회색 점선, Q 기준은 보라색 점선입니다. 기준 각속도를 1로 두었습니다.</p></details>
+  </div>
   <div class="transport">
    <button class="primary" id="play" aria-pressed="false">▶ 재생</button>
    <div class="scrub"><label class="scrub-label" for="time"><span>시간 이동</span><output id="timeValue">0%</output></label><input id="time" type="range" min="0" max="1000" step="1" value="0" aria-label="시간 이동"></div>
@@ -367,7 +152,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
  </section>
  <aside class="reading" id="reading" aria-label="모형 해설"></aside>
  </div></section><section class="lab-sources" aria-label="참고문헌과 모형 범위"><details><summary>참고문헌 · 모형의 범위</summary>
- <p class="source-note">이 페이지는 원리를 분리해 보여주는 수업용 모형입니다. 프톨레미의 행성별 매개변수나 코페르니쿠스의 전체 계산 체계를 복원하지 않았습니다. 원의 크기와 시간은 이해를 위한 상대값이며 실제 천체의 위치를 예보하지 않습니다. 01–03은 세 장치의 구별을 위한 설명 순서로, 실제 역사에서 이 순서대로 발명되었다는 뜻이 아닙니다.</p>
+ <p class="source-note">이 페이지는 원리를 분리해 보여주는 수업용 모형입니다. 배경별은 실제 별자리가 아닌 고정된 방향 표지입니다. P의 실제 크기는 고정하고, 거리로 계산한 겉보기 원반만 같은 확대율로 표시합니다. 원반의 확대는 맨눈으로 그 크기 변화가 이 정도로 보인다는 뜻이 아닙니다. 프톨레미의 행성별 매개변수나 코페르니쿠스의 전체 계산 체계를 복원하지 않았습니다. 원의 크기와 시간은 이해를 위한 상대값이며 실제 천체의 위치를 예보하지 않습니다. 01–03은 세 장치의 구별을 위한 설명 순서로, 실제 역사에서 이 순서대로 발명되었다는 뜻이 아닙니다.</p>
  <ol>
  <li>Ptolemy. 1998. <i>Ptolemy’s Almagest</i>. Translated by G. J. Toomer. Princeton, NJ: Princeton University Press. Books III and IX. <a href="https://press.princeton.edu/books/paperback/9780691002606/ptolemys-almagest" target="_blank" rel="noopener">출판사 ↗</a></li>
  <li>Van Helden, Albert. 1995. “The Ptolemaic System.” <i>The Galileo Project</i>, Rice University. <a href="https://galileo.library.rice.edu/sci/theories/ptolemaic_system.html" target="_blank" rel="noopener">세 장치의 설명 ↗</a></li>
@@ -380,7 +165,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
  </ol>
  <p class="source-note">기하학적 비교: 04는 두 원운동의 상대위치를 같은 시각에 계산하므로, 태양 기준과 지구 기준을 바꾸어도 지구에서 본 행성 방향은 같습니다. 이는 좌표 변환의 성질을 보여줍니다. 역사적 두 체계의 모든 예측이 같았다는 주장이나, 이 시연만으로 지동설을 입증했다는 뜻은 아닙니다.</p>
  </details></section>
-        <footer class="text-center pb-20 text-slate-400 text-[12px] font-mono tracking-[0.4em] uppercase">
+        <footer class="text-center pb-20 text-slate-600 text-[12px] font-mono tracking-[0.4em] uppercase">
             Historical Astronomy Visualization • Systematic Comparison
         </footer>
     </div>
@@ -389,7 +174,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 <script>(() => {
  'use strict';
  const ids=['canvasPtolemy','canvasCopernicus','canvasTycho','canvasKepler'];
- const color={sun:'#F6AD55',earth:'#65AFFF',mercury:'#D1D9E4',mars:'#FF8D7A',orbit:'#506071',trace:'#9aabba',star:'#7f93aa'};
+ const color={sun:'#b79143',earth:'#44748d',mercury:'#717d83',mars:'#af6842',orbit:'#b2bdbc',trace:'#8f9d9f',star:'#839da5'};
  let days=0,playing=false,speed=1,tracing=true,parallax=false,last=0;
  const planets=[{key:'mercury',name:'수성',a:.387,e:.206,period:88,phase:1.1},{key:'earth',name:'지구',a:1,e:.017,period:365,phase:0},{key:'mars',name:'화성',a:1.524,e:.093,period:687,phase:-.4}];
  const tau=2*Math.PI;
@@ -403,18 +188,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
   const px=p=>({x:center.x+p.x*scale,y:center.y-p.y*scale});
   function line(a,b,col,dash=[]){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=col;ctx.lineWidth=1.3;ctx.setLineDash(dash);ctx.stroke();ctx.setLineDash([])}
   function ring(p,r,col,dash=[]){ctx.beginPath();ctx.arc(px(p).x,px(p).y,r*scale,0,tau);ctx.strokeStyle=col;ctx.lineWidth=1.1;ctx.setLineDash(dash);ctx.stroke();ctx.setLineDash([])}
-  function label(p,name,col){const q=px(p);ctx.font='600 13px "Noto Sans KR",sans-serif';ctx.textBaseline='middle';const wide=ctx.measureText(name).width;const right=q.x+10+wide<w-5;ctx.textAlign=right?'left':'right';ctx.lineWidth=4;ctx.strokeStyle='#000';ctx.strokeText(name,q.x+(right?10:-10),q.y+3);ctx.fillStyle=col;ctx.fillText(name,q.x+(right?10:-10),q.y+3)}
+  function label(p,name,col){const q=px(p);ctx.font='600 13px "Noto Sans KR",sans-serif';ctx.textBaseline='middle';const wide=ctx.measureText(name).width;const right=q.x+10+wide<w-5;ctx.textAlign=right?'left':'right';ctx.lineWidth=4;ctx.strokeStyle='#fafbf9';ctx.strokeText(name,q.x+(right?10:-10),q.y+3);ctx.fillStyle=col;ctx.fillText(name,q.x+(right?10:-10),q.y+3)}
   function dot(p,col,name){const q=px(p);ctx.beginPath();ctx.arc(q.x,q.y,name==='태양'?7:name?5:1.7,0,tau);ctx.fillStyle=col;ctx.fill();if(name)label(p,name,col)}
   function track(points,col){ctx.beginPath();points.forEach((p,i)=>{const q=px(p);i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y)});ctx.strokeStyle=col;ctx.lineWidth=1.4;ctx.stroke()}
   const E=circular(planets[1],days),M=circular(planets[2],days),Me=circular(planets[0],days),zero={x:0,y:0},sun=subtract(zero,E);
-  ring(zero,2.72,'#46596d',[3,8]);for(let i=0;i<28;i++){const a=i*tau/28;dot({x:2.72*Math.cos(a),y:2.72*Math.sin(a)},'#7790a4','')}
+  ring(zero,2.72,'#c2cdcf',[3,8]);for(let i=0;i<28;i++){const a=i*tau/28;dot({x:2.72*Math.cos(a),y:2.72*Math.sin(a)},'#94a9b0','')}
   const position=(p,d)=>{if(index===3)return ellipse(p,d);const base=circular(p,d);return index===1?base:subtract(base,circular(planets[1],d))};
-  if(index===0){ring(zero,1.524,color.orbit);ring(M,1,'#8b6b42',[5,4]);ring(zero,1,color.orbit);ring(sun,.387,'#8b6b42',[5,4]);line(px(zero),px(M),'#435569',[4,4]);dot(M,'#a09b8e','');line(px(M),px(subtract(M,E)),'#b99a65');dot(zero,color.earth,'지구');dot(sun,color.sun,'태양')}
+  if(index===0){ring(zero,1.524,color.orbit);ring(M,1,'#8b6b42',[5,4]);ring(zero,1,color.orbit);ring(sun,.387,'#8b6b42',[5,4]);line(px(zero),px(M),'#b0bfc3',[4,4]);dot(M,'#a09b8e','');line(px(M),px(subtract(M,E)),'#b99a65');dot(zero,color.earth,'지구');dot(sun,color.sun,'태양')}
   if(index===1){planets.forEach(p=>ring(zero,p.a,color.orbit));dot(zero,color.sun,'태양')}
-  if(index===2){ring(zero,1,color.orbit);ring(sun,.387,'#65798d');ring(sun,1.524,'#65798d');dot(zero,color.earth,'지구');dot(sun,color.sun,'태양')}
+  if(index===2){ring(zero,1,color.orbit);ring(sun,.387,'#b1bec0');ring(sun,1.524,'#b1bec0');dot(zero,color.earth,'지구');dot(sun,color.sun,'태양')}
   if(index===3){planets.forEach(p=>{const pts=Array.from({length:161},(_,i)=>ellipse(p,i*p.period/160));track(pts,color.orbit)});dot(zero,color.sun,'태양')}
   planets.forEach(p=>{if(p.key==='earth'&&(index===0||index===2))return;if(tracing){const pts=Array.from({length:100},(_,i)=>position(p,days-(99-i)*1.6));track(pts,color.trace)}dot(position(p,days),color[p.key],p.name)});
-  if(parallax){const observer=index===1?E:index===3?ellipse(planets[1],days):zero;const star={x:-1.3,y:2.4};line(px(observer),px(star),'#75b9ff',[5,4]);dot(star,'#9dcaff','기준 별')}
+  if(parallax){const observer=index===1?E:index===3?ellipse(planets[1],days):zero;const star={x:-1.3,y:2.4};line(px(observer),px(star),'#6d94a7',[5,4]);dot(star,'#668c9e','기준 별')}
  }
  function render(){ids.forEach(draw);document.getElementById('compareTime').value=Math.round(days)}
  function setPlay(value){playing=value;const b=document.getElementById('comparePlay');b.textContent=value?'Ⅱ 일시정지':'▶ 재생';b.setAttribute('aria-pressed',String(value))}
@@ -435,7 +220,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 </script><script>(() => {
 'use strict';
 const $=id=>document.getElementById(id), TAU=Math.PI*2, N=1.88, SYN=TAU/(N-1);
-const ink='#e4edf7',muted='#a8b7c7',blue='#76baff',orange='#ffad82',purple='#c09ae7',green='#7acfb4',red='#ff9f9b';
+const ink='#33464f',muted='#718087',blue='#426f85',orange='#a96439',purple='#897394',green='#577d70',red='#ac5733';
 const state={mode:'eccentric',t:0.1,e:.30,r:.65,playing:false,speed:1,view:'sun',loop:true,lecture:false};
 const names=['eccentric','epicycle','equant','copernicus'];
 const lessons={
@@ -444,6 +229,23 @@ epicycle:{step:'02 / 04 · EPICYCLE',title:'두 원운동으로 역행을 설명
 equant:{step:'03 / 04 · EQUANT',title:'‘균일한 운동’의 기준점을 바꾸다',diagram:'원의 중심 C ≠ 지구 E ≠ 이심점 Q',lead:'원은 C를 중심으로 돌고,<br>각도는 Q에서 일정하게 변합니다.',body:`<p>이심점은 <strong>원의 중심을 옮기는 장치가 아닙니다.</strong> 원의 중심 C는 그대로 두고, 별도의 점 Q에서 바라본 방향이 같은 시간에 같은 각도만큼 변하도록 운동을 정합니다.</p><p>그래서 Q에서 본 각속도는 일정하지만, C에서 본 각속도는 달라집니다. 같은 시간 간격으로 찍은 원 위의 점들도 고르게 놓이지 않습니다. <strong>원 궤도를 유지하면서 속도 변화를 더 정교하게 표현</strong>할 수 있는 셈입니다.</p>`,try:`‘C에서 균일한 운동과 비교’를 눌러 보세요. 이심원에서는 C 기준 선이, 이심점에서는 Q 기준 선이 평평합니다. 원의 모양은 그대로인데 점들의 간격은 바뀝니다.`,history:`프톨레미의 행성 모형에서 이 조건을 따르는 것은 주축원 위를 도는 주전원의 중심입니다. 이심점은 관측을 잘 설명하기 위한 장치였지만, 원의 실제 중심에서 균일한 운동을 요구한 천문학자들에게는 문제가 되었습니다. 코페르니쿠스의 불만도 여기에 닿아 있습니다.`,cite:'Ptolemy 1998, bk. IX; Museo Galileo n.d.; Rabin 2023',limit:'주전원의 중심 P만 표시했습니다. 지구 E와 이심점 Q는 원의 중심 C에서 같은 거리만큼 반대쪽에 놓입니다. 작은 주전원은 생략했습니다.',caption:'세로축: 각속도(기준 운동 = 1). Q 기준은 일정하지만, C 기준과 지구 E 기준은 변합니다.'},
 copernicus:{step:'04 / 04 · A MOVING EARTH',title:'같은 역행, 다른 세계의 배치',diagram:'지구가 안쪽 궤도에서 외행성을 추월한다',lead:'이번에는 관측자인 지구도<br>움직인다고 생각해 봅시다.',body:`<p>안쪽 궤도를 더 빨리 도는 지구가 외행성을 추월하면, 지구와 행성을 잇는 시선의 방향이 잠시 반대로 변합니다. 행성이 자신의 궤도에서 뒤로 돌지 않아도 <strong>별을 배경으로 역행이 나타납니다.</strong></p><p>‘태양 기준’과 ‘지구 기준’을 바꾸어 보세요. 지구를 고정하도록 그림 전체의 좌표를 옮기면, 행성의 상대운동은 앞 단계의 큰 원과 작은 원의 합으로 나타납니다. <strong>보이는 방향은 같아도, 그 운동을 무엇 때문에 생긴 것으로 해석하는지는 달라집니다.</strong></p>`,try:`역행 순간에 화면을 멈추고 기준을 바꾸어 보세요. 위쪽 그림의 배치는 바뀌지만, 아래쪽 그래프에서 행성의 방향과 역행 여부는 그대로입니다.`,history:`코페르니쿠스에게 지구의 운동은 여러 행성의 역행을 하나의 공통 원인으로 묶는 길이었습니다. 그렇지만 원운동과 작은 원들을 여전히 사용했고, 초기 예측 정확도만으로 기존 체계를 압도한 것도 아니었습니다. 우주의 질서와 물리적 가능성에 대한 판단도 함께 쟁점이 되었습니다.`,cite:'Rabin 2023',limit:'두 원궤도의 상대운동을 비교합니다. 코페르니쿠스의 전체 모형을 재현한 것은 아니며, 이 시연만으로 두 역사적 이론의 우열이 결정되지는 않습니다.',caption:'역행 부근(시간 30–70%)을 확대한 계산 그래프입니다. 좌표 기준을 바꾸어도 이 곡선과 현재 위치는 변하지 않습니다.'}
 };
+
+lessons.eccentric.lead='같은 크기의 P도,<br>가까우면 더 크게 보입니다.';
+lessons.eccentric.body=`<p>왼쪽은 원을 도는 천체 P와 지구의 배치입니다. 오른쪽은 <strong>지구에서 바라본 P의 원반을 확대</strong>한 모습입니다. P 자체가 커지는 것이 아니라, 지구와의 거리가 가까워져 더 크게 보입니다.</p><p><strong>이심원은 원의 중심 C와 지구를 분리</strong>합니다. 그러면 P와 지구 사이의 거리가 변하고, 지구에서 보이는 크기와 운동의 빠르기도 달라집니다. 왼쪽의 작은 점들은 같은 시간 간격의 위치입니다. 원 위의 간격은 일정하지만, 지구에서 바라보는 방향의 변화는 일정하지 않습니다.</p>`;
+lessons.eccentric.try='‘멀리 있을 때’와 ‘가까이 있을 때’를 번갈아 눌러 보세요. 지구를 원의 중심에 놓으면 두 모습의 차이가 사라집니다. 재생하면 거리가 바뀌는 과정과 보이는 크기의 변화를 함께 볼 수 있습니다.';
+lessons.eccentric.caption='같은 크기의 P를 같은 확대율로 봅니다. 지구에 가까울수록 크게, 멀수록 작게 보입니다.';
+lessons.eccentric.limit='모형 속 지구와 P는 알아보기 위한 기호입니다. 오른쪽 원반은 보이는 크기의 변화를 확대해 표현했습니다. R은 원의 반지름입니다.';
+lessons.epicycle.lead='고정된 별 앞에서,<br>P가 가던 방향을 되돌아옵니다.';
+lessons.epicycle.try='‘순행 → 역행 재생’을 누르고 오른쪽의 P를 보세요. 오른쪽으로 가던 P가 잠시 멈춘 뒤 왼쪽으로 되돌아왔다가, 다시 오른쪽으로 갑니다. 배경별은 움직이지 않습니다. 주전원을 없애면 같은 구간에서도 역행이 사라집니다.';
+lessons.epicycle.caption='별 배경은 고정되어 있습니다. 가까워질수록 P의 원반도 커집니다. 남북 움직임을 생략하고 역행 전후를 확대했습니다.';
+lessons.epicycle.limit='원의 크기와 속도는 원리를 보여주는 설명용 비율입니다. 오른쪽은 같은 모형을 지구에서 바라본 모습이며, 원반 크기는 확대 표시했습니다.';
+lessons.equant.try='오른쪽의 작은 점들은 같은 시간 간격으로 본 P의 방향입니다. Q를 기준으로 하면 간격이 일정하지만, C를 기준으로 하면 일정하지 않습니다. 재생하여 두 시계의 바늘이 어떻게 움직이는지 비교하세요.';
+lessons.equant.caption='이 단계의 P는 행성이 아니라 주전원의 중심입니다. 원반 크기 대신, 두 기준점에서 보이는 방향을 비교합니다.';
+lessons.equant.limit='지구와 Q는 C에서 같은 거리만큼 반대쪽에 있습니다. 작은 주전원은 생략하고 그 중심 P의 운동만 보여줍니다.';
+lessons.copernicus.try='‘순행 → 역행 재생’을 누르면 지구가 외행성을 추월하는 동안 오른쪽의 P가 역행합니다. 멈춘 뒤 태양 기준과 지구 기준을 바꾸어 보세요. 지구에서 보이는 P의 위치와 크기는 그대로입니다.';
+lessons.copernicus.caption='왼쪽의 좌표 기준을 바꾸어도, 지구에서 보이는 P의 이동 방향과 원반 크기는 같습니다.';
+lessons.copernicus.limit='역행 전후를 확대한 두 원궤도 모형입니다. P의 원반은 가까울수록 크게 보이도록 확대했습니다. 코페르니쿠스의 전체 계산 체계를 재현하지는 않습니다.';
+
 function point(a,r=1){return{x:r*Math.cos(a),y:r*Math.sin(a)}}
 function sub(a,b){return{x:a.x-b.x,y:a.y-b.y}}
 function sample(mode,p,e=state.e,r=state.r){
@@ -462,109 +264,123 @@ function direction(mode,p,ref='earth'){
 function angularRate(mode,p,ref='earth'){
  const h=.00001;return angleDelta(direction(mode,p+h,ref),direction(mode,p-h,ref))/(2*h)/(mode==='eccentric'||mode==='equant'?TAU:SYN);
 }
-function fit(canvas){const rect=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);const w=Math.round(rect.width),h=Math.round(rect.height);if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr)}const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);return{ctx,w,h}}
+function viewRange(mode=state.mode){return mode==='epicycle'||mode==='copernicus'?{start:.38,end:.62}:{start:0,end:1}}
+function apparentData(mode,p,e=state.e,r=state.r){
+ const s=sample(mode,p,e,r),v=mode==='eccentric'||mode==='equant'?sub(s.P,s.E):s.P;
+ const distance=Math.hypot(v.x,v.y),angle=Math.atan2(v.y,v.x);
+ return{distance,angle,angularRadius:Math.asin(.01/distance)};
+}
+function fit(canvas){const rect=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2),w=Math.round(rect.width),h=Math.round(rect.height);if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr)}const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);return{ctx,w,h}}
 function line(ctx,a,b,color,width=1.5,dash=[]){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.stroke();ctx.setLineDash([])}
 function circle(ctx,p,r,color,width=1.5,dash=[]){ctx.beginPath();ctx.arc(p.x,p.y,Math.max(r,.1),0,TAU);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.stroke();ctx.setLineDash([])}
-function label(ctx,txt,x,y,color=ink,size=12,align='left'){ctx.font=`600 ${size}px Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.lineWidth=4;ctx.strokeStyle='#080d15';ctx.strokeText(txt,x,y);ctx.fillStyle=color;ctx.fillText(txt,x,y)}
-function dot(ctx,p,color,size=5,kind='circle'){ctx.fillStyle=color;ctx.beginPath();if(kind==='square'){ctx.moveTo(p.x,p.y-size);ctx.lineTo(p.x+size,p.y);ctx.lineTo(p.x,p.y+size);ctx.lineTo(p.x-size,p.y);ctx.closePath()}else ctx.arc(p.x,p.y,size,0,TAU);ctx.fill();ctx.strokeStyle='#080d15';ctx.lineWidth=1.5;ctx.stroke()}
-function arrow(ctx,a,b,color,width=1.6){line(ctx,a,b,color,width);const theta=Math.atan2(b.y-a.y,b.x-a.x),len=7;line(ctx,b,{x:b.x-len*Math.cos(theta-.45),y:b.y-len*Math.sin(theta-.45)},color,width);line(ctx,b,{x:b.x-len*Math.cos(theta+.45),y:b.y-len*Math.sin(theta+.45)},color,width)}
+function label(ctx,txt,x,y,color=ink,size=13,align='left'){ctx.font=`500 ${size}px Pretendard,"Noto Sans KR","Apple SD Gothic Neo",sans-serif`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.lineWidth=4;ctx.strokeStyle='#fcfcfa';ctx.strokeText(txt,x,y);ctx.fillStyle=color;ctx.fillText(txt,x,y)}
+function dot(ctx,p,color,size=4,kind='circle'){ctx.fillStyle=color;ctx.beginPath();if(kind==='square'){ctx.moveTo(p.x,p.y-size);ctx.lineTo(p.x+size,p.y);ctx.lineTo(p.x,p.y+size);ctx.lineTo(p.x-size,p.y);ctx.closePath()}else ctx.arc(p.x,p.y,size,0,TAU);ctx.fill();ctx.strokeStyle='#fcfcfa';ctx.lineWidth=1.2;ctx.stroke()}
+function earth(ctx,p,r=14){ctx.save();ctx.beginPath();ctx.arc(p.x,p.y,r,0,TAU);ctx.clip();const g=ctx.createLinearGradient(p.x-r,p.y-r,p.x+r,p.y+r);g.addColorStop(0,'#89b4c5');g.addColorStop(1,'#355f7a');ctx.fillStyle=g;ctx.fillRect(p.x-r,p.y-r,2*r,2*r);ctx.fillStyle='#c1d1ab';ctx.beginPath();ctx.moveTo(p.x-r*.5,p.y-r*.8);ctx.lineTo(p.x+r*.3,p.y-r*.7);ctx.lineTo(p.x+r*.13,p.y-r*.17);ctx.lineTo(p.x+r*.5,p.y+r*.1);ctx.lineTo(p.x+r*.3,p.y+r*.72);ctx.lineTo(p.x-r*.07,p.y+r*.38);ctx.lineTo(p.x-r*.42,p.y+r*.12);ctx.closePath();ctx.fill();ctx.restore();circle(ctx,p,r,'#35617b',1.2)}
+function planetDisc(ctx,p,r=9){const g=ctx.createRadialGradient(p.x-r*.3,p.y-r*.4,r*.05,p.x,p.y,r);g.addColorStop(0,'#e6b98b');g.addColorStop(.66,'#c98552');g.addColorStop(1,'#ac663e');ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,r,0,TAU);ctx.fill();circle(ctx,p,r,'#9f6543',1)}
+function arrow(ctx,a,b,color,width=1.8){line(ctx,a,b,color,width);const theta=Math.atan2(b.y-a.y,b.x-a.x),len=7;line(ctx,b,{x:b.x-len*Math.cos(theta-.45),y:b.y-len*Math.sin(theta-.45)},color,width);line(ctx,b,{x:b.x-len*Math.cos(theta+.45),y:b.y-len*Math.sin(theta+.45)},color,width)}
 function path(ctx,points,color,width=1.5,dash=[]){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle=color;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.stroke();ctx.setLineDash([])}
 function geometry(){
  const {ctx,w,h}=fit($('diagram'));if(w<1)return;const mode=state.mode,z=sample(mode,state.t),ecc=mode==='eccentric'||mode==='equant';
- const scale=ecc?Math.min((w-88)/2.45,(h-64)/2.12):Math.min((w-62)/3.65,(h-58)/3.6),cx=w/2,cy=h/2-2;
- const to=p=>({x:cx+p.x*scale,y:cy-p.y*scale});const C=to({x:0,y:0});
+ const scale=ecc?Math.min((w-76)/2.45,(h-62)/2.15):mode==='copernicus'&&state.view==='sun'?Math.min((w-70)/2.5,(h-65)/2.5):Math.min((w-55)/3.55,(h-55)/3.55),cx=w/2,cy=h/2-3;
+ const to=p=>({x:cx+p.x*scale,y:cy-p.y*scale}),C=to({x:0,y:0});
  if(ecc){
-  const E=to(z.E),Q=to(z.Q),P=to(z.P);circle(ctx,C,scale,'#8799a5',1.6);
-  for(let i=0;i<12;i++){const s=to(sample(mode,i/12).P);dot(ctx,s,'#a0aeb7',3.2)}
-  line(ctx,C,P,'#6f7c85',1.4,[4,4]);line(ctx,E,P,blue,2);
-  if(mode==='equant'){line(ctx,Q,P,purple,2,[6,4]);for(let j=0;j<12;j++){line(ctx,Q,to(sample(mode,j/12).P),'#c09ae724',1)}dot(ctx,Q,purple,5,'square');if(state.e>=.065)label(ctx,'Q',Q.x,Q.y+23,purple,14,'center')}
-  dot(ctx,C,ink,4,'square');dot(ctx,E,blue,6);dot(ctx,P,orange,7);
-  if(state.e<.065){label(ctx,mode==='equant'?'E · C · Q':'E · C',C.x,C.y+24,ink,13,'center')}else{label(ctx,'C',C.x,C.y-21,ink,13,'center');label(ctx,'E',E.x,E.y+23,blue,14,'center')}
-  const dx=P.x-cx,dy=P.y-cy;label(ctx,'P',P.x+(dx>=0?14:-14),P.y+(dy<0?-13:16),orange,14,dx>=0?'left':'right');
-  const ahead=to(sample(mode,state.t+.025).P);arrow(ctx,P,ahead,orange,1.7);
-  label(ctx,'작은 점 = 같은 시간 간격의 위치',w-14,h-17,muted,11,'right');
+  const E=to(z.E),Q=to(z.Q),P=to(z.P);circle(ctx,C,scale,'#9aa8aa',1.6);
+  for(let i=0;i<12;i++)dot(ctx,to(sample(mode,i/12).P),'#a6b4b5',3);
+  line(ctx,C,P,'#9aa5a9',1.1,[3,4]);line(ctx,E,P,blue,1.8);
+  if(mode==='equant'){for(let j=0;j<12;j++)line(ctx,Q,to(sample(mode,j/12).P),'#b7a9c433',1);line(ctx,Q,P,purple,2,[6,4]);dot(ctx,Q,purple,4,'square');if(state.e>.1)label(ctx,'Q',Q.x,Q.y+21,purple,14,'center')}
+  dot(ctx,C,'#647279',3,'square');earth(ctx,E,14);if(mode==='equant')dot(ctx,P,orange,7,'square');else planetDisc(ctx,P,9);
+  if(state.e<.1)label(ctx,mode==='equant'?'지구 · C · Q':'지구 · C',E.x,E.y+29,blue,13,'center');else{label(ctx,'C',C.x,C.y-20,muted,13,'center');label(ctx,'지구',E.x,E.y+29,blue,14,'center')}
+  label(ctx,mode==='equant'?'P (주전원 중심)':'P',P.x+(P.x>cx?14:-14),P.y+(P.y<cy?-16:20),orange,13,P.x>cx?'left':'right');
+  arrow(ctx,P,to(sample(mode,state.t+.035).P),orange,1.6);label(ctx,'작은 점: 같은 시간 간격',w-14,h-16,muted,11,'right');
  }else if(mode==='epicycle'){
-  circle(ctx,C,scale,'#8d9ca5',1.5);const M=to(z.M),P=to(z.P);circle(ctx,M,state.r*scale,'#ffad8280',1.8);
-  const pts=Array.from({length:421},(_,i)=>to(sample(mode,i/420).P));path(ctx,pts,'#9aa9b16c',1);
-  line(ctx,C,M,'#a0adb5',1.2,[5,4]);line(ctx,M,P,orange,1.7);line(ctx,C,P,blue,2);
-  const pv=sub(z.P,{x:0,y:0}),norm=Math.hypot(pv.x,pv.y);line(ctx,P,to({x:pv.x/norm*1.76,y:pv.y/norm*1.76}),blue,1.2,[4,4]);
-  dot(ctx,C,blue,6);dot(ctx,M,ink,4,'square');dot(ctx,P,orange,7);
-  label(ctx,'E',C.x-13,C.y+18,blue,14,'right');label(ctx,'D',M.x+12,M.y-14,ink,12);label(ctx,'P',P.x+12,P.y+17,orange,14);
-  label(ctx,'주축원',cx,cy-scale-17,muted,12,'center');
-  const epiLabel=to({x:z.M.x,y:z.M.y+state.r});if(state.r>.1)label(ctx,'주전원',Math.min(w-45,Math.max(43,epiLabel.x)),Math.max(17,epiLabel.y-14),orange,12,'center');
-  const ahead=to(sample(mode,state.t+.012).P);arrow(ctx,P,ahead,orange,1.7);
+  const D=to(z.M),P=to(z.P);circle(ctx,C,scale,'#96a4a7',1.6);if(state.r>.005)circle(ctx,D,state.r*scale,'#bd9577',1.7);
+  const pts=Array.from({length:220},(_,i)=>to(sample(mode,i/219).P));path(ctx,pts,'#b4bebe65',1);
+  line(ctx,C,D,'#acb7ba',1,[4,4]);line(ctx,D,P,'#ba8e6d',1.5);line(ctx,C,P,blue,2);
+  const a=apparentData(mode,state.t);line(ctx,P,to({x:Math.cos(a.angle)*1.7,y:Math.sin(a.angle)*1.7}),blue,1.1,[4,4]);
+  earth(ctx,C,14);dot(ctx,D,'#647279',3,'square');planetDisc(ctx,P,9);
+  label(ctx,'지구',C.x-7,C.y+30,blue,14,'center');label(ctx,'D',D.x+12,D.y-16,muted,12);label(ctx,'P',P.x+14,P.y+20,orange,15);
+  label(ctx,'주축원',cx,cy-scale-17,muted,12,'center');if(state.r>.1){const p=to({x:z.M.x,y:z.M.y+state.r});label(ctx,'주전원',Math.min(w-45,Math.max(45,p.x)),Math.max(18,p.y-14),'#a5714d',12,'center')}
+  arrow(ctx,P,to(sample(mode,state.t+.017).P),orange,1.6);
  }else{
-  const earthview=state.view==='earth',shift=earthview?z.E:{x:0,y:0},tr=p=>to(sub(p,shift)),E=tr(z.E),M=tr(z.M),S=tr({x:0,y:0});
-  if(earthview){circle(ctx,C,scale,'#8d9ca5',1.4);circle(ctx,to(z.M),state.r*scale,'#ffad8280',1.6);dot(ctx,to(z.M),ink,3,'square');const pts=Array.from({length:421},(_,i)=>to(sample(mode,i/420).P));path(ctx,pts,'#9aa9b145',1.2)}else{circle(ctx,S,scale,'#8d9ca5',1.5);circle(ctx,S,state.r*scale,'#76baff80',1.5)}
-  const v=sub(z.M,z.E),len=Math.hypot(v.x,v.y);line(ctx,E,M,blue,2.3);line(ctx,M,{x:M.x+v.x/len*scale*.6,y:M.y-v.y/len*scale*.6},blue,1.3,[4,4]);
-  dot(ctx,S,'#b28b20',8);dot(ctx,E,blue,6);dot(ctx,M,orange,7);label(ctx,'태양',S.x,S.y+23,'#e1c46d',12,'center');label(ctx,'E',E.x-13,E.y+18,blue,14,'right');label(ctx,'P',M.x+13,M.y-14,orange,14);
-  const next=sample(mode,state.t+.016);if(!earthview){arrow(ctx,E,tr(next.E),blue,1.7);arrow(ctx,M,tr(next.M),orange,1.7)}else{arrow(ctx,M,to(next.P),orange,1.7)}
-  label(ctx,earthview?'지구를 고정한 상대위치':'두 행성 모두 같은 방향으로 공전',w-13,h-17,muted,11,'right');
+  const geocentric=state.view==='earth',shift=geocentric?z.E:{x:0,y:0},tr=p=>to(sub(p,shift)),E=tr(z.E),P=tr(z.M),S=tr({x:0,y:0});
+  if(geocentric){circle(ctx,C,1*scale,'#9da9ab',1.5);circle(ctx,to(z.M),state.r*scale,'#bf9b80',1.5);dot(ctx,to(z.M),'#89979d',3,'square')}else{circle(ctx,S,scale,'#9ca9ac',1.5);circle(ctx,S,state.r*scale,'#9eb6bf',1.5)}
+  line(ctx,E,P,blue,2);const v=sub(z.M,z.E),d=Math.hypot(v.x,v.y);line(ctx,P,{x:P.x+v.x/d*scale*.38,y:P.y-v.y/d*scale*.38},blue,1.1,[4,4]);
+  dot(ctx,S,'#c6a04e',12);earth(ctx,E,14);planetDisc(ctx,P,9);label(ctx,'태양',S.x,S.y+26,'#927331',13,'center');label(ctx,'지구',E.x-13,E.y+28,blue,13,'center');label(ctx,'P',P.x+14,P.y-17,orange,15);
+  const next=sample(mode,state.t+.017);if(geocentric)arrow(ctx,P,to(next.P),orange,1.6);else{arrow(ctx,E,tr(next.E),blue,1.6);arrow(ctx,P,tr(next.M),orange,1.6)}
+  label(ctx,geocentric?'지구를 고정한 상대위치':'지구와 행성은 모두 같은 방향으로 공전',w/2,h-15,muted,11,'center');
  }
 }
+function star(ctx,x,y,size=3){line(ctx,{x:x-size,y},{x:x+size,y},'#869da8',1);line(ctx,{x,y:y-size},{x,y:y+size},'#869da8',1)}
+function updateStatus(text,retro=false){$('motionState').textContent=text;$('motionState').classList.toggle('retro',retro)}
+function observer(){
+ const {ctx,w,h}=fit($('observer'));if(w<1)return;const m=state.mode;
+ if(m==='equant'){
+  $('observer').setAttribute('aria-label','같은 시간 간격의 P 방향을 C와 Q에서 비교. Q에서는 방향의 간격이 일정합니다.');
+  const cy=h*.46,rad=Math.min(w/5,h*.24);const items=[{x:w*.27,ref:'c',name:'C에서 보면',col:'#687d83'},{x:w*.73,ref:'q',name:'Q에서 보면',col:purple}];
+  items.forEach(item=>{const c={x:item.x,y:cy};circle(ctx,c,rad,'#bdcbd0',1);for(let i=0;i<12;i++){const a=direction(m,i/12,item.ref);const p={x:c.x+rad*Math.cos(a),y:c.y-rad*Math.sin(a)};line(ctx,c,p,'#bdcbd055',1);dot(ctx,p,item.col,3)}const a=direction(m,state.t,item.ref);arrow(ctx,c,{x:c.x+rad*Math.cos(a),y:c.y-rad*Math.sin(a)},item.col,2);dot(ctx,c,item.col,3,'square');label(ctx,item.name,c.x,cy-rad-30,item.col,15,'center');label(ctx,item.ref==='q'||state.e<.005?'일정한 간격':'달라지는 간격',c.x,cy+rad+25,item.col,13,'center')});
+  label(ctx,'같은 시간 간격으로 바라본 P의 방향',w/2,h-30,muted,12,'center');updateStatus('Q에서는 일정한 간격');return;
+ }
+ const data=apparentData(m,state.t);
+ if(m==='eccentric'){
+  for(const [x,y] of [[.13,.22],[.24,.64],[.73,.2],[.88,.66],[.57,.84]])star(ctx,x*w,y*h,3);
+  const r=3600*data.angularRadius,c={x:w/2,y:h*.46};planetDisc(ctx,c,r);label(ctx,'P',c.x,c.y+r+23,orange,17,'center');
+  const near=1-state.e,far=1+state.e,ratio=far/data.distance;
+  label(ctx,`가장 멀 때보다 ${ratio.toFixed(2)}배 크게 보임`,w/2,h-28,muted,w<400?12:14,'center');
+  const dNext=apparentData(m,state.t+.001).distance;if(state.e<.005)updateStatus('보이는 크기가 일정');else if(Math.abs(Math.sin(state.t*TAU))<.02)updateStatus(Math.cos(state.t*TAU)>0?'가장 멀고 작게 보임':'가장 가깝고 크게 보임');else updateStatus(dNext<data.distance?'가까워지며 커짐':'멀어지며 작아짐');
+  $('observer').setAttribute('aria-label',`지구에서 본 P의 원반. 지구와의 거리는 ${data.distance.toFixed(2)} R, 가장 멀 때의 ${ratio.toFixed(2)}배 크기.`);return;
+ }
+ const range=viewRange(),vals=Array.from({length:101},(_,i)=>direction(m,range.start+(range.end-range.start)*i/100));const fov=Math.max(.04,...vals.map(Math.abs))*1.15;
+ const X=a=>w/2+a/fov*(w-90)/2,Y=h*.48;
+ const stars=[[.14,.21,3],[.34,.3,2],[.54,.17,3],[.76,.27,3],[.91,.6,2],[.12,.73,2],[.44,.77,3],[.69,.7,2],[.84,.85,3]];
+ stars.forEach(([x,y,s])=>star(ctx,x*w,y*h,s));label(ctx,'별 A',w*.14,h*.21-16,'#7a8c94',11,'center');label(ctx,'별 B',w*.54,h*.17-16,'#7a8c94',11,'center');label(ctx,'별 C',w*.84,h*.85+16,'#7a8c94',11,'center');
+ const trail=[];for(let i=0;i<=26;i++){const t=Math.max(range.start,state.t-.026+i*.001);trail.push({x:X(direction(m,t)),y:Y})}path(ctx,trail,'#b38b6960',2.5);
+ const x=X(data.angle),r=1000*data.angularRadius;planetDisc(ctx,{x,y:Y},r);label(ctx,'P',x,Y+r+21,orange,17,'center');
+ const rate=angularRate(m,state.t),stopped=Math.abs(rate)<.025,retro=rate<-.025;
+ if(!stopped){const dx=retro?-1:1,ay=Y-r-24;arrow(ctx,{x:x-dx*15,y:ay},{x:x+dx*30,y:ay},retro?'#a75330':blue,2.2)}
+ updateStatus(stopped?'잠시 멈춤':retro?'← 역행 · 왼쪽으로 되돌아감':'순행 · 오른쪽으로 이동 →',retro);
+ label(ctx,'← 역행 방향',18,h-24,muted,12);label(ctx,'순행 방향 →',w-18,h-24,muted,12,'right');
+ $('observer').setAttribute('aria-label',`고정된 별을 배경으로 움직이는 행성 P. ${stopped?'정지점':retro?'왼쪽으로 역행':'오른쪽으로 순행'}. 지구와 가까울수록 원반이 커집니다.`);
+}
 function measure(){
- const {ctx,w,h}=fit($('measure')),mode=state.mode;if(w<1)return;const left=38,right=w-13,top=18,bottom=h-24;const max=mode==='equant'?3:2;const X=t=>left+t*(right-left),Y=v=>bottom-(v/max)*(bottom-top);
- [0,1,max].forEach(v=>{line(ctx,{x:left,y:Y(v)},{x:right,y:Y(v)},'#344352',1,v===1?[3,4]:[]);label(ctx,v.toFixed(0),left-10,Y(v),muted,11,'right')});
- const series=[{ref:'earth',color:blue,dash:[]} ,{ref:'c',color:'#687981',dash:[4,4]}];if(mode==='equant')series.push({ref:'q',color:purple,dash:[7,4]});
- series.forEach(s=>{const pts=Array.from({length:201},(_,i)=>({x:X(i/200),y:Y(angularRate(mode,i/200,s.ref))}));path(ctx,pts,s.color,1.8,s.dash)});
- line(ctx,{x:X(state.t),y:top},{x:X(state.t),y:bottom},'#dce7f060',1);
- series.forEach(s=>dot(ctx,{x:X(state.t),y:Y(angularRate(mode,state.t,s.ref))},s.color,3.5));
- label(ctx,'처음',left,bottom+16,muted,11);label(ctx,'한 바퀴',right,bottom+16,muted,11,'right');
- const rate=angularRate(mode,state.t);$('motionState').textContent=`지구 기준 ${rate.toFixed(2)}배`;$('motionState').classList.remove('retro');
+ if(!$('mathDetail').open)return;const {ctx,w,h}=fit($('measure'));if(!w)return;const mode=state.mode,left=30,right=w-13,top=17,bottom=h-22,max=mode==='equant'?3:2,X=t=>left+t*(right-left),Y=v=>bottom-v/max*(bottom-top);
+ [0,1,max].forEach(v=>{line(ctx,{x:left,y:Y(v)},{x:right,y:Y(v)},'#d2dbdc',1);label(ctx,String(v),left-9,Y(v),muted,11,'right')});
+ const series=[{ref:'earth',col:blue,dash:[]},{ref:'c',col:'#7b8a8b',dash:[3,4]}];if(mode==='equant')series.push({ref:'q',col:purple,dash:[6,4]});series.forEach(s=>{path(ctx,Array.from({length:180},(_,i)=>({x:X(i/179),y:Y(angularRate(mode,i/179,s.ref))})),s.col,1.5,s.dash);dot(ctx,{x:X(state.t),y:Y(angularRate(mode,state.t,s.ref))},s.col,3)});
+ label(ctx,'처음',left,h-7,muted,11);label(ctx,'한 바퀴',right,h-7,muted,11,'right');
 }
-function sky(){
- const {ctx,w,h}=fit($('sky'));if(w<1)return;const mode=state.mode,left=24,right=w-24,top=20,bottom=h-23;
- const start=.30,end=.70,X=t=>left+(t-start)/(end-start)*(right-left),Y=a=>bottom-(a+.27)/.54*(bottom-top);
-
- const points=Array.from({length:201},(_,i)=>{const t=start+(end-start)*i/200;return{x:X(t),y:Y(direction(mode,t)),t}});
- // A fixed scale for the opposition interval makes the reversal visible as a downward segment.
- const vals=points.map(p=>direction(mode,p.t));const low=Math.min(...vals)-.035,high=Math.max(...vals)+.035;
- const yy=a=>bottom-(a-low)/(high-low)*(bottom-top);
- line(ctx,{x:left,y:bottom},{x:right,y:bottom},'#4b5d70',1);
- path(ctx,points.map(p=>({x:p.x,y:yy(direction(mode,p.t))})),'#76baff',2.3);
- for(let i=0;i<200;i++){const p=points[i],q=points[i+1];if(angularRate(mode,p.t)<0)line(ctx,{x:p.x,y:yy(direction(mode,p.t))},{x:q.x,y:yy(direction(mode,q.t))},red,2.8)}
- const rate=angularRate(mode,state.t),retro=rate<-.015;
- $('motionState').textContent=Math.abs(rate)<.015?'정지점 부근':retro?'역행 · 방향이 감소':'순행 · 방향이 증가';$('motionState').classList.toggle('retro',retro);
- if(state.t>=start&&state.t<=end){const p={x:X(state.t),y:yy(direction(mode,state.t))};line(ctx,{x:p.x,y:top},{x:p.x,y:bottom},'#b9c8d260',1,[3,3]);dot(ctx,p,orange,5)}
- label(ctx,'앞선 시각',left,h-7,muted,11);label(ctx,'시간 →',right,h-7,muted,11,'right');
- label(ctx,'별을 기준으로 한 방향 ↑',left,8,muted,11);
- if(state.t<start||state.t>end)label(ctx,'현재 시각은 확대 구간 밖',right,8,muted,11,'right');
-}
-function draw(){geometry();if(state.mode==='eccentric'||state.mode==='equant')measure();else sky();$('timeValue').textContent=`${Math.round(state.t*100)}%`;$('time').value=String(Math.round(state.t*1000))}
+function draw(){geometry();observer();measure();const a=viewRange();const progress=(state.t-a.start)/(a.end-a.start);$('timeValue').textContent=`${Math.round(progress*100)}%`;$('time').value=String(Math.round(progress*1000));$('diagram').dataset.time=state.t.toFixed(5);$('observer').dataset.time=state.t.toFixed(5);const info=apparentData(state.mode,state.t);$('observer').dataset.distance=info.distance.toFixed(8);$('observer').dataset.angularRadius=info.angularRadius.toFixed(8);$('observer').dataset.direction=info.angle.toFixed(8);$('observer').dataset.motion=angularRate(state.mode,state.t)<0?'retrograde':'direct'}
 function notify(text){$('announcement').textContent=text}
 function setPlaying(value){state.playing=value;$('play').textContent=value?'Ⅱ 일시정지':'▶ 재생';$('play').setAttribute('aria-pressed',String(value))}
 function legendItem(color,text,shape=''){return `<span class="key"><i class="dot ${shape}" style="--c:${color}"></i>${text}</span>`}
 function setMode(mode,keepTime=false){
- state.mode=mode;delete $('comparisonAction').dataset.returnEquant;setPlaying(false);if(mode==='copernicus')state.r=.65;if(!keepTime)state.t=(mode==='epicycle'||mode==='copernicus')?.36:.10;
+ state.mode=mode;setPlaying(false);const a=viewRange(mode);if(mode==='copernicus')state.r=.65;if(!keepTime)state.t=a.start;
+ state.loop=mode==='eccentric'||mode==='equant';$('loop').checked=state.loop;
  const L=lessons[mode],i=names.indexOf(mode),ecc=mode==='eccentric'||mode==='equant';
  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
- $('stepLabel').textContent=L.step;$('lessonTitle').textContent=L.title;$('diagramTitle').textContent=mode==='copernicus'&&state.view==='earth'?'지구를 고정하면, 두 원운동의 합이 드러난다':L.diagram;
- $('reading').innerHTML=`<p class="lead">${L.lead}</p>${L.body}<div class="try"><h3>직접 확인하기</h3><p>${L.try}</p></div><div class="historical"><h3>이것이 왜 중요했을까?</h3><p>${L.history}</p><p class="citation">(${L.cite})</p></div>${mode==='equant'?'<details><summary>세 점의 역할을 다시 보면</summary><p><b>E</b>는 실제 관측자의 위치인 지구, <b>C</b>는 원의 기하학적 중심, <b>Q</b>는 균일한 각속도를 정의하는 점입니다. 이심원과 이심점은 같은 말이 아닙니다.</p></details>':''}<div class="next-row"><button id="previousStep" ${i===0?'disabled':''}>← 이전 단계</button><button id="nextStep">${i===3?'네 체계 비교로 →':'다음 단계 →'}</button></div>`;
+ $('stepLabel').textContent=L.step;$('lessonTitle').textContent=L.title;$('diagramTitle').textContent=mode==='copernicus'&&state.view==='earth'?'지구를 고정한 모형':L.diagram;
+ $('reading').innerHTML=`<p class="lead">${L.lead}</p>${L.body}<div class="try"><h3>직접 확인하기</h3><p>${L.try}</p></div><div class="historical"><h3>이것이 왜 중요했을까?</h3><p>${L.history}</p><p class="citation">(${L.cite})</p></div><div class="next-row"><button id="previousStep" ${i===0?'disabled':''}>← 이전 단계</button><button id="nextStep">${i===3?'네 체계 비교로 →':'다음 단계 →'}</button></div>`;
  $('previousStep').onclick=()=>setMode(names[Math.max(0,i-1)]);$('nextStep').onclick=()=>i===3?window.showModule('comparison'):setMode(names[i+1]);
- $('modelLimit').textContent=L.limit;$('observationCaption').textContent=L.caption;$('measureWrap').hidden=!ecc;$('skyWrap').hidden=ecc;$('viewToggle').hidden=mode!=='copernicus';
- $('observationTitle').textContent=ecc?'같은 시간 동안, 지구에서는 얼마나 움직여 보일까?':'지구에서 본 방향 · 역행 부근 확대';
- $('parameterWrap').hidden=mode==='copernicus';$('jump').hidden=ecc;$('comparisonAction').hidden=mode==='copernicus';
- $('parameterLabel').textContent=ecc?'중심에서 지구가 떨어진 정도':'주전원의 반지름';$('parameter').setAttribute('aria-label',$('parameterLabel').textContent);$('parameter').max=ecc?'45':'80';$('parameter').value=String(Math.round((ecc?state.e:state.r)*100));
- updateParameter();
- $('legend').innerHTML=legendItem(blue,'E 지구')+legendItem(orange,mode==='equant'?'P 주전원의 중심':'P 천체')+(ecc?legendItem(ink,'C 원의 중심','square')+(mode==='equant'?legendItem(purple,'Q 이심점','square'):''):mode==='epicycle'?legendItem(ink,'D 주전원의 중심','square'):legendItem('#b28b20','태양'));
- $('diagram').setAttribute('aria-label',L.diagram+'. '+L.lead.replace(/<br>/g,' '));notify(L.title);draw();requestAnimationFrame(draw);
+ $('modelLimit').textContent=L.limit;$('observationCaption').textContent=L.caption;$('mathDetail').hidden=!ecc;$('mathDetail').open=false;$('observerActions').hidden=mode!=='eccentric';$('viewToggle').hidden=mode!=='copernicus';
+ $('observationTitle').textContent=mode==='equant'?'같은 시간, 어디에서 바라보는가?':mode==='eccentric'?'지구에서 보이는 P의 크기':'지구에서 보이는 하늘';
+ $('parameterWrap').hidden=mode==='copernicus';$('jump').hidden=ecc;$('comparisonAction').hidden=mode==='copernicus'||mode==='equant';$('parameterLabel').textContent=ecc?'지구가 원의 중심에서 벗어난 거리':'주전원의 반지름';$('parameter').setAttribute('aria-label',$('parameterLabel').textContent);$('parameter').max=ecc?'45':'70';$('parameter').value=String(Math.round((ecc?state.e:state.r)*100));
+ updateParameter();$('legend').innerHTML=legendItem(blue,'지구')+legendItem(orange,mode==='equant'?'P 주전원의 중심':'P 행성',mode==='equant'?'square':'')+(ecc?legendItem('#79898c','C 원의 중심','square')+(mode==='equant'?legendItem(purple,'Q 이심점','square'):''):mode==='epicycle'?legendItem('#79898c','D 주전원의 중심','square'):legendItem('#bc9546','태양'));
+ $('diagram').setAttribute('aria-label',L.diagram);notify(L.title);draw();requestAnimationFrame(draw);
 }
-function updateParameter(){const ecc=state.mode==='eccentric'||state.mode==='equant';$('parameterValue').textContent=`${(ecc?state.e:state.r).toFixed(2)} R`;$('comparisonAction').textContent=state.mode==='equant'?'C에서 균일한 운동과 비교':state.mode==='epicycle'?(state.r<.01?'주전원 되돌리기':'주전원 없애기'):(state.e<.01?'지구를 다시 떨어뜨리기':'지구를 중심에 놓기')}
+function updateParameter(){const ecc=state.mode==='eccentric'||state.mode==='equant';$('parameterValue').textContent=`${(ecc?state.e:state.r).toFixed(2)} R`;$('comparisonAction').textContent=state.mode==='equant'?'C를 기준으로 바꿔 보기':state.mode==='epicycle'?(state.r<.01?'주전원 되돌리기':'주전원 없애기'):(state.e<.01?'지구를 다시 떨어뜨리기':'지구를 중심에 놓기');$('jump').textContent=state.mode==='epicycle'&&state.r*N<=1?'같은 구간 다시 보기':'순행 → 역행 재생'}
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
-document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{state.view=b.dataset.view;document.querySelectorAll('[data-view]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.view===state.view)));$('diagramTitle').textContent=state.view==='earth'?'지구를 고정하면, 두 원운동의 합이 드러난다':lessons.copernicus.diagram;draw();notify('좌표 기준만 변경했습니다. 지구에서 본 방향은 같습니다.')});
-$('play').onclick=()=>{if(state.t>=1)state.t=0;setPlaying(!state.playing)};
-$('time').oninput=e=>{setPlaying(false);state.t=Number(e.target.value)/1000;draw()};
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{state.view=b.dataset.view;document.querySelectorAll('[data-view]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.view===state.view)));$('diagramTitle').textContent=state.view==='earth'?'지구를 고정한 모형':lessons.copernicus.diagram;draw();notify('지구에서 보이는 P의 위치와 크기는 같습니다.')});
+$('play').onclick=()=>{const a=viewRange();if(state.t>=a.end-.0001)state.t=a.start;setPlaying(!state.playing)};
+$('time').oninput=e=>{setPlaying(false);const a=viewRange();state.t=a.start+(a.end-a.start)*Number(e.target.value)/1000;draw()};
 $('speed').onchange=e=>state.speed=Number(e.target.value);$('loop').onchange=e=>state.loop=e.target.checked;
 $('parameter').oninput=e=>{if(state.mode==='epicycle')state.r=Number(e.target.value)/100;else state.e=Number(e.target.value)/100;updateParameter();draw()};
-$('comparisonAction').onclick=()=>{if(state.mode==='equant'){setMode('eccentric',true);$('comparisonAction').textContent='Q에서 균일한 운동으로 돌아가기';$('comparisonAction').dataset.returnEquant='true';return}if($('comparisonAction').dataset.returnEquant==='true'){delete $('comparisonAction').dataset.returnEquant;setMode('equant',true);return}if(state.mode==='epicycle')state.r=state.r<.01?.65:0;else state.e=state.e<.01?.30:0;$('parameter').value=String(Math.round((state.mode==='epicycle'?state.r:state.e)*100));updateParameter();draw()};
-$('jump').onclick=()=>{state.t=.5;setPlaying(false);draw();notify('역행 구간의 중앙으로 이동했습니다.')};
-$('lecture').onclick=()=>{state.lecture=!state.lecture;$('ptolemyLab').classList.toggle('lecture',state.lecture);document.body.classList.toggle('focused-lesson',state.lecture);$('lecture').textContent=state.lecture?'해설 함께 보기':'강의 화면';$('lecture').setAttribute('aria-pressed',String(state.lecture));requestAnimationFrame(draw)};
-document.addEventListener('keydown',e=>{if($('ptolemyLab').hidden)return;if(['INPUT','SELECT','TEXTAREA','BUTTON','A','SUMMARY'].includes(document.activeElement.tagName)||e.altKey||e.metaKey||e.ctrlKey)return;if(e.code==='Space'){e.preventDefault();setPlaying(!state.playing)}if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();setPlaying(false);state.t=Math.max(0,Math.min(1,state.t+(e.key==='ArrowRight'?.015:-.015)));draw()}});
-let last=0;function animate(ts){const dt=Math.min((ts-last)/1000,.05);last=ts;if(state.playing&&!document.hidden&&!$('ptolemyLab').hidden){state.t+=dt*state.speed/24;if(state.t>=1){if(state.loop)state.t%=1;else{state.t=1;setPlaying(false)}}draw()}requestAnimationFrame(animate)}
+$('comparisonAction').onclick=()=>{if(state.mode==='epicycle')state.r=state.r<.01?.65:0;else state.e=state.e<.01?.30:0;$('parameter').value=String(Math.round((state.mode==='epicycle'?state.r:state.e)*100));updateParameter();draw()};
+$('jump').onclick=()=>{state.t=viewRange().start;setPlaying(true);draw();notify('순행에서 시작해 역행과 다시 순행하는 모습을 재생합니다.')};
+$('near').onclick=()=>{state.t=.5;setPlaying(false);draw()};$('far').onclick=()=>{state.t=0;setPlaying(false);draw()};$('mathDetail').ontoggle=()=>measure();
+$('lecture').onclick=()=>{state.lecture=!state.lecture;$('ptolemyLab').classList.toggle('lecture',state.lecture);document.body.classList.toggle('focused-lesson',state.lecture);$('lecture').textContent=state.lecture?'해설 함께 보기':'강의 화면';$('lecture').setAttribute('aria-pressed',String(state.lecture));window.scrollTo({top:0,behavior:'instant'});requestAnimationFrame(draw)};
+document.addEventListener('keydown',e=>{if($('ptolemyLab').hidden||['INPUT','SELECT','TEXTAREA','BUTTON','A','SUMMARY'].includes(document.activeElement.tagName)||e.altKey||e.metaKey||e.ctrlKey)return;const a=viewRange();if(e.code==='Space'){e.preventDefault();if(state.t>=a.end)state.t=a.start;setPlaying(!state.playing)}if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();setPlaying(false);state.t=Math.max(a.start,Math.min(a.end,state.t+(e.key==='ArrowRight'?1:-1)*.015*(a.end-a.start)));draw()}});
+let last=0;function animate(ts){const dt=Math.min((ts-last)/1000,.05);last=ts;if(state.playing&&!document.hidden&&!$('ptolemyLab').hidden){const a=viewRange();state.t+=dt*state.speed*(a.end-a.start)/20;if(state.t>=a.end){if(state.loop)state.t=a.start;else{state.t=a.end;setPlaying(false)}}draw()}requestAnimationFrame(animate)}
 new ResizeObserver(()=>draw()).observe($('diagram').parentElement);
 setMode('eccentric');requestAnimationFrame(animate);
-// Expose read-only numerical samples for validation; the lesson uses the same functions.
-window.redrawPtolemyLab=draw;window.pausePtolemyLab=()=>setPlaying(false);window.W03Model={sample:(mode,p,e,r)=>sample(mode,p,e,r),angularRate:(mode,p,ref)=>angularRate(mode,p,ref),getState:()=>({...state})};
+window.redrawPtolemyLab=draw;window.pausePtolemyLab=()=>setPlaying(false);window.W03Model={sample:(mode,p,e,r)=>sample(mode,p,e,r),angularRate:(mode,p,ref)=>angularRate(mode,p,ref),apparentData,viewRange,getState:()=>({...state})};
 })();
 </script><script>if(location.hash==='#ptolemy')showModule('lab');</script></body>
 </html>
