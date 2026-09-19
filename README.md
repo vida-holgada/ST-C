@@ -12,10 +12,10 @@ Interactive HTML collection for multiple ST&C teaching modules.
 
 - `W03_Astronomy.html`: astronomy systems comparison
 - `W03_theory_choice.html`: theory choice criteria interactive
-- `W03_suppersymmetry.html`: supersymmetry and theory choice wrap-up
-- `supersymmetry_explainer.html`: step-by-step supersymmetry explainer
-- `W03_supersymmetry_Explainer_2.html`: alternate explainer wrapper
-- `supersymmetry_explainer_2.js`: script dependency for the alternate explainer
+- `W03_suppersymmetry.html`: supersymmetry lesson with interactive particle pairs, correction cancellation, coupling evolution, detector tracks, and current search limits
+- `supersymmetry_explainer.html`: preserved entry URL, redirects to the maintained Week 3 supersymmetry lesson
+- `W03_supersymmetry_Explainer_2.html`: preserved alternate entry URL, redirects to the maintained lesson
+- `supersymmetry_explainer_2.js`: shared vanilla JavaScript for the Week 3 supersymmetry lesson
 
 ## Week 5 Files
 
