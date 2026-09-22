@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="점수와 기준선, 정확도와 두 가지 오류, 집단별 공정성을 직접 비교하는 한국어 COMPAS 수업 체험.">
+<meta name="theme-color" content="#4f55ab"><title>어디에 선을 그을까? · COMPAS 체험</title>
+<link rel="stylesheet" href="styles.css"><script defer src="data.js"></script><script defer src="model.js"></script><script defer src="app.js"></script>
+</head>
+<body>
+<a class="skip" href="#lesson">본문으로 건너뛰기</a>
+<header class="mast"><a class="brand" href="#1"><b>인공지능과 현대사회</b><span>W04 · 데이터로 사람을 판단하기</span></a><div class="head-actions"><button id="teacherToggle" aria-expanded="false" aria-controls="teacher">교사용 안내</button><button id="reset">처음부터</button></div></header>
+<main class="shell">
+<div class="course-title"><h1>어디에 선을 그을까?</h1><p>같은 점수도, 기준을 바꾸면 다른 판단이 됩니다.</p></div>
+<nav id="steps" class="steps" aria-label="체험 단계"></nav>
+<section id="lesson" tabindex="-1">
+<div class="lesson-heading"><div><p id="eyebrow" class="eyebrow"></p><h2 id="heading"></h2></div><span id="dataTag" class="data-tag"></span></div>
+<p id="intro" class="intro"></p>
+<div id="task" class="task"><span>해볼 일</span><p id="taskText"></p></div>
+<div id="experiment">
+<div id="controls" class="controls"></div>
+<div class="figure-heading"><p id="figureTitle"></p><div id="legend" class="legend"></div></div>
+<div id="plotFrame" class="plot-frame"><svg id="plot" viewBox="0 0 1000 325" role="img" aria-labelledby="plotTitle plotDescription"></svg></div>
+<p class="mobile-hint">작은 화면에서는 그래프를 좌우로 밀어 볼 수 있습니다. 아래 조절 막대로도 기준을 바꿀 수 있습니다.</p>
+<div id="stats" class="stats"></div>
+<div id="feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true"></div>
+<div id="dotDetail" class="dot-detail" hidden></div>
+<div id="extra" class="extra"></div>
+<details id="tableDetails" class="data-details"><summary>점수별 인원과 계산 확인</summary><div id="dataTable" class="table-scroll"></div></details>
+</div>
+<div id="discussion" hidden></div>
+<aside id="teacher" class="teacher" hidden><h3>교사용 설명</h3><div id="teacherText"></div></aside>
+<div class="next-row"><button id="previous">이전 단계</button><span id="position"></span><button id="next" class="primary">다음 단계</button></div>
+</section>
+<details class="sources"><summary>자료 출처와 이 체험의 범위</summary><div>
+<p>이 페이지는 Karen Hao와 Jonathan Stray의 MIT Technology Review 체험 기사(2019)의 학습 순서를 참고해 한국어 수업용으로 새로 만들었습니다. 원본 화면이나 코드를 그대로 옮긴 것이 아닙니다.</p>
+<p>실제 자료 단계는 원본 체험에 사용된 500명 표본의 <b>점수·인종 집단·재체포 여부별 집계</b>를 사용합니다. 이름 등 개인 식별 정보는 포함하지 않습니다. 3단계만 결과를 인위적으로 바꾼 가상 사례입니다. 원본 기사의 전체 표본 수치나 ProPublica의 전체 분석 수치와 섞어 읽지 않습니다.</p>
+<p>점수는 1~10의 순서 척도로 읽습니다. <b>7점이 재체포 확률 70%라는 뜻은 아닙니다.</b> 또한 재체포 기록은 실제 범죄 전체나 유죄 확정과 같지 않습니다. 여기서 ‘고위험/저위험’으로 나누는 규칙은 문턱 선택을 배우기 위한 모형이며, 실제 판결·구금 결정을 재현하지 않습니다.</p>
+<ol><li>Hao, Karen, and Jonathan Stray. “Can You Make AI Fairer than a Judge? Play Our Courtroom Algorithm Game.” <i>MIT Technology Review</i>, October 17, 2019. <a href="https://www.technologyreview.com/2019/10/17/75285/ai-fairer-than-judge-criminal-risk-assessment-algorithm/" target="_blank" rel="noopener">기사</a> · <a href="https://technologyreview.github.io/Fairness/graph4.html" target="_blank" rel="noopener">원본 graph4</a>.</li><li>Larson, Jeff, Surya Mattu, Lauren Kirchner, and Julia Angwin. “How We Analyzed the COMPAS Recidivism Algorithm.” <i>ProPublica</i>, May 23, 2016. <a href="https://www.propublica.org/article/how-we-analyzed-the-compas-recidivism-algorithm" target="_blank" rel="noopener">분석 방법</a>.</li></ol>
+<p>원본 단계: <a href="https://technologyreview.github.io/Fairness/graph1.html" target="_blank" rel="noopener">1</a> · <a href="https://technologyreview.github.io/Fairness/graph2.html" target="_blank" rel="noopener">2</a> · <a href="https://technologyreview.github.io/Fairness/graph2a.html" target="_blank" rel="noopener">2a</a> · <a href="https://technologyreview.github.io/Fairness/graph3.html" target="_blank" rel="noopener">3</a> · <a href="https://technologyreview.github.io/Fairness/graph4.html" target="_blank" rel="noopener">4</a> · <a href="https://technologyreview.github.io/Fairness/graph5.html" target="_blank" rel="noopener">5</a> · <a href="https://technologyreview.github.io/Fairness/graph6.html" target="_blank" rel="noopener">6</a> · <a href="https://technologyreview.github.io/Fairness/graph6a.html" target="_blank" rel="noopener">6a</a> · <a href="https://technologyreview.github.io/Fairness/graph7.html" target="_blank" rel="noopener">7</a>.</p>
+</div></details>
+<footer>인공지능과 현대사회 · W04 <span>분류의 정확도와 사용의 정당성을 함께 묻기</span></footer>
+</main><noscript>이 체험은 JavaScript가 필요합니다. 그래프를 조작하려면 브라우저에서 JavaScript를 허용해 주세요.</noscript>
+</body></html>
